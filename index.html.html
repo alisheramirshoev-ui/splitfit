@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>SplitFit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0b0b0c">
+<style>
+:root{color-scheme:dark;--bg:#0b0b0c;--card:#141416;--card2:#1c1c1f;--tx:#f2f2f3;--mu:#8a8a92;--mu2:#4f4f56;--ac:#e5202e;--ac2:#ff5560;--bd:#26262a;--r:16px;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.32,.72,0,1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+#app{max-width:560px;margin:0 auto;min-height:100vh;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px calc(100px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;cursor:pointer;color:inherit}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;min-width:0;outline:0;transition:border-color .2s,background .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+input[type=number]{-moz-appearance:textfield}input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+textarea{resize:vertical;min-height:64px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--ac);padding:0;flex:none}
+h1,h2,h3{margin:0;letter-spacing:-.01em}
+.mu{color:var(--mu);font-size:13px}.mu2{color:var(--mu2)}.c{text-align:center}.r{text-align:right}
+.lb{color:var(--mu);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.row{display:flex;gap:8px;align-items:center}.wrap{flex-wrap:wrap}.f1{flex:1;min-width:0}.mt{margin-top:10px}.mt2{margin-top:16px}.gap4{gap:4px}
+.hdr{display:flex;align-items:flex-end;gap:10px;margin:8px 0 16px}
+.hdr h1{font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.1;margin-top:6px}
+.hdr .sub{color:var(--mu);font-size:13px;margin-top:4px}
+.brand{font-size:10.5px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;display:flex;align-items:center;gap:8px;color:var(--mu)}
+.brand:before{content:"";width:8px;height:8px;background:var(--ac);border-radius:1px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.card h3{font-size:16px;font-weight:600}
+.card.warn{border-color:rgba(229,32,46,.55);background:linear-gradient(180deg,rgba(229,32,46,.09),rgba(229,32,46,.02))}
+.empty{color:var(--mu);font-size:14px;text-align:center;padding:22px 8px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ac);color:#fff;border:0;border-radius:13px;padding:13px 16px;font-weight:600;width:100%;transition:transform .18s var(--ease),opacity .2s}
+.btn:active,.ib:active,.chip:active,.press:active{transform:scale(.965)}
+.btn.ghost{background:var(--card2);border:1px solid var(--bd);color:var(--tx)}
+.btn.sm{width:auto;padding:9px 13px;font-size:13.5px;border-radius:11px}
+.btn[disabled]{opacity:.4}
+.ib{flex:none;background:var(--card2);border:1px solid var(--bd);border-radius:12px;width:40px;height:40px;display:grid;place-items:center;transition:transform .18s var(--ease),border-color .2s}
+.ib svg,.btn svg{width:20px;height:20px}.ib[disabled]{opacity:.3}
+.press{transition:transform .18s var(--ease)}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--bd);border-radius:999px;padding:6px 11px;font-size:13px;transition:transform .18s var(--ease),background .2s,border-color .2s;white-space:nowrap}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.chip.bad{border-color:rgba(229,32,46,.5);color:#ff7b84;background:rgba(229,32,46,.08)}
+.chip.sm{padding:3px 8px;font-size:11.5px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.hs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px}.hs::-webkit-scrollbar{display:none}
+.fld{display:flex;flex-direction:column;gap:5px}.fld>span{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.badge{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:6px;background:var(--card2);border:1px solid var(--bd);color:var(--mu);white-space:nowrap}
+.badge.ac{background:var(--ac);border-color:var(--ac);color:#fff}.badge.red{color:#ff7b84;border-color:rgba(229,32,46,.5)}
+.sep{height:1px;background:var(--bd);margin:12px 0}
+.av{flex:none;width:42px;height:42px;border-radius:50%;background:var(--card2);border:1px solid var(--bd);display:grid;place-items:center;font-weight:600;font-size:14px;letter-spacing:.02em;position:relative}
+.av.lg{width:64px;height:64px;font-size:22px}
+.av.alert:after{content:"";position:absolute;right:-1px;top:-1px;width:11px;height:11px;border-radius:50%;background:var(--ac);border:2px solid var(--card);animation:pulse 2s infinite}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--bd);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;transition:opacity .2s}
+.li:first-child{border-top:0}.li:active{opacity:.6}
+.li .t{font-weight:600}.li .s{color:var(--mu);font-size:12.5px;margin-top:1px}
+.chev{width:16px;height:16px;color:var(--mu2);flex:none}
+.li>svg,.role>svg{width:18px;height:18px;color:var(--mu2);flex:none}.li .ic{width:28px;display:grid;place-items:center;flex:none}
+/* tab bar */
+#tabs .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px));background:rgba(11,11,12,.86);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--bd)}
+.tabbar .in{display:flex;max-width:560px;margin:0 auto}
+.tab{flex:1;background:none;border:0;color:var(--mu);font-size:10.5px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 6px;position:relative;transition:color .25s}
+.tab svg{width:23px;height:23px;transition:transform .4s var(--spring)}
+.tab.on{color:var(--tx)}.tab.on svg{transform:translateY(-1px) scale(1.08)}
+.tab.on:before{content:"";position:absolute;top:-4px;width:20px;height:2px;border-radius:2px;background:var(--ac);animation:grow .35s var(--spring)}
+/* segmented */
+.seg{position:relative;display:flex;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{position:relative;z-index:1;flex:1 0 auto;background:none;border:0;color:var(--mu);font-size:13.5px;padding:8px 12px;border-radius:9px;white-space:nowrap;transition:color .3s}
+.seg button.on{color:#fff}
+.seg>i{position:absolute;top:3px;bottom:3px;left:0;width:0;background:var(--ac);border-radius:9px;transition:transform .45s var(--spring),width .45s var(--spring)}
+.seg.sm{display:inline-flex;margin:0}.seg.sm button{padding:6px 10px;font-size:12.5px}
+/* animations */
+@keyframes inR{from{opacity:0;transform:translateX(30px)}}
+@keyframes inL{from{opacity:0;transform:translateX(-30px)}}
+@keyframes inU{from{opacity:0;transform:translateY(10px)}}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.985)}}
+@keyframes pop{0%{transform:scale(.5)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes barUp{from{transform:scaleY(0)}}
+@keyframes wL{from{opacity:0;transform:translateX(40px)}}@keyframes wR{from{opacity:0;transform:translateX(-40px)}}
+.page.a-fwd{animation:inR .45s var(--ease)}.page.a-back{animation:inL .45s var(--ease)}.page.a-tab{animation:inU .35s var(--ease)}
+.page[class*=" a-"] .st{animation:rise .55s var(--ease) both;animation-delay:calc(var(--i,0)*45ms)}
+.fx{animation:inU .35s var(--ease)}
+.wkL{animation:wL .4s var(--ease)}.wkR{animation:wR .4s var(--ease)}
+/* sheet */
+.sb{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;opacity:0;transition:opacity .35s}
+.sb.on{opacity:1}
+.sh{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:560px;margin:0 auto;background:#111113;border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;max-height:93vh;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .5s var(--spring);box-shadow:0 -20px 60px rgba(0,0,0,.5)}
+.sh.on{transform:none}
+.grab{padding:10px 0 6px;display:flex;justify-content:center;touch-action:none;cursor:grab;flex:none}.grab i{width:40px;height:4px;border-radius:2px;background:#3a3a40}
+.sbody{overflow:auto;padding:2px 16px calc(20px + env(safe-area-inset-bottom,0px));overscroll-behavior:contain}
+.sbody h2{font-size:21px;margin:2px 0 14px;font-weight:700}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translate(-50%,-160%);background:#1d1d20;border:1px solid var(--bd);padding:11px 16px;border-radius:14px;z-index:70;transition:transform .5s var(--spring);font-size:14px;max-width:92vw;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#toast.on{transform:translate(-50%,0)}
+.vbar{position:sticky;top:0;z-index:15;margin:-10px -16px 8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px 8px;background:var(--ac);color:#fff;font-size:13px;display:flex;align-items:center;gap:8px;animation:fadeIn .3s}
+.vbar button{margin-left:auto;background:rgba(0,0,0,.25);border:0;border-radius:8px;padding:5px 10px;font-size:12.5px;color:#fff}
+/* week */
+.wkh{display:flex;align-items:flex-start;gap:10px}
+.wkn{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.wk{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;font-variant-numeric:tabular-nums;font-size:14.5px}
+.wk .h{font-size:10px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;padding:0 6px 8px;text-align:right}
+.wk .h:first-child{text-align:left}
+.wr{display:contents;cursor:pointer}
+.wr>div{padding:12px 6px;border-top:1px solid var(--bd);text-align:right;transition:background .2s;white-space:nowrap}
+.wr>div:first-child{text-align:left}
+.wr.today>div{background:rgba(229,32,46,.08)}.wr.today>div:first-child{box-shadow:inset 2px 0 var(--ac)}
+.wr.fut{cursor:default}.wr.fut>div{color:var(--mu2)}
+.wr.ft>div{color:var(--mu);font-size:13px;border-top:1px solid #333}
+.wr .d small{color:var(--mu);font-size:11.5px;margin-left:3px}
+.wr .mk{margin-left:4px;font-size:12px;letter-spacing:-1px}
+.bad{color:var(--ac2)}.good{color:var(--tx)}
+.dl{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-variant-numeric:tabular-nums;padding:4px 8px;border-radius:8px;background:var(--card2)}
+.dl.bad{background:rgba(229,32,46,.12)}
+/* day sheet */
+.wbox{display:flex;align-items:center;gap:10px;justify-content:center;margin:2px 0 14px}
+.wbox .ib{width:52px;height:52px;border-radius:16px;font-size:24px}
+input.big{font-size:44px;font-weight:700;text-align:center;border:0;background:none;padding:0;width:170px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+input.big:focus{border:0}
+.mks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mk-b{background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:8px 2px;font-size:11px;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .18s var(--ease),border-color .2s,background .2s}
+.mk-b b{font-size:19px;font-weight:400}
+.mk-b.on{border-color:var(--ac);background:rgba(229,32,46,.12);color:var(--tx)}.mk-b.on b{animation:pop .35s var(--spring)}
+.bub{max-width:85%;padding:9px 12px;border-radius:14px;background:var(--card2);font-size:14px;margin-top:6px;animation:inU .3s var(--ease)}
+.bub.me{margin-left:auto;background:rgba(229,32,46,.18)}
+.bub small{display:block;color:var(--mu);font-size:11px;margin-bottom:2px}
+/* today */
+.tdy{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tdy>div{background:var(--card2);border-radius:12px;padding:10px;position:relative;overflow:hidden}
+.tdy b{display:block;font-size:19px;font-variant-numeric:tabular-nums;margin-top:2px}
+.tdy .no b{color:var(--mu2);font-weight:500;font-size:15px}
+.pbar{height:3px;border-radius:2px;background:#2a2a2f;margin-top:8px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--ac);transform-origin:left;animation:grow .9s var(--ease) both}
+.quote{border-left:2px solid var(--ac);padding:2px 0 2px 10px;margin-top:12px;font-size:14px}
+/* chart */
+.chart{position:relative;user-select:none}
+.chart svg{width:100%;display:block;overflow:visible;touch-action:pan-y}
+.chart .tip{position:absolute;top:-6px;transform:translate(-50%,-100%);background:#222226;border:1px solid #333;border-radius:9px;padding:5px 9px;font-size:12px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .15s}
+.chart .tip.on{opacity:1}
+.draw{transition:stroke-dashoffset 1.2s var(--ease)}
+.bar-r{transform-box:fill-box;transform-origin:bottom;animation:barUp .7s var(--ease) both}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.stat{background:var(--card2);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums;margin-top:2px;letter-spacing:-.02em}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.kpi .card{margin:0}
+.kpi b{display:block;font-size:26px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:4px}
+.hb{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13.5px}
+.hb .tr{flex:1;height:8px;border-radius:4px;background:var(--card2);position:relative;overflow:hidden}
+.hb .tr i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--ac);transform-origin:left;animation:grow .9s var(--ease) both}
+.hb .tr u{position:absolute;top:0;bottom:0;background:rgba(229,32,46,.18)}
+.spark{width:64px;height:24px;flex:none}
+.heat{display:flex;gap:3px;flex:none}.heat i{width:7px;height:7px;border-radius:2px;background:#2a2a2f}.heat i.on{background:var(--tx)}.heat i.part{background:var(--mu2)}
+/* workout */
+.ex h3{font-size:16.5px}
+.set{display:grid;grid-template-columns:20px 1fr auto 1fr 1.25fr 44px;gap:6px;align-items:center;margin-top:7px}
+.set .n{color:var(--mu);font-size:13px}
+.set input,.set select{padding:9px 6px;text-align:center}
+.set select{text-align:left;padding:9px 4px;font-size:13px}
+.chk{width:44px;height:42px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--mu);font-size:17px;transition:background .25s,border-color .25s,color .25s,transform .18s}
+.set.done .chk{background:var(--ac);border-color:var(--ac);color:#fff;animation:pop .4s var(--spring)}
+.set.done input,.set.done select{border-color:#3a1c1f}
+#tm{position:fixed;left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:30;max-width:536px;margin:0 auto;background:var(--ac);border-radius:18px;padding:10px 12px;display:flex;align-items:center;gap:8px;transform:translateY(calc(100% + 120px));opacity:0;pointer-events:none;transition:transform .5s var(--spring),opacity .3s;overflow:hidden;box-shadow:0 10px 40px rgba(229,32,46,.35)}
+#tm.on{transform:none;opacity:1;pointer-events:auto}
+#tm .p{position:absolute;left:0;top:0;bottom:0;background:rgba(0,0,0,.2);transition:width .25s linear}
+#tm b{position:relative;font-size:26px;font-variant-numeric:tabular-nums;min-width:74px;text-align:center;flex:1}
+#tm button{position:relative;background:rgba(0,0,0,.25);border:0;border-radius:10px;padding:9px 12px;color:#fff}
+.it{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--bd);padding:12px 2px}
+.it:active{opacity:.6}
+.it{align-items:center}.it .tick{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--bd);flex:none;transition:background .2s,border-color .2s;position:relative}
+.it.on .tick{background:var(--ac);border-color:var(--ac);animation:pop .3s var(--spring)}.it.on .tick:after{content:"";position:absolute;left:7px;top:3px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.it.on{color:var(--tx)}.pkfoot{position:sticky;bottom:calc(-20px - env(safe-area-inset-bottom,0px));margin:14px -16px 0;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(17,17,19,0),#111113 30%)}
+.set.cset{grid-template-columns:20px 1fr 1fr 1.4fr 44px}.cset .lb{font-size:9.5px}
+.exrow{border-top:1px solid var(--bd);padding-top:9px;margin-top:9px}.ib.sm{width:30px;height:30px;border-radius:9px;font-size:12px}
+/* photos */
+.cmp{position:relative;aspect-ratio:3/4.4;border-radius:16px;overflow:hidden;touch-action:pan-y;background:#151517;user-select:none}
+.cmp img,.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.cmp .top{position:absolute;inset:0}
+.cmp .hd{position:absolute;top:0;bottom:0;width:2px;background:#fff;transform:translateX(-1px);pointer-events:none}
+.cmp .hd i{position:absolute;top:50%;left:50%;width:38px;height:38px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 4px 18px rgba(0,0,0,.4);display:grid;place-items:center;color:#111;font-style:normal;font-size:14px;font-weight:700}
+.cmp .tg{position:absolute;bottom:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border-radius:8px;padding:4px 8px;font-size:12px}
+.ph{position:relative;aspect-ratio:3/4.4;border-radius:12px;overflow:hidden;background:var(--card2);border:1px solid var(--bd)}
+.ph.add{display:grid;place-items:center;color:var(--mu);font-size:12px;text-align:center}
+.ph .lab{position:absolute;left:6px;bottom:6px;font-size:10.5px;background:rgba(0,0,0,.55);padding:2px 6px;border-radius:6px}
+/* onboarding */
+.ob{min-height:calc(100vh - 120px);display:flex;flex-direction:column;justify-content:center}
+.logo{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.logo i{width:22px;height:22px;background:var(--ac);border-radius:3px;animation:pop .7s var(--spring) both}
+.logo span{font-size:30px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;animation:inR .7s .15s var(--ease) both}
+.role{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px;margin-top:10px;transition:transform .2s var(--ease),border-color .2s}
+.role:active{transform:scale(.98);border-color:var(--ac)}
+.role .ic{width:46px;height:46px;border-radius:14px;background:rgba(229,32,46,.12);color:var(--ac);display:grid;place-items:center;flex:none}
+.role .ic svg{width:24px;height:24px}
+.role b{font-size:17px}
+.tier{position:relative;display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-top:8px;width:100%;text-align:left;transition:transform .2s var(--ease),border-color .2s}
+.tier.pop{border-color:var(--ac)}
+.tier .pr{font-size:20px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
+.ring{transform:rotate(-90deg)}.ring circle{transition:stroke-dashoffset 1.1s var(--ease)}
+.okc{width:84px;height:84px;margin:6px auto 10px;display:block}
+.okc circle,.okc path{stroke:var(--ac);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.okc circle{stroke-dasharray:240;stroke-dashoffset:240;animation:dash .7s var(--ease) forwards}
+.okc path{stroke-dasharray:60;stroke-dashoffset:60;animation:dash .45s .55s var(--ease) forwards}
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes flash{0%{border-color:var(--ac);box-shadow:0 0 0 3px rgba(229,32,46,.35)}100%{border-color:var(--bd);box-shadow:none}}.flash{animation:flash 1.6s var(--ease)}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl td,.tbl th{padding:9px 4px;border-top:1px solid var(--bd);text-align:center}
+.tbl th{font-weight:500;color:var(--mu);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border-top:0}
+.tbl td:first-child,.tbl th:first-child{text-align:left}
+.ok-c{color:var(--tx)}.no-c{color:var(--ac2)}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<div id="app"></div>
+<div id="tabs"></div>
+<div id="tm"><div class="p" id="tmp"></div><button onclick="addRest(-30)">−30</button><b id="tt">0:00</b><button onclick="addRest(30)">+30</button><button onclick="stopRest()">Готово</button></div>
+<div id="toast"></div>
+<script>
+/* =========================================================
+   SPLITFIT — прототип (этап 0). Все данные демонстрационные и
+   живут в localStorage. На этапе 1 слой DATA заменяется
+   запросами к Supabase, интерфейс остаётся тем же.
+   ========================================================= */
+const APP={name:'SplitFit',bot:'splitfit_coach_bot'};
+/* Адрес серверной функции Supabase. Пусто — приложение работает в демо-режиме на тестовых данных. */
+const API_URL='https://mbemxdadkufsagwczhqc.supabase.co/functions/v1/splitfit';
+const PLANS={t10:{n:'Старт',max:10,price:4990},t20:{n:'Про',max:20,price:8990,pop:1},t30:{n:'Студия',max:30,price:12990}};
+const PERIODS=[[1,'1 месяц',1,''],[3,'3 месяца',.9,'−10%'],[12,'12 месяцев',10/12,'2 мес. в подарок']];
+const TRIAL={days:30,max:30};
+const DEMO_MODE=!API_URL; // нет сервера — демо
+const LSK='splitfit-demo-v1',DRK='splitfit-draft-',RSK='splitfit-rest';
+
+/* ---------- Telegram ---------- */
+const TG=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)?Telegram.WebApp:null;
+const hap=t=>{try{TG.HapticFeedback.impactOccurred(t||'light')}catch(e){}};
+const hapOk=()=>{try{TG.HapticFeedback.notificationOccurred('success')}catch(e){}};
+const hapErr=()=>{try{TG.HapticFeedback.notificationOccurred('error')}catch(e){}};
+const hapSel=()=>{try{TG.HapticFeedback.selectionChanged()}catch(e){}};
+const LIVE=!!API_URL,DEMO=!LIVE;
+
+/* ---------- утилиты ---------- */
+const $=s=>document.querySelector(s);
+/* append, пропускающий null/false и разворачивающий массивы */
+const _ap=Element.prototype.append;Element.prototype.append=function(...a){return _ap.apply(this,a.flat(9).filter(x=>x!=null&&x!==false))};
+function h(t,p,...ch){const e=document.createElement(t);if(p)for(const k in p){const v=p[k];if(v==null||v===false)continue;if(k==='style')e.style.cssText=v;else if(k==='html')e.innerHTML=v;else if(k.startsWith('on')||k in e)e[k]=v;else e.setAttribute(k,v)}ch.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c.nodeType?c:String(c))});return e}
+const pad=n=>String(n).padStart(2,'0');
+const ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const TODAY=()=>ds(new Date());
+const add=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d)};
+const diff=(a,b)=>Math.round((pd(a)-pd(b))/864e5);
+const monday=s=>{const d=pd(s);d.setDate(d.getDate()-(d.getDay()+6)%7);return ds(d)};
+const MON=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],WDL=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
+const fmtD=s=>{const d=pd(s);return d.getDate()+' '+MON[d.getMonth()]};
+const fmtDs=s=>{const d=pd(s);return pad(d.getDate())+'.'+pad(d.getMonth()+1)};
+const wdi=s=>(pd(s).getDay()+6)%7;
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const fmtN=(n,d)=>n==null||n===''||isNaN(n)?'—':Number(n).toLocaleString('ru-RU',{maximumFractionDigits:d==null?1:d});
+const money=n=>Math.round(n).toLocaleString('ru-RU')+' ₸';
+const plural=(n,f)=>{n=Math.abs(n)%100;const a=n%10;return f[n>10&&n<20?2:a>1&&a<5?1:a===1?0:2]};
+const avg=a=>{a=a.filter(v=>v!=null&&v!==''&&!isNaN(v));return a.length?a.reduce((x,y)=>x+ +y,0)/a.length:null};
+const r1=v=>Math.round(v*10)/10;
+const ini=n=>n.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+let idc=0;const uid=p=>(p||'')+Date.now().toString(36).slice(-5)+(idc++).toString(36)+Math.random().toString(36).slice(2,5);
+const sgn=v=>(v>0?'+':v<0?'−':'')+fmtN(Math.abs(v));
+let seed=7;const R=()=>{seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const rr=(a,b)=>a+R()*(b-a),ri=(a,b)=>Math.round(rr(a,b)),pick=a=>a[Math.floor(R()*a.length)];
+
+const IC={
+cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+dumb:'<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',
+chart:'<path d="M4 19.5h16"/><path d="M5 15l4.5-5 3.5 3 6-7"/>',
+user:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.8 4-5.6 7.5-5.6s6.3 1.8 7.5 5.6"/>',
+users:'<circle cx="9" cy="9" r="3.4"/><path d="M2.8 19.5c.9-3.3 3.2-5 6.2-5s5.3 1.7 6.2 5M15.5 5.8a3.2 3.2 0 0 1 0 6.3M17.5 14.6c1.9.6 3.2 2.2 3.8 4.9"/>',
+list:'<path d="M9.5 6.5h11M9.5 12h11M9.5 17.5h11M3.8 6.3l1.2 1.2 2-2.3M3.8 11.8l1.2 1.2 2-2.3M3.8 17.3l1.2 1.2 2-2.3"/>',
+case:'<rect x="3.5" y="7" width="17" height="12.5" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3.5 12.5h17"/>',
+grid:'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+chat:'<path d="M5 19V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H8.5z"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',back:'<path d="M14.5 5.5 8 12l6.5 6.5"/>',chev:'<path d="M9.5 6l6 6-6 6"/>',
+send:'<path d="M5 12h12M12 6l6 6-6 6"/>',cam:'<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.3"/>',
+eye:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+mega:'<path d="M4 10v4h3l7 4V6L7 10zM17.5 9a4 4 0 0 1 0 6"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>'};
+const ic=(n,s)=>{const e=document.createElementNS('http://www.w3.org/2000/svg','svg');e.setAttribute('viewBox','0 0 24 24');e.setAttribute('fill','none');e.setAttribute('stroke','currentColor');e.setAttribute('stroke-width',s||1.8);e.setAttribute('stroke-linecap','round');e.setAttribute('stroke-linejoin','round');e.setAttribute('width','20');e.setAttribute('height','20');e.innerHTML=IC[n];return e};
+
+/* ---------- справочники ---------- */
+const MG=['Грудь','Спина','Дельты','Трапеции','Бицепс','Трицепс','Предплечья','Квадрицепс','Бицепс бедра','Ягодицы','Икры','Пресс'];
+const CARDIO='Кардио',GROUPS=[...MG,CARDIO];
+const gLabel=g=>g==='Дельты'?'Плечи':g;
+const FL={'':'—','1':'RIR 1','0':'RIR 0','f':'⚡ отказ'};
+const LVL={'':'—','1':'лёгкая','2':'средняя','3':'высокая'};
+const PASS='Жим лёжа — проходка на 1 раз';
+/* Библиотека упражнений: «название|подходы|повторения», для кардио — «название|минуты» */
+const EXDB={
+'Грудь':['Жим лёжа|3|6',PASS+'|1|1','Жим штанги на наклонной|3|8','Жим штанги с обратным наклоном|3|8','Жим гантелей лёжа|3|10','Жим гантелей на наклонной|3|8','Жим в Смите лёжа|3|8','Жим в Смите на наклонной|3|8','Жим в тренажёре (грудь)|3|10','Жим в рычажном тренажёре (грудь)|3|10','Разводка гантелей лёжа|3|12','Разводка гантелей на наклонной|3|12','Сведения в кроссовере|3|12','Сведения в кроссовере снизу вверх|3|12','Бабочка (пек-дек)|3|12','Отжимания от пола|3|15','Отжимания на брусьях (акцент на грудь)|3|10','Пуловер с гантелью|3|12'],
+'Спина':['Подтягивания|3|8','Подтягивания обратным хватом|3|8','Подтягивания в гравитроне|3|10','Тяга верхнего блока|3|10','Тяга верхнего блока узким хватом|3|10','Тяга верхнего блока обратным хватом|3|10','Тяга штанги в наклоне|3|8','Тяга штанги обратным хватом|3|8','Тяга Т-грифа|3|8','Тяга гантели в упор|3|10','Тяга гантелей в наклоне|3|10','Тяга нижнего блока|3|10','Тяга нижнего блока одной рукой|3|12','Тяга в рычажном тренажёре|3|10','Тяга с упором в грудь|3|10','Пуловер в блоке прямыми руками|3|12','Становая тяга|3|5','Становая тяга сумо|3|5','Тяга Пендли|3|6','Гиперэкстензия|3|12'],
+'Дельты':['Жим стоя|3|8','Жим штанги сидя|3|8','Жим гантелей сидя|3|10','Жим гантелей стоя|3|10','Жим Арнольда|3|10','Жим в тренажёре (плечи)|3|10','Жим в Смите сидя|3|8','Махи в стороны|3|12','Махи в стороны в кроссовере|3|12','Махи в стороны в тренажёре|3|12','Махи перед собой|3|12','Махи в наклоне|3|15','Обратные разведения в тренажёре|3|12','Тяга к лицу (канат)|3|15','Тяга штанги к подбородку|3|10'],
+'Трапеции':['Шраги со штангой|3|12','Шраги с гантелями|3|12','Шраги в Смите|3|12','Шраги в тренажёре|3|12','Прогулка фермера, сек|3|40'],
+'Бицепс':['Сгибания на бицепс|3|10','Сгибания штанги стоя|3|10','Сгибания EZ-штанги|3|10','Сгибания гантелей стоя|3|10','Сгибания гантелей на наклонной скамье|3|10','Молотки|3|10','Концентрированные сгибания|3|12','Сгибания на скамье Скотта|3|10','Сгибания в кроссовере|3|12','Сгибания в тренажёре|3|12','Паучьи сгибания|3|12','Сгибания обратным хватом|3|12'],
+'Трицепс':['Отжимания на брусьях|3|10','Брусья в тренажёре|3|10','Разгибания на трицепс|3|10','Разгибания с канатом|3|12','Разгибания одной рукой в блоке|3|12','Разгибания из-за головы в кроссовере|3|12','Французский жим|3|10','Французский жим с гантелями|3|10','Разгибание гантели из-за головы|3|10','Жим узким хватом|3|8','Отжимания от скамьи|3|15','Разгибания в наклоне (кикбэк)|3|12','Разгибания в тренажёре|3|12'],
+'Предплечья':['Сгибания запястий со штангой|3|15','Разгибания запястий|3|15','Вис на турнике, сек|3|40','Ролик-накрутка|3|3'],
+'Квадрицепс':['Присед|3|6','Фронтальный присед|3|6','Присед в Смите|3|8','Гакк-присед|3|8','Жим ногами|3|10','Пендулум-присед|3|10','Присед-кубок (гоблет)|3|12','Болгарские выпады|3|10','Выпады с гантелями|3|10','Выпады в ходьбе|3|12','Зашагивания на тумбу|3|10','Разгибания ног|3|12','Сисси-присед|3|12'],
+'Бицепс бедра':['Румынская тяга|3|8','Румынская тяга с гантелями|3|10','Становая на прямых ногах|3|8','Сгибания ног|3|10','Сгибания ног сидя|3|12','Сгибания ноги стоя|3|12','Скандинавские сгибания|3|6','Гуд морнинг|3|10'],
+'Ягодицы':['Ягодичный мост|3|10','Ягодичный мост в Смите|3|10','Ягодичный мост в тренажёре|3|12','Отведение ноги в кроссовере|3|15','Отведение ног в тренажёре|3|15','Махи ногой назад в тренажёре|3|15','Гиперэкстензия на ягодицы|3|15','Выпады назад|3|12','Сведение ног в тренажёре|3|15'],
+'Икры':['Подъём на носки|4|12','Подъём на носки стоя в тренажёре|4|12','Подъём на носки сидя|4|15','Подъём на носки в жиме ногами|4|15','Подъём на носки в Смите|4|12','Подъём на носок с гантелью|3|15'],
+'Пресс':['Скручивания|3|15','Обратные скручивания|3|15','Подъём ног в висе|3|12','Подъём коленей в висе|3|15','Подъём ног лёжа|3|15','Скручивания в кроссовере|3|15','Скручивания на римском стуле|3|15','Ролик для пресса|3|10','Велосипед|3|20','Русские скручивания|3|20','Планка, сек|3|60','Боковая планка, сек|3|40','Вакуум, сек|3|30'],
+'Кардио':['Беговая дорожка|30','Бег на улице|30','Ходьба в наклон на дорожке|30','Велотренажёр|30','Эллипс|30','Гребной тренажёр|20','Степпер / лестница|20','Скакалка|10','Плавание|30','Ходьба на улице|45','Сайкл|45','Интервалы (HIIT)|20','Аэробайк|15','Лыжный тренажёр|15']};
+const libEx=(g,s)=>{const[n,a,b]=s.split('|');return g===CARDIO?{id:uid('x'),name:n,mg:g,cardio:1,min:+a}:{id:uid('x'),name:n,mg:g,sets:+a,reps:+b}};
+const EXI={};for(const g in EXDB)EXDB[g].forEach(s=>{const x=libEx(g,s);EXI[x.name]=x});
+const E=(n,s,r)=>{const b=EXI[n];if(!b)throw new Error('нет упражнения '+n);const x={...b,id:uid('x')};if(b.cardio){if(s)x.min=s}else{if(s)x.sets=s;if(r)x.reps=r}return x};
+const pe=s=>{const[n,mg,se,re]=s.split('|');return mg===CARDIO?{id:uid('x'),name:n,mg,cardio:1,min:+se}:{id:uid('x'),name:n,mg,sets:+se,reps:+re}};
+const PRESET=[
+['День 1 — Тяни','Акцент: ширина / толщина спины',['Подтягивания|Спина|3|8','Тяга штанги в наклоне|Спина|3|8','Тяга верхнего блока|Спина|3|10','Сгибания на бицепс|Бицепс|3|10']],
+['День 2 — Толкай','',['Жим лёжа|Грудь|3|6',PASS+'|Грудь|1|1','Жим гантелей на наклонной|Грудь|3|8','Жим стоя|Дельты|3|8','Разгибания на трицепс|Трицепс|3|10']],
+['День 3 — Ноги','',['Присед|Квадрицепс|3|6','Румынская тяга|Бицепс бедра|3|8','Сгибания ног|Бицепс бедра|3|10','Подъём на носки|Икры|4|12','Велотренажёр|Кардио|15']],
+['День 4 — Full Body (акцент: плечи)','Последний подход каждого упражнения — в отказ ⚡',['Жим стоя|Дельты|3|8','Махи в стороны|Дельты|4|12','Тяга штанги в наклоне|Спина|2|8','Подтягивания|Спина|2|8','Жим лёжа|Грудь|2|8','Беговая дорожка|Кардио|15']]];
+/* готовые программы для тренера */
+const BUILTIN=[
+ {id:'b1',name:'Тяни / Толкай / Ноги / Full Body',sub:'гибридный сплит',days:()=>PRESET.map(([n,f,ex])=>({name:n,focus:f,ex:ex.map(pe)}))},
+ {id:'b2',name:'Full Body × 3',sub:'новичкам и при снижении веса',days:()=>[
+   {name:'День A',focus:'',ex:[E('Присед',3,8),E('Жим лёжа',3,8),E('Тяга верхнего блока'),E('Махи в стороны'),E('Скручивания'),E('Беговая дорожка',15)]},
+   {name:'День B',focus:'',ex:[E('Румынская тяга'),E('Жим гантелей сидя'),E('Тяга гантели в упор'),E('Жим ногами',3,12),E('Планка, сек')]},
+   {name:'День C',focus:'',ex:[E('Гакк-присед',3,10),E('Жим гантелей на наклонной',3,10),E('Тяга нижнего блока'),E('Сгибания гантелей стоя',3,12),E('Разгибания с канатом'),E('Эллипс',20)]}]},
+ {id:'b3',name:'Верх / Низ',sub:'средний уровень',days:()=>[
+   {name:'Верх 1',focus:'Силовой',ex:[E('Жим лёжа',4,6),E('Тяга штанги в наклоне',4,8),E('Жим стоя'),E('Подтягивания'),E('Сгибания EZ-штанги'),E('Французский жим')]},
+   {name:'Низ 1',focus:'Силовой',ex:[E('Присед',4,6),E('Румынская тяга'),E('Выпады в ходьбе'),E('Сгибания ног',3,12),E('Подъём на носки')]},
+   {name:'Верх 2',focus:'Объёмный',ex:[E('Жим гантелей на наклонной',4,10),E('Тяга верхнего блока',4,10),E('Махи в стороны',4,15),E('Тяга с упором в грудь',3,12),E('Молотки',3,12),E('Разгибания с канатом')]},
+   {name:'Низ 2',focus:'Объёмный',ex:[E('Жим ногами',4,12),E('Ягодичный мост',4,10),E('Болгарские выпады'),E('Разгибания ног',3,15),E('Подъём на носки сидя'),E('Подъём ног в висе')]}]}];
+const cloneDays=ds=>ds.map(d=>({id:uid('d'),name:d.name,focus:d.focus||'',ex:d.ex.map(x=>({...x,id:uid('x')}))}));
+const BASEW={'Подтягивания':0,'Тяга штанги в наклоне':60,'Тяга верхнего блока':55,'Сгибания на бицепс':14,'Жим лёжа':80,[PASS]:92.5,'Жим гантелей на наклонной':28,'Жим стоя':45,'Разгибания на трицепс':25,'Присед':100,'Румынская тяга':90,'Сгибания ног':40,'Подъём на носки':60,'Махи в стороны':10};
+const grpOf=n=>/верх/i.test(n)?'Грудь':/тяни|спин/i.test(n)?'Спина':/толкай|груд/i.test(n)?'Грудь':/ног|низ/i.test(n)?'Квадрицепс':/плеч/i.test(n)?'Дельты':/рук|бицеп/i.test(n)?'Бицепс':/кардио/i.test(n)?CARDIO:'Грудь';
+const kindOf=x=>/подтягива/i.test(x.name)&&!/гравитрон/i.test(x.name)?'band':x.name==='Сгибания на бицепс'?'bench':null;
+const exPlan=x=>x.cardio?x.min+' мин':x.sets+'×'+x.reps;
+const fmtSets=it=>it.cardio?it.sets.map(s=>s.min+' мин'+(s.km?' · '+fmtN(s.km)+' км':'')+(s.lvl?' · '+LVL[s.lvl]:'')).join(', '):it.sets.map(s=>s.w+'×'+s.r+(s.f==='f'?' ⚡':s.f?' (RIR '+s.f+')':'')).join(', ');
+const MKLEN=40,MKMAX=3;
+/* отметки дня: r.m — массив до 3 штук (старые записи со строкой тоже читаются) */
+const mkArr=r=>!r||!r.m?[]:Array.isArray(r.m)?r.m:[r.m];
+const mkShow=x=>MK.some(m=>m[0]===x)||(/^[\p{Extended_Pictographic}\uFE0F\u200D\u{1F3FB}-\u{1F3FF}]+$/u.test(x)&&[...x].length<=4)?x:'💬';
+const MK=[['✅','Тренировка'],['❌','Пропуск'],['😊','Хорошо'],['😞','Плохо'],['🤒','Болен'],['😴','Усталость'],['🍷','Алкоголь'],['🌸','Цикл']];
+const MS=[['neck','Шея'],['chest','Грудь'],['waist','Талия'],['belly','Живот'],['hips','Ягодицы'],['thighL','Бедро (л)'],['thighR','Бедро (п)'],['armL','Плечо (л)'],['armR','Плечо (п)']];
+const GOALS={cut:'Снижение веса',keep:'Поддержание',bulk:'Набор массы'};
+
+/* % жира по методу ВМС США (сантиметры). Мужчины — обхват живота на уровне пупка */
+function fat(c,m){if(!c||!m||!c.height)return null;const H=+c.height,l=Math.log10;let v;
+  if(c.sex==='m'){const a=+(m.belly||m.waist),n=+m.neck;if(!a||!n||a<=n)return null;v=495/(1.0324-0.19077*l(a-n)+0.15456*l(H))-450}
+  else{const w=+m.waist,hp=+m.hips,n=+m.neck;if(!w||!hp||!n||w+hp<=n)return null;v=495/(1.29579-0.35004*l(w+hp-n)+0.22100*l(H))-450}
+  return v>2&&v<70?r1(v):null}
+
+/* ---------- демо-данные ---------- */
+function bodySVG(view,k,sex){
+  const s=view==='side'?.56:1,cx=60,f=sex==='f';
+  const sh=(f?27:34)*s,ch=(f?25:29)*Math.pow(k,.45)*s,wa=(f?18.5:23)*Math.pow(k,1.6)*s,hp=(f?28:25)*Math.pow(k,.7)*s,kn=(f?11:12)*s;
+  const P=(x,y)=>x.toFixed(1)+' '+y;
+  const torso=`M${P(cx-sh,58)} Q${P(cx-ch-2,74)} ${P(cx-ch,86)} Q${P(cx-wa-1,104)} ${P(cx-wa,116)} Q${P(cx-hp-2,132)} ${P(cx-hp,146)} L${P(cx-kn-4,206)} L${P(cx-3,206)} L${P(cx-2,156)} L${P(cx+2,156)} L${P(cx+3,206)} L${P(cx+kn+4,206)} L${P(cx+hp,146)} Q${P(cx+hp+2,132)} ${P(cx+wa,116)} Q${P(cx+wa+1,104)} ${P(cx+ch,86)} Q${P(cx+ch+2,74)} ${P(cx+sh,58)} Q${P(cx,50)} ${P(cx-sh,58)}Z`;
+  const arms=view==='side'?`<rect x="${cx-5}" y="60" width="10" height="66" rx="5" fill="#202024"/>`:`<rect x="${cx-sh-9}" y="58" width="9" height="70" rx="4.5" fill="url(#g)" transform="rotate(8 ${cx-sh} 58)"/><rect x="${cx+sh}" y="58" width="9" height="70" rx="4.5" fill="url(#g)" transform="rotate(-8 ${cx+sh} 58)"/>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 220"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#2c2c31"/><stop offset=".5" stop-color="#3b3b42"/><stop offset="1" stop-color="#26262b"/></linearGradient><radialGradient id="b" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#1d1d21"/><stop offset="1" stop-color="#101012"/></radialGradient></defs><rect width="120" height="220" fill="url(#b)"/><path d="M0 206h120" stroke="#222" /><circle cx="${view==='side'?cx+3:cx}" cy="34" r="12" fill="url(#g)"/><rect x="${cx-5}" y="44" width="10" height="12" fill="#2c2c31"/>${arms}<path d="${torso}" fill="url(#g)"/></svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg)}
+
+function genDemo(){
+  seed=11;idc=0;const T=TODAY();
+  const db={v:1,trainers:[],clients:[],days:{},meas:{},photos:{},prog:{},logs:{},com:{},support:[],pay:[],deload:{}};
+  const NM={f:[['Мария','Камила','Алина','Светлана','Жанна','Айгерим','Екатерина','Дана','Асель','Ольга','Индира','Юлия','Аружан','Наталья','Диляра','Анна','Томирис','Ксения'],['Васильева','Нурланова','Ершова','Ли','Омарова','Тулегенова','Белова','Серикова','Касымова','Демченко','Абдрахманова','Ковалёва','Беккали','Ким','Исаева','Смагулова','Орлова','Жунусова']],
+    m:[['Артём','Василий','Данияр','Тимур','Нурсултан','Игорь','Олжас','Арман','Сергей','Максат','Бауыржан','Денис','Азамат','Руслан','Ильяс','Ерасыл','Павел','Алмас'],['Ким','Пупкин','Абенов','Сагинтаев','Беков','Петров','Муратов','Жаксылыков','Волков','Оразов','Иса','Соколов','Ергалиев','Ахметов','Каримов','Нуржанов','Лебедев','Сапаров']]};
+  const used=new Set();const nextName=sex=>{let n;do{n=pick(NM[sex][0])+' '+pick(NM[sex][1])}while(used.has(n));return n};
+  const tr=(name,tg,plan,joinedAgo,paidIn)=>{const t={id:uid('t'),name,tg,plan,joined:add(T,-joinedAgo),trialUntil:add(T,-joinedAgo+TRIAL.days),paidUntil:null,blocked:false,invite:Math.random().toString(36).slice(2,8)};
+    if(paidIn!=null){t.paidUntil=add(T,paidIn);let d=add(t.paidUntil,-30);const L=[];while(d>=t.trialUntil){L.unshift({id:uid('p'),trainerId:t.id,date:d,amount:PLANS[plan].price,plan,months:1});d=add(d,-30)}db.pay.push(...L)}
+    db.trainers.push(t);return t};
+  const cl=(t,o={})=>{const sex=o.sex||(R()<.55?'f':'m');const name=o.name||nextName(sex);used.add(name);const tAgo=diff(T,t.joined);
+    const since=Math.min(o.since||ri(18,Math.min(115,tAgo)),tAgo);const start=add(T,-since);const id=uid('c');
+    const height=sex==='f'?ri(158,174):ri(171,190);const goal=o.goal||pick(['cut','cut','cut','keep','bulk']);
+    const w0=o.w0||(sex==='f'?rr(60,80):rr(74,98));const slope=goal==='cut'?-rr(.035,.07):goal==='bulk'?rr(.02,.04):rr(-.006,.006);
+    const kT=Math.round((sex==='f'?rr(1500,1850):rr(2150,2750))/50)*50,pT=Math.round(w0*1.7/5)*5,sT=pick([8000,10000,10000,12000]);
+    const c={id,name,sex,height,birth:(1984+ri(0,16))+'-'+pad(ri(1,12))+'-'+pad(ri(1,28)),goal,trainerId:t.id,start,tg:'',links:[{t:t.id,from:start,to:null}],targets:[{from:start,k:kT,p:pT,s:sT}]};
+    db.clients.push(c);const D={};db.days[id]=D;const wdays=sex==='f'?[0,2,4]:[0,2,4,5];
+    for(let i=0;i<=since;i++){const d=add(start,i),ago=since-i;if(o.gone&&ago<o.gone)continue;if(R()<(o.lazy?.42:.06))continue;
+      const r={};r.w=r1(w0+slope*i+Math.sin(i/2.3)*.22+(R()-.5)*.6+(o.regain&&ago<12?(12-ago)*.07:0));
+      if(R()>.07)r.s=Math.round(rr(sT*.5,sT*1.3)/10)*10;
+      if(R()>(o.lazy?.5:.12)){r.k=Math.round((kT+(R()-.5)*560+(o.over&&ago<9?380:0))/10)*10;r.p=Math.round(pT*rr(.72,1.12));r.f=Math.round(r.k*.3/9);r.c=Math.max(0,Math.round((r.k-r.p*4-r.f*9)/4))}
+      const dw=wdi(d);if(wdays.includes(dw)&&R()>.13&&!(o.noTrain&&ago<9))r.m='✅';else if(R()<.05)r.m=pick(['😴','😊','🍷','😞']);
+      if(sex==='f'&&(since-i)%28===4)r.m='🌸';if(o.sick&&ago<=1)r.m='🤒';D[d]=r}
+    const M=[];db.meas[id]=M;const ref=sex==='f'?66:84;
+    for(let i=0;i<=since;i+=7){const ago=since-i;if(o.gone&&ago<o.gone)break;if(o.oldMeas&&ago<o.oldMeas)break;const d=add(start,i),k=(w0+slope*i)/w0;
+      const base=sex==='f'?{neck:32,chest:90,waist:71,belly:79,hips:100,thighL:57,thighR:57.6,armL:28,armR:28.4}:{neck:39,chest:102,waist:85,belly:91,hips:100,thighL:58,thighR:58.5,armL:34,armR:34.6};
+      const m={date:d};for(const[kk]of MS){const sc=kk==='neck'?1:(kk==='waist'||kk==='belly')?Math.pow(k,2.4):Math.pow(k,1.1);m[kk]=r1(base[kk]*Math.pow(w0/ref,.55)*sc+(R()-.5)*.5)}M.push(m)}
+    if(since>30)db.deload[id]=[add(T,-ri(10,Math.min(since,52)))];
+    if(o.detail){const P=PRESET.map(([n,f,ex])=>({id:uid('d'),name:n,focus:f,ex:ex.map(pe)}));db.prog[id]=P;const L=[];db.logs[id]=L;let pi=0;const str=sex==='f'?.55:1;
+      Object.keys(D).sort().forEach(d=>{if(D[d].m!=='✅'||diff(T,d)>63)return;const day=P[pi++%P.length];const g=1+(63-diff(T,d))/63*.1;
+        L.push({id:uid('l'),date:d,day:day.name,note:'',items:day.ex.map(x=>{if(x.cardio)return{exId:x.id,name:x.name,mg:CARDIO,cardio:1,sets:[{min:x.min+ri(-3,6),km:/дорожк|бег/i.test(x.name)?r1(x.min*rr(.1,.15)):null,lvl:pick(['2','2','3','1'])}]};const b=(BASEW[x.name]??20)*str*g;const sets=[];for(let k=0;k<x.sets;k++)sets.push({w:Math.round(b*(1-k*.03)/2.5)*2.5,r:Math.max(1,x.reps-(k>1?ri(0,2):0)),f:k===x.sets-1?pick(['','1','0','f']):''});return{exId:x.id,name:x.name,mg:x.mg,opt:x.name==='Подтягивания'&&sex==='f'?'с резинкой':'',sets}})})})}
+    return c};
+  const A=tr('Алексей Ким','alexey_coach','t20',150,18);
+  const mar=cl(A,{name:'Мария Васильева',sex:'f',since:84,goal:'cut',w0:71.5,detail:1});
+  cl(A,{name:'Артём Ким',sex:'m',detail:1,goal:'bulk'});cl(A,{name:'Василий Пупкин',sex:'m',lazy:1,detail:1});cl(A,{name:'Камила Нурланова',sex:'f',gone:4,detail:1});
+  cl(A,{name:'Данияр Абенов',sex:'m',goal:'cut',regain:1,detail:1});cl(A,{name:'Алина Ершова',sex:'f',sick:1,detail:1});cl(A,{sex:'m',detail:1,over:1,goal:'cut'});
+  for(let i=0;i<7;i++)cl(A,{detail:1,oldMeas:i===2?20:0,noTrain:i===4});
+  const Dn=tr('Дина Ахметова','dina_fit','t10',21,null);for(let i=0;i<4;i++)cl(Dn);
+  const Ru=tr('Руслан Оспанов','ruslan_os','t10',95,3);for(let i=0;i<8;i++)cl(Ru,{lazy:i%3===0});
+  const Ma=tr('Мадина Сейткали','madina_pro','t30',190,25);for(let i=0;i<23;i++)cl(Ma);
+  const Er=tr('Ерлан Жумабаев','erlan_gym','t10',70,-3);for(let i=0;i<5;i++)cl(Er);
+  const Ol=tr('Ольга Смирнова','olga_trainer','t10',120,11);for(let i=0;i<9;i++)cl(Ol);
+  const Sa=tr('Санжар Тлеуов','sanzhar_t','t10',36,null);for(let i=0;i<2;i++)cl(Sa,{gone:5});
+  const Ai=tr('Айдана Муса','aidana_m','t10',9,null);for(let i=0;i<3;i++)cl(Ai);
+  const Bo=tr('Бекзат Нуров','bekzat','t20',55,20);for(let i=0;i<16;i++)cl(Bo);
+  // фото Марии
+  const P={};[[0,1],[42,.93],[77,.87]].forEach(([d,k])=>{const dd=add(mar.start,d);P[dd]={front:bodySVG('front',k,'f'),side:bodySVG('side',k,'f'),back:bodySVG('back',k,'f')}});db.photos[mar.id]=P;
+  db.com[mar.id]=[{id:uid('m'),date:add(T,-2),at:Date.now()-2*864e5,by:A.id,text:'Хорошая неделя! Белок добирай, вчера было мало.'},{id:uid('m'),date:add(T,-2),at:Date.now()-2*864e5+3600e3,by:mar.id,text:'Поняла, добавлю творог вечером 👌'}];
+  const pu=db.clients.find(c=>c.name==='Василий Пупкин'),rt=Ru;
+  db.support=[
+    {id:uid('s'),uid:mar.id,role:'client',type:'idea',text:'Было бы здорово получать напоминание выпить воду и график воды за неделю.',at:Date.now()-5*36e5,status:'new'},
+    {id:uid('s'),uid:rt.id,role:'trainer',type:'q',text:'Как перейти на тариф до 20 клиентов? У меня скоро будет 11.',at:Date.now()-26*36e5,status:'new'},
+    {id:uid('s'),uid:pu.id,role:'client',type:'q',text:'Не получается загрузить фото сбоку, пишет ошибку.',at:Date.now()-50*36e5,status:'new'},
+    {id:uid('s'),uid:Dn.id,role:'trainer',type:'idea',text:'Нужны шаблоны программ, чтобы не собирать каждому клиенту с нуля.',at:Date.now()-4*864e5,status:'done',reply:'Спасибо! Шаблоны уже есть в разделе «Тренировки» у клиента.'}];
+  return db}
+
+/* ---------- состояние ---------- */
+let DB,ME=null,AS=null,stack=[];
+const UI={tab:{},seg:{},wk:{},per:{},segPrev:{},cmp:{},q:'',fx:0,wkDir:'',phl:{}};
+function persist(){if(LIVE)return;clearTimeout(persist.t);persist.t=setTimeout(()=>{try{localStorage.setItem(LSK,JSON.stringify({DB,ME}))}catch(e){console.warn('storage',e)}},350)}
+const who=()=>AS||ME;
+const C=id=>DB.clients.find(c=>c.id===id),Tr=id=>DB.trainers.find(t=>t.id===id);
+const nameOf=id=>(C(id)||Tr(id)||{name:id==='admin'?'Администратор':'Гость'}).name;
+const myClients=tid=>DB.clients.filter(c=>c.trainerId===tid);
+function canWrite(){if(AS){toast('Режим просмотра: изменения отключены');hapErr();return false}return true}
+
+/* ---------- сервер ---------- */
+const MODEK='splitfit-mode';let MODE=(()=>{try{return localStorage.getItem(MODEK)||'admin'}catch(e){return'admin'}})();
+async function api(action,p){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData:TG?TG.initData:'',mode:MODE,action,p:p||{}})});let j={};try{j=await r.json()}catch(e){}if(!r.ok||j.error)throw new Error(j.error||('Ошибка сервера '+r.status));return j}
+const pending=new Set();
+function bg(pr){pending.add(pr);pr.catch(e=>{hapErr();toast('Не сохранилось: '+e.message)}).finally(()=>pending.delete(pr));return pr}
+const PT={};
+const S={
+  put(cid,key,data){if(!LIVE)return persist();bg(api('put',{client_id:cid,key,data}))},
+  del(cid,key){if(!LIVE)return persist();bg(api('del',{client_id:cid,key}))},
+  tput(key,data){if(!LIVE)return persist();bg(api('put',{scope:'t',key,data}))},
+  tdel(key){if(!LIVE)return persist();bg(api('del',{scope:'t',key}))},
+  day(cid,d){const r=days(cid)[d];r?S.put(cid,'day:'+d,r):S.del(cid,'day:'+d)},
+  meas(cid,d){const m=(DB.meas[cid]||[]).find(x=>x.date===d);if(m){const o={...m};delete o.date;S.put(cid,'meas:'+d,o)}else S.del(cid,'meas:'+d)},
+  prog(cid){if(!LIVE)return persist();clearTimeout(PT[cid]);PT[cid]=setTimeout(()=>{delete PT[cid];bg(api('put',{client_id:cid,key:'prog',data:DB.prog[cid]||[]}))},700)},
+  client(c,fields){if(!LIVE)return persist();bg(api('client_update',{client_id:c.id,fields}))},
+};
+let SRV={},lastLoad=0;
+function fromServer(r){const db={v:1,trainers:[],clients:[],days:{},meas:{},photos:{},prog:{},logs:{},com:{},support:[],pay:[],deload:{},tpl:{},custom:{},countedSrv:{}};
+  db.trainers=(r.trainers||[]).map(t=>({id:t.id,name:t.name,tg:t.tg||'',plan:t.plan||'t10',joined:t.joined||TODAY(),trialUntil:t.trial_until||'2000-01-01',paidUntil:t.paid_until||null,blocked:!!t.blocked,invite:t.invite||''}));
+  const L={};(r.links||[]).forEach(l=>(L[l.client_id]=L[l.client_id]||[]).push({t:l.trainer_id,from:l.date_from,to:l.date_to||null}));
+  db.clients=(r.clients||[]).map(c=>({id:c.id,name:c.name,tg:c.tg||'',sex:c.sex||'f',height:c.height?+c.height:null,birth:c.birth||'',goal:c.goal||'cut',start:c.start,trainerId:c.trainer_id||null,targets:(c.targets&&c.targets.length)?c.targets:[{from:c.start,k:null,p:null,s:null}],links:L[c.id]||[]}));
+  (r.docs||[]).forEach(d=>{const sc=d.scope[0],id=d.scope.slice(2),k=d.key,v=d.data;
+    if(sc==='t'){if(k==='custom')db.custom[id]=v||[];else if(k.startsWith('tpl:'))(db.tpl[id]=db.tpl[id]||[]).push({...v,id:k.slice(4)});return}
+    if(k.startsWith('day:'))(db.days[id]=db.days[id]||{})[k.slice(4)]=v;
+    else if(k.startsWith('meas:'))(db.meas[id]=db.meas[id]||[]).push({...v,date:k.slice(5)});
+    else if(k.startsWith('log:'))(db.logs[id]=db.logs[id]||[]).push({...v,id:k.slice(4)});
+    else if(k.startsWith('com:'))(db.com[id]=db.com[id]||[]).push({...v,id:k.slice(4)});
+    else if(k==='prog')db.prog[id]=v||[];else if(k==='deload')db.deload[id]=v||[]});
+  for(const k in db.meas)db.meas[k].sort((a,b)=>a.date<b.date?-1:1);for(const k in db.logs)db.logs[k].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);for(const k in db.com)db.com[k].sort((a,b)=>a.at-b.at);
+  db.support=(r.support||[]).map(x=>({id:x.id,uid:x.user_id,role:x.role,type:x.type,text:x.text,pay:x.pay,status:x.status,reply:x.reply,at:Date.parse(x.at)})).sort((a,b)=>b.at-a.at);
+  db.pay=(r.payments||[]).map(x=>({id:x.id,trainerId:x.trainer_id,date:x.date,amount:x.amount,plan:x.plan,months:x.months}));
+  if(r.role==='trainer'&&r.counted!=null)db.countedSrv[r.id]=r.counted;
+  return db}
+const trFromSrv=t=>({id:t.id,name:t.name,tg:t.tg||'',plan:t.plan,joined:t.joined,trialUntil:t.trial_until,paidUntil:t.paid_until||null,blocked:!!t.blocked,invite:t.invite||''});
+function setTrainer(t){const i=DB.trainers.findIndex(x=>x.id===t.id),n=trFromSrv(t);if(i>=0)DB.trainers[i]=n;else DB.trainers.push(n);return n}
+async function reloadMe(){const r=await api('me');SRV=r;DB=fromServer(r);ME=r.role==='new'?null:{role:r.role,id:r.id};lastLoad=Date.now();return r}
+function loaderPage(t){return h('div',{className:'ob'},h('div',{className:'logo'},h('i'),h('span',{},APP.name)),h('div',{className:'mu',style:'animation:pulse 1.4s infinite'},t||'Загружаю…'))}
+
+/* ---------- данные ---------- */
+const days=id=>DB.days[id]||(DB.days[id]={});
+const tgtAt=(c,d)=>{let r=c.targets[0]||{};for(const t of c.targets)if(t.from<=d)r=t;return r};
+const weekNo=(c,d)=>Math.floor(diff(monday(d),monday(c.start))/7)+1;
+const hasData=r=>r&&(r.w||r.s||r.k);
+function lastDataDate(id){const D=days(id);let m=null;for(const k in D)if(hasData(D[k])&&(!m||k>m))m=k;return m}
+function vals(id,from,to,key){const D=days(id),o=[];for(let d=from;d<=to;d=add(d,1))if(D[d]&&D[d][key]!=null&&D[d][key]!=='')o.push(+D[d][key]);return o}
+function series(id,from,to,key){const D=days(id),o=[];for(let d=from;d<=to;d=add(d,1))if(D[d]&&D[d][key]!=null&&D[d][key]!=='')o.push({x:d,y:+D[d][key]});return o}
+function weekly(pts){const g={};pts.forEach(p=>{const m=monday(p.x);(g[m]=g[m]||[]).push(p.y)});return Object.keys(g).sort().map(k=>({x:k,y:r1(avg(g[k])),wk:1}))}
+const lastW=(c,d)=>{const D=days(c.id);for(let i=1;i<30;i++){const r=D[add(d,-i)];if(r&&r.w)return r.w}return null};
+function tStatus(t){const T=TODAY();if(t.blocked)return'blocked';if(t.paidUntil&&t.paidUntil>=T)return'paid';if(t.trialUntil>=T)return'trial';return'expired'}
+function tLimit(t){const s=tStatus(t);return s==='trial'?TRIAL.max:s==='paid'?PLANS[t.plan].max:0}
+function tUntil(t){const s=tStatus(t);return s==='paid'?t.paidUntil:s==='trial'?t.trialUntil:(t.paidUntil&&t.paidUntil>t.trialUntil?t.paidUntil:t.trialUntil)}
+function periodStart(t){const s=tStatus(t);return s==='paid'?add(t.paidUntil,-30):s==='trial'?t.joined:tUntil(t)}
+/* лимит считается по всем клиентам, подключённым в оплаченном периоде — удаление и замена клиента не освобождают место до конца месяца */
+function counted(t){const ps=periodStart(t);const n=DB.clients.filter(c=>(c.links||[]).some(l=>l.t===t.id&&(!l.to||l.to>=ps))).length;const sv=DB.countedSrv&&DB.countedSrv[t.id];return sv!=null?Math.max(n,sv):n}
+const planName=t=>{const s=tStatus(t);return s==='trial'?'Пробный период':PLANS[t.plan].n};
+const deloadWeeks=c=>{const L=DB.deload[c.id]||[];const b=L.length?L[L.length-1]:c.start;return Math.floor(diff(TODAY(),b)/7)};
+function issues(c){const T=TODAY(),o=[];const L=lastDataDate(c.id);const gap=L?diff(T,L):99;
+  if(gap>=2)o.push({t:gap>=99?'Не вносит данные':`Нет данных ${gap} дн.`,l:gap>=4?3:2});
+  const D=days(c.id);for(let i=0;i<3;i++)if(mkArr(D[add(T,-i)]).includes('🤒')){o.push({t:'🤒 Болеет',l:2});break}
+  const a1=avg(vals(c.id,add(T,-6),T,'w')),a0=avg(vals(c.id,add(T,-13),add(T,-7),'w'));
+  if(a1&&a0){const dl=a1-a0;if(c.goal==='cut'&&dl>.25)o.push({t:`Вес +${dl.toFixed(1)} кг за нед.`,l:2});if(c.goal==='bulk'&&dl<-.25)o.push({t:`Вес ${dl.toFixed(1)} кг за нед.`,l:2})}
+  const tg=tgtAt(c,T),k=avg(vals(c.id,add(T,-6),T,'k'));if(k&&tg.k&&k>tg.k*1.1)o.push({t:`Ккал +${Math.round((k/tg.k-1)*100)}% к планке`,l:1});
+  if(!(DB.prog[c.id]||[]).length)o.push({t:'Нет программы',l:1});
+  if((DB.prog[c.id]||[]).length){const lg=DB.logs[c.id]||[];const ll=lg.length?lg[lg.length-1].date:null;const g=ll?diff(T,ll):99;if(g>=6)o.push({t:g>=99?'Ещё не тренировался':`Нет тренировок ${g} дн.`,l:g>=9?2:1})}
+  const M=DB.meas[c.id]||[];const lm=M.length?M[M.length-1].date:null;if(!lm||diff(T,lm)>14)o.push({t:lm?`Замеры ${diff(T,lm)} дн. назад`:'Нет замеров',l:1});
+  const dw=deloadWeeks(c);if(dw>=6)o.push({t:`Разгрузка: прошло ${dw} нед.`,l:1});
+  return o.sort((a,b)=>b.l-a.l)}
+const score=c=>issues(c).reduce((a,i)=>a+i.l,0);
+
+/* ---------- инфраструктура интерфейса ---------- */
+const MQ=[];const onMount=f=>MQ.push(f);
+function flushMount(){requestAnimationFrame(()=>{while(MQ.length){const f=MQ.shift();try{f()}catch(e){console.error(e)}}UI.fx=0;UI.wkDir='';UI.flash=null})}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2300)}
+/* подтверждение — своё окно, а не системное: системные confirm() блокируются в некоторых окнах просмотра и выглядят чужеродно */
+function ask(t,cb,o={}){sheet(null,(b,close)=>{b.append(h('div',{style:'font-size:17px;font-weight:600;line-height:1.35;margin:4px 0 6px'},t),o.sub?h('div',{className:'mu'},o.sub):null,
+  h('div',{className:'g2 mt2'},h('button',{className:'btn ghost',onclick:close},'Отмена'),h('button',{className:'btn',onclick:()=>{close();hap('medium');setTimeout(cb,200)}},o.ok||'Подтвердить')))})}
+const SH=[];
+function sheet(title,build,opt={}){
+  const bd=h('div',{className:'sb'}),sh=h('div',{className:'sh'}),gr=h('div',{className:'grab'},h('i')),body=h('div',{className:'sbody'});
+  if(title)body.append(h('h2',{},title));sh.append(gr,body);document.body.append(bd,sh);
+  const o={close,body,closed:false};SH.push(o);
+  function close(){if(o.closed)return;o.closed=true;sh.style.transform='';sh.classList.remove('on');bd.classList.remove('on');setTimeout(()=>{bd.remove();sh.remove()},500);SH.splice(SH.indexOf(o),1);syncBack();opt.onClose&&opt.onClose()}
+  bd.onclick=close;let y0=null,dy=0;
+  gr.onpointerdown=e=>{y0=e.clientY;dy=0;sh.style.transition='none';gr.setPointerCapture(e.pointerId)};
+  gr.onpointermove=e=>{if(y0==null)return;dy=Math.max(0,e.clientY-y0);sh.style.transform=`translateY(${dy}px)`};
+  gr.onpointerup=gr.onpointercancel=()=>{if(y0==null)return;y0=null;sh.style.transition='';if(dy>90)close();else sh.style.transform=''};
+  build(body,close);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{bd.classList.add('on');sh.classList.add('on')}));
+  flushMount();syncBack();hap();return o}
+function render(anim){
+  const top=stack[stack.length-1],sy=window.scrollY;
+  const page=h('div',{className:'page'+(anim?' a-'+anim:'')});
+  try{SCR[top.s](page,top.p||{})}catch(e){console.error(e);page.append(h('div',{className:'card warn'},'Ошибка: '+e.message))}
+  const nodes=[];if(AS)nodes.push(viewBar());nodes.push(page);
+  $('#app').replaceChildren(...nodes);
+  $('#tabs').replaceChildren(...(top.s==='root'&&ME?[tabbar()]:[]));
+  window.scrollTo(0,anim&&anim!=='none'?0:sy);flushMount();syncBack()}
+const refresh=()=>render(null);
+function go(s,p){stack.push({s,p});hap();render('fwd')}
+function back(){if(SH.length){SH[SH.length-1].close();return}if(stack.length>1){stack.pop();hap();render('back')}}
+function syncBack(){if(!TG||!TG.BackButton)return;if(SH.length||stack.length>1)TG.BackButton.show();else TG.BackButton.hide()}
+function card(i,...ch){return h('div',{className:'card st',style:'--i:'+i},...ch)}
+function hdr(title,sub,right,i){return h('div',{className:'hdr st',style:'--i:'+(i||0)},stack.length>1?h('button',{className:'ib',onclick:back},ic('back',2)):null,h('div',{className:'f1'},h('div',{className:'row',style:'justify-content:space-between'},h('div',{className:'brand'},APP.name),((DEMO&&ME)||(LIVE&&SRV.admin))&&!AS&&stack.length===1?h('button',{className:'chip sm',style:'border-style:dashed',onclick:roleSheet},(DEMO?'демо: ':'режим: ')+{admin:'админ',trainer:'тренер',client:'клиент'}[DEMO?ME.role:MODE]+' ⇄'):null),h('h1',{},title),sub?h('div',{className:'sub'},sub):null),right||null)}
+function seg(key,opts,cur,onChange,cls){
+  const w=h('div',{className:'seg'+(cls?' '+cls:'')}),ind=h('i');w.append(ind);
+  const btns=opts.map(([k,l])=>{const b=h('button',{className:k===cur?'on':'',onclick:()=>{if(k===cur)return;UI.segPrev[key]=cur;hapSel();UI.fx=1;onChange(k)}},l);w.append(b);return b});
+  onMount(()=>{const i=Math.max(0,opts.findIndex(o=>o[0]===cur)),p=opts.findIndex(o=>o[0]===UI.segPrev[key]);
+    const set=b=>{ind.style.width=b.offsetWidth+'px';ind.style.transform=`translateX(${b.offsetLeft}px)`};
+    ind.style.transition='none';set(btns[p>=0?p:i]);void ind.offsetWidth;ind.style.transition='';set(btns[i]);delete UI.segPrev[key];
+    if(w.scrollWidth>w.clientWidth)w.scrollLeft=Math.max(0,btns[i].offsetLeft-60)});
+  return w}
+const fxBox=()=>h('div',{className:UI.fx?'fx':''});
+function av(name,alert,lg){return h('div',{className:'av'+(alert?' alert':'')+(lg?' lg':'')},ini(name))}
+function countUp(el,to,fmt){onMount(()=>{if(!el.closest('.page[class*=" a-"]')){el.textContent=fmt(to);return}const t0=performance.now(),d=900;const f=t=>{const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);el.textContent=fmt(to*e);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
+
+/* ---------- графики ---------- */
+function ema(a,al){let p=null;return a.map(v=>p=p==null?v:p+al*(v-p))}
+function smooth(P){if(P.length<3)return P.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join('');let d='M'+P[0][0].toFixed(1)+','+P[0][1].toFixed(1);
+  for(let i=0;i<P.length-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];d+=`C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`}return d}
+function chart(pts,o={}){
+  const box=h('div',{className:'chart'});
+  if(pts.length<2){box.append(h('div',{className:'empty'},o.empty||'Пока мало данных для графика'));return box}
+  const W=340,H=o.h||170,pl=36,pr=10,pt=16,pb=24,n=pts.length;const ys=pts.map(p=>p.y);const tr=o.trend?ema(ys,.22):null;
+  const ext=[...ys];if(o.target)ext.push(o.target);let mn=Math.min(...ext),mx=Math.max(...ext);if(o.bars)mn=0;const pd_=(mx-mn)*.14||1;if(!o.bars)mn-=pd_;mx+=pd_;
+  const X=i=>o.bars?pl+(i+.5)*(W-pl-pr)/n:pl+(n===1?0:i*(W-pl-pr)/(n-1)),Y=v=>pt+(1-(v-mn)/(mx-mn))*(H-pt-pb);
+  const fm=o.fmt||(v=>fmtN(v));let s='';
+  let lastLab=null;for(let k=0;k<=3;k++){const v=mn+(mx-mn)*k/3;const lb=(o.axis||(v=>Math.abs(v)>=1000?fmtN(r1(v/1000))+'к':fmtN(Math.round(v*10)/10)))(v);const dup=lb===lastLab;lastLab=lb;s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#1f1f23"/>`;if(!dup)s+=`<text x="${pl-6}" y="${Y(v)+3.5}" font-size="10" fill="#6b6b73" text-anchor="end">${lb}</text>`}
+  if(o.zone)s+=`<rect x="${pl}" width="${W-pl-pr}" y="${Y(o.zone[1])}" height="${Y(o.zone[0])-Y(o.zone[1])}" fill="rgba(229,32,46,.07)"/>`;
+  if(o.bars){const bw=(W-pl-pr)/n*.62;pts.forEach((p,i)=>{const hit=o.target&&p.y>=o.target;s+=`<rect class="bar-r" style="animation-delay:${i*14}ms" x="${X(i)-bw/2}" y="${Y(p.y)}" width="${bw}" height="${Math.max(1,Y(0)-Y(p.y))}" rx="${Math.min(3,bw/2)}" fill="${hit?'#f2f2f3':'#e5202e'}" opacity="${hit?.9:.75}"/>`})}
+  else{const P=pts.map((p,i)=>[X(i),Y(p.y)]);
+    if(tr){s+=`<path d="${P.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+','+q[1].toFixed(1)).join('')}" fill="none" stroke="#3a3a41" stroke-width="1.2"/>`;if(n<=45)s+=P.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="2" fill="#5a5a62"/>`).join('');
+      const TP=tr.map((v,i)=>[X(i),Y(v)]);s+=`<path d="${smooth(TP)} L${TP[n-1][0]},${H-pb} L${TP[0][0]},${H-pb}Z" fill="url(#ga)" opacity=".5" class="fadeA"/><path class="draw" d="${smooth(TP)}" fill="none" stroke="#e5202e" stroke-width="2.6" stroke-linecap="round"/>`}
+    else{s+=`<path d="${smooth(P)} L${P[n-1][0]},${H-pb} L${P[0][0]},${H-pb}Z" fill="url(#ga)" opacity=".5"/><path class="draw" d="${smooth(P)}" fill="none" stroke="#e5202e" stroke-width="2.4" stroke-linecap="round"/>`;if(n<=40)s+=P.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="2.6" fill="#e5202e"/>`).join('')}}
+  if(o.target)s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(o.target)}" y2="${Y(o.target)}" stroke="#ff5560" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${W-pr}" y="${Y(o.target)-5}" font-size="10" fill="#ff5560" text-anchor="end">планка ${fm(o.target)}</text>`;
+  if(o.avg){const a=avg(ys);s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(a)}" y2="${Y(a)}" stroke="#8a8a92" stroke-dasharray="2 4"/><text x="${pl+4}" y="${Y(a)-5}" font-size="10" fill="#8a8a92">среднее ${fm(a)}</text>`}
+  const lab=i=>fmtDs(pts[i].x);s+=`<text x="${X(0)}" y="${H-6}" font-size="10" fill="#6b6b73" text-anchor="${o.bars?'middle':'start'}">${lab(0)}</text><text x="${X(n-1)}" y="${H-6}" font-size="10" fill="#6b6b73" text-anchor="${o.bars?'middle':'end'}">${lab(n-1)}</text>`;if(n>6)s+=`<text x="${X(Math.floor(n/2))}" y="${H-6}" font-size="10" fill="#6b6b73" text-anchor="middle">${lab(Math.floor(n/2))}</text>`;
+  s+=`<line class="gd" x1="0" x2="0" y1="${pt}" y2="${H-pb}" stroke="#fff" stroke-opacity=".25" opacity="0"/><circle class="gp" r="4.5" fill="#fff" stroke="#e5202e" stroke-width="2" opacity="0"/>`;
+  box.innerHTML=`<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5202e" stop-opacity=".28"/><stop offset="1" stop-color="#e5202e" stop-opacity="0"/></linearGradient></defs>${s}</svg><div class="tip"></div>`;
+  const svg=box.firstChild,tip=box.lastChild,gd=svg.querySelector('.gd'),gp=svg.querySelector('.gp');
+  const mv=e=>{const r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W;let i=o.bars?Math.floor((x-pl)/((W-pl-pr)/n)):Math.round((x-pl)/((W-pl-pr)/(n-1)));i=Math.max(0,Math.min(n-1,i));
+    const yv=tr&&!o.bars?tr[i]:pts[i].y;gd.setAttribute('x1',X(i));gd.setAttribute('x2',X(i));gd.setAttribute('opacity',1);gp.setAttribute('cx',X(i));gp.setAttribute('cy',Y(o.bars?pts[i].y:yv));gp.setAttribute('opacity',1);
+    tip.innerHTML=(pts[i].wk?'нед. с '+fmtDs(pts[i].x):fmtD(pts[i].x))+' · <b>'+fm(pts[i].y)+'</b>'+(tr&&!o.bars?' <span class="mu">тренд '+fm(r1(tr[i]))+'</span>':'');tip.style.left=Math.max(14,Math.min(86,X(i)/W*100))+'%';tip.style.top=(Y(o.bars?pts[i].y:yv)/H*r.height-8)+'px';tip.classList.add('on');if(i!==mv.l){hapSel();mv.l=i}};
+  svg.onpointermove=mv;svg.onpointerdown=mv;svg.onpointerleave=()=>{tip.classList.remove('on');gd.setAttribute('opacity',0);gp.setAttribute('opacity',0)};
+  onMount(()=>svg.querySelectorAll('.draw').forEach(p=>{const L=p.getTotalLength();p.style.transition='none';p.style.strokeDasharray=L;p.style.strokeDashoffset=L;void p.getBoundingClientRect();p.style.transition='';p.style.strokeDashoffset=0}));
+  return box}
+function spark(id){const T=TODAY(),p=series(id,add(T,-20),T,'w');const e=document.createElementNS('http://www.w3.org/2000/svg','svg');e.setAttribute('viewBox','0 0 64 24');e.setAttribute('class','spark');if(p.length<3)return e;
+  const ys=ema(p.map(q=>q.y),.3),mn=Math.min(...ys),mx=Math.max(...ys),sp=mx-mn||1;e.innerHTML=`<path d="${smooth(ys.map((v,i)=>[2+i*60/(ys.length-1),21-(v-mn)/sp*18]))}" fill="none" stroke="${ys[ys.length-1]>ys[0]?'#8a8a92':'#e5202e'}" stroke-width="1.8" stroke-linecap="round"/>`;return e}
+function heat(id,n){const T=TODAY(),D=days(id),w=h('div',{className:'heat'});for(let i=n-1;i>=0;i--){const r=D[add(T,-i)];const full=r&&r.w&&r.k,any=hasData(r);w.append(h('i',{className:full?'on':any?'part':''}))}return w}
+function hbar(label,v,max,txt,zone){const w=Math.min(1,v/max)*100;return h('div',{className:'hb'},h('span',{style:'width:96px;flex:none'},label),h('div',{className:'tr',html:(zone?`<u style="left:${zone[0]/max*100}%;width:${(zone[1]-zone[0])/max*100}%"></u>`:'')+`<i style="width:${w}%"></i>`}),h('b',{style:'min-width:30px;text-align:right;font-variant-numeric:tabular-nums'},txt))}
+function ring(v,size){const r=(size-6)/2,L=2*Math.PI*r;const e=h('div',{html:`<svg class="ring" width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="#26262a" stroke-width="5" fill="none"/><circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="#e5202e" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="${L}" stroke-dashoffset="${L}"/></svg>`});onMount(()=>{const c=e.querySelectorAll('circle')[1];c.style.strokeDashoffset=L*(1-Math.min(1,v))});return e}
+
+/* ---------- экраны ---------- */
+const TABS={client:[['diary','Дневник','cal'],['workout','Тренировка','dumb'],['progress','Прогресс','chart'],['profile','Профиль','user']],
+  trainer:[['clients','Клиенты','users'],['report','Отчёт','list'],['cabinet','Кабинет','case']],
+  admin:[['dash','Сводка','grid'],['trainers','Тренеры','users'],['support','Поддержка','chat']]};
+const curTab=()=>{const r=who().role;return UI.tab[r]||TABS[r][0][0]};
+function tabbar(){const r=who().role,cur=curTab();
+  return h('nav',{className:'tabbar'},h('div',{className:'in'},TABS[r].map(([k,l,i])=>{const b=h('button',{className:'tab'+(k===cur?' on':''),onclick:()=>{if(k===cur){window.scrollTo({top:0,behavior:'smooth'});return}UI.tab[r]=k;hapSel();render('tab')}},ic(i),h('span',{},l));
+    if(r==='admin'&&k==='support'){const n=DB.support.filter(s=>s.status==='new').length;if(n)b.append(h('span',{style:'position:absolute;top:4px;left:calc(50% + 6px);background:var(--ac);color:#fff;font-size:10px;border-radius:9px;padding:1px 5px;font-weight:700'},n))}return b})))}
+function viewBar(){return h('div',{className:'vbar'},ic('eye',2),h('span',{},'Просмотр: ',h('b',{},nameOf(AS.id)),' · ',AS.role==='trainer'?'тренер':'клиент'),h('button',{onclick:exitAs},'Выйти'))}
+function viewAs(role,id){UI.adminStack=stack;UI.adminTab=Object.assign({},UI.tab);AS={role,id};stack=[{s:'root'}];UI.tab[role]=TABS[role][0][0];hap('medium');render('fwd')}
+function exitAs(){AS=null;stack=UI.adminStack||[{s:'root'}];UI.tab=UI.adminTab||UI.tab;render('back')}
+
+const SCR={
+onboard(page){
+  page.append(h('div',{className:'ob'},
+    h('div',{className:'logo'},h('i'),h('span',{},APP.name)),
+    h('div',{className:'mu st',style:'--i:2;font-size:15px;max-width:340px'},'Ведение клиентов без таблиц и скриншотов: тренировки, вес, питание, замеры и фото в одном месте.'),
+    h('div',{style:'height:22px'}),
+    h('button',{className:'role st',style:'--i:3',onclick:()=>signupTrainer()},h('div',{className:'ic'},ic('users')),h('div',{className:'f1'},h('b',{},'Я тренер'),h('div',{className:'mu'},'Веду клиентов. Первый месяц бесплатно.')),ic('chev')),
+    h('button',{className:'role st',style:'--i:4',onclick:()=>signupClient()},h('div',{className:'ic'},ic('user')),h('div',{className:'f1'},h('b',{},'Я клиент'),h('div',{className:'mu'},'Тренер прислал мне приглашение.')),ic('chev')),
+    DEMO&&h('div',{className:'card st mt2',style:'--i:5'},h('div',{className:'lb'},'Демо-вход для прототипа'),h('div',{className:'mu',style:'margin:4px 0 10px'},'В рабочей версии роль определяется по Telegram-аккаунту, а админ — по вашему ID.'),
+      h('div',{className:'chips'},
+        h('button',{className:'chip',onclick:()=>login('admin','admin')},'Админ'),
+        h('button',{className:'chip',onclick:()=>login('trainer',DB.trainers[0].id)},'Тренер · Алексей'),
+        h('button',{className:'chip',onclick:()=>login('client',DB.clients[0].id)},'Клиент · Мария'),
+        h('button',{className:'chip',onclick:()=>login('trainer',DB.trainers.find(t=>tStatus(t)==='expired').id)},'Тренер · подписка истекла'),
+        h('button',{className:'chip',onclick:()=>signupClient(DB.trainers[0].invite)},'Клиент по ссылке'))),
+    h('button',{className:'btn ghost sm st',style:'--i:6;margin:10px auto 0',onclick:()=>supportSheet()},ic('chat'),'Поддержка и идеи'),
+    LIVE&&SRV.admin?h('button',{className:'chip st',style:'--i:7;margin:14px auto 0;border-style:dashed;display:flex',onclick:roleSheet},'режим: '+{admin:'админ',trainer:'тренер',client:'клиент'}[MODE]+' ⇄'):null))},
+root(page){const r=who().role;
+  if(r==='client'){const c=C(who().id);if(!c){page.append(h('div',{className:'empty'},'Клиент не найден'));return}if(!c.trainerId)return noTrainer(page,c);({diary:cDiary,workout:cWorkout,progress:cProgress,profile:cProfile})[curTab()](page,c)}
+  else if(r==='trainer'){const t=Tr(who().id);({clients:tClients,report:tReport,cabinet:tCabinet})[curTab()](page,t)}
+  else({dash:aDash,trainers:aTrainers,support:aSupport})[curTab()](page)},
+client(page,p){clientCard(page,C(p.id))},
+trainer(page,p){aTrainer(page,Tr(p.id))}};
+
+function roleSheet(){if(LIVE){sheet('Режим',(b,close)=>{const it=(m,t,s2)=>h('button',{className:'li',onclick:async()=>{close();if(m===MODE)return;MODE=m;try{localStorage.setItem(MODEK,m)}catch(e){}AS=null;UI.tab={};UI.phl={};$('#tabs').replaceChildren();$('#app').replaceChildren(loaderPage());try{await reloadMe()}catch(er){toast(er.message)}startUI()}},h('div',{className:'f1'},h('div',{className:'t'},t+(MODE===m?'  ✓':'')),h('div',{className:'s'},s2)),ic('chev'));
+  b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Видно только вам как админу. Во всех режимах — ваш Telegram-аккаунт.'),h('div',{className:'card',style:'padding:2px 14px'},it('admin','Админ','сводка, тренеры, оплаты, поддержка'),it('trainer','Мой кабинет тренера','свои клиенты и подписка, как у обычного тренера'),it('client','Тестовый клиент','подключитесь кодом из своего кабинета тренера')))});return}
+  sheet('Сменить роль (демо)',(b,close)=>{const it=(t,s,f)=>h('button',{className:'li',onclick:()=>{close();setTimeout(f,250)}},h('div',{className:'f1'},h('div',{className:'t'},t),s?h('div',{className:'s'},s):null),ic('chev'));const ex=DB.trainers.find(t=>tStatus(t)==='expired');
+  b.append(h('div',{className:'card',style:'padding:2px 14px'},it('Админ','сводка, тренеры, поддержка',()=>login('admin','admin')),it('Тренер · '+DB.trainers[0].name,'14 клиентов, тариф «Про»',()=>login('trainer',DB.trainers[0].id)),it('Клиент · '+DB.clients[0].name,'есть фото, замеры, тренировки',()=>login('client',DB.clients[0].id)),ex?it('Тренер · '+ex.name,'подписка истекла',()=>login('trainer',ex.id)):null,it('Стартовый экран','регистрация тренера или клиента',logout)))})}
+function login(role,id){ME={role,id};persist();stack=[{s:'root'}];UI.tab={};hapOk();render('fwd')}
+function logout(){ME=null;AS=null;persist();stack=[{s:'onboard'}];$('#tabs').replaceChildren();stopRest();render('back')}
+
+/* ===== регистрация ===== */
+function signupTrainer(){const tu=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
+  sheet('Регистрация тренера',(b,close)=>{const n=h('input',{placeholder:'Имя и фамилия',value:tu?[tu.first_name,tu.last_name].filter(Boolean).join(' '):''});
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 14px'},'Первый месяц бесплатно, без ограничений по функциям, до 30 клиентов. Карта не нужна.'),h('label',{className:'fld'},h('span',{},'Как вас зовут'),n),
+      h('div',{className:'card mt'},h('div',{className:'lb'},'Дальше — от '+money(PLANS.t10.price)+' в месяц'),...Object.values(PLANS).map(p=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{},'до '+p.max+' клиентов'),h('b',{},money(p.price))))),
+      h('button',{className:'btn mt',onclick:async e=>{if(!n.value.trim()){n.focus();hapErr();return}if(LIVE){const bt=e.currentTarget;bt.disabled=true;bt.textContent='Создаю кабинет…';try{await api('signup_trainer',{name:n.value.trim()});await reloadMe();askWrite();close();stack=[{s:'root'}];UI.tab={};hapOk();render('fwd')}catch(er){bt.disabled=false;bt.textContent='Начать бесплатно';hapErr();toast(er.message)}return}const T=TODAY();const t={id:uid('t'),name:n.value.trim(),tg:tu&&tu.username||'',plan:'t10',joined:T,trialUntil:add(T,TRIAL.days),paidUntil:null,blocked:false,invite:Math.random().toString(36).slice(2,8)};DB.trainers.push(t);persist();close();login('trainer',t.id)}},'Начать бесплатно'))})}
+function signupClient(code){
+  sheet(code?null:'Вход для клиента',(b,close)=>{
+    const show=t=>{b.replaceChildren();
+      if(LIVE?!t.ok:(tStatus(t)==='expired'||tStatus(t)==='blocked'||counted(t)>=tLimit(t))){b.append(h('h2',{},'Места закончились'),h('div',{className:'mu'},`У тренера ${t.name} сейчас нет свободных мест. Попросите его обновить тариф и отправить ссылку ещё раз.`),h('button',{className:'btn ghost mt2',onclick:close},'Понятно'));hapErr();return}
+      const tu=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;let sex='f',goal='cut';
+      const nm=h('input',{placeholder:'Имя и фамилия',value:tu?[tu.first_name,tu.last_name].filter(Boolean).join(' '):''}),ht=h('input',{type:'number',inputMode:'numeric',placeholder:'см'}),bd=h('input',{type:'date'}),ok=h('input',{type:'checkbox'});
+      const sx=h('div');const sxR=()=>sx.replaceChildren(seg('su-sex',[['f','Женский'],['m','Мужской']],sex,v=>{sex=v;sxR();flushMount()}));sxR();
+      const gl=h('div');const glR=()=>gl.replaceChildren(seg('su-goal',Object.entries(GOALS),goal,v=>{goal=v;glR();flushMount()}));glR();
+      b.append(h('div',{className:'row',style:'margin-bottom:14px'},av(t.name),h('div',{},h('div',{className:'mu'},'Вас приглашает тренер'),h('b',{style:'font-size:18px'},t.name))),
+        h('label',{className:'fld'},h('span',{},'Имя'),nm),h('div',{className:'fld mt'},h('span',{},'Пол'),sx),
+        h('div',{className:'g2'},h('label',{className:'fld'},h('span',{},'Рост'),ht),h('label',{className:'fld'},h('span',{},'Дата рождения'),bd)),
+        h('div',{className:'fld mt'},h('span',{},'Цель'),gl),
+        h('label',{className:'row mt',style:'align-items:flex-start'},ok,h('span',{className:'mu'},'Согласен(на) с политикой конфиденциальности. Мои данные и фото видят только я и мой тренер.')),
+        h('button',{className:'btn mt2',onclick:async e=>{if(!nm.value.trim()||!ok.checked){hapErr();toast(!ok.checked?'Нужно согласие с политикой':'Введите имя');return}
+          if(LIVE){const bt=e.currentTarget;bt.disabled=true;bt.textContent='Подключаю…';try{await api('join',{code:t.code,profile:{name:nm.value.trim(),sex,height:+ht.value||null,birth:bd.value||null,goal}});await reloadMe();askWrite();close();stack=[{s:'root'}];UI.tab={};hapOk();render('fwd');setTimeout(()=>toast('Добро пожаловать! Внесите вес за сегодня'),600)}catch(er){bt.disabled=false;bt.textContent='Присоединиться';hapErr();toast(er.message)}return}
+          const T=TODAY();const c={id:uid('c'),name:nm.value.trim(),sex,height:+ht.value||null,birth:bd.value||'',goal,trainerId:t.id,start:T,tg:tu&&tu.username||'',links:[{t:t.id,from:T,to:null}],targets:[{from:T,k:null,p:null,s:10000}]};
+          DB.clients.push(c);persist();close();login('client',c.id);setTimeout(()=>toast('Добро пожаловать! Внесите вес за сегодня'),600)}},'Присоединиться'));flushMount()};
+    const look=async c=>{if(!LIVE){const t=DB.trainers.find(x=>x.invite===c);return t||null}try{const r=await api('invite_info',{code:c});return{...r.trainer,ok:r.ok,code:c}}catch(e){return null}};
+    if(code){if(!LIVE){const t=DB.trainers.find(x=>x.invite===code);if(t){show(t);return}}else{b.append(h('div',{className:'mu',style:'padding:20px 0;text-align:center;animation:pulse 1.4s infinite'},'Проверяю приглашение…'));look(code).then(t=>{if(t){show(t);return}b.replaceChildren(h('h2',{},'Приглашение не найдено'),h('div',{className:'mu'},'Попросите тренера прислать ссылку ещё раз.'),h('button',{className:'btn ghost mt2',onclick:close},'Понятно'))});return}}
+    const inp=h('input',{placeholder:'Код из ссылки, например a1b2c3',autocapitalize:'off'});
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 14px'},'Клиенты подключаются по ссылке-приглашению от тренера. Откройте ссылку — всё заполнится само. Или введите код вручную.'),inp,
+      h('button',{className:'btn mt',onclick:async()=>{const t=await look(inp.value.trim());if(!t){hapErr();toast('Код не найден');return}show(t)}},'Продолжить'),
+      h('div',{className:'mu c mt2'},'Нет тренера? ',h('a',{href:'#',style:'color:var(--ac2)',onclick:e=>{e.preventDefault();close();supportSheet()}},'Напишите нам')),
+      DEMO?h('div',{className:'mu c',style:'margin-top:6px;font-size:12px'},'Для демо: код тренера Алексея — ',h('b',{},DB.trainers[0].invite)):null)})}
+function askWrite(){try{TG&&TG.requestWriteAccess&&TG.requestWriteAccess()}catch(e){}}
+function noTrainer(page,c){page.append(hdr('Нет тренера',c.name),card(1,h('div',{className:'mu'},'Тренер отключил вас или вы ещё не подключены. История сохранена — подключитесь к тренеру по ссылке-приглашению, и он увидит все ваши данные.'),h('button',{className:'btn mt',onclick:()=>signupClient()},'Ввести код приглашения'),h('button',{className:'btn ghost mt',onclick:()=>supportSheet()},'Поддержка')))}
+
+/* ===== КЛИЕНТ ===== */
+function cDiary(page,c){const T=TODAY(),t=Tr(c.trainerId);
+  page.append(hdr('Дневник',`Неделя ${Math.max(1,weekNo(c,T))} · тренер ${t?t.name:'—'}`));
+  page.append(todayCard(c,1));page.append(weekView(c,2))}
+function todayCard(c,i){const T=TODAY(),r=days(c.id)[T]||{},tg=tgtAt(c,T);
+  const cell=(lab,v,unit,prog)=>h('div',{className:v==null?'no':''},h('div',{className:'lb'},lab),h('b',{},v==null?'внести':v+(unit||'')),prog!=null?h('div',{className:'pbar'},h('i',{style:`width:${Math.min(100,prog*100)}%`})):null);
+  const cm=(DB.com[c.id]||[]).filter(m=>m.by!==c.id&&diff(T,m.date)<=7).pop();
+  const x=h('div',{className:'card st press',style:'--i:'+i+';cursor:pointer',onclick:()=>openDay(c,T)},
+    h('div',{className:'row'},h('div',{className:'f1'},h('div',{className:'lb'},'Сегодня'),h('div',{style:'font-size:18px;font-weight:600;margin-top:2px'},cap(WDL[wdi(T)])+', '+fmtD(T))),mkArr(r).length?h('span',{style:'font-size:22px;letter-spacing:2px'},mkArr(r).map(mkShow).join('')):h('span',{className:'chip sm'},'+ отметка')),
+    h('div',{className:'tdy'},cell('Вес',r.w!=null?fmtN(r.w):null,' кг'),cell('Шаги',r.s!=null?fmtN(r.s):null,'',r.s&&tg.s?r.s/tg.s:null),cell('Ккал',r.k!=null?fmtN(r.k):null,'',r.k&&tg.k?r.k/tg.k:null)),
+    cm?h('div',{className:'quote'},h('div',{className:'mu',style:'font-size:12px'},nameOf(cm.by)+' · '+fmtD(cm.date)),cm.text):null);
+  return x}
+function weekView(c,i){
+  const T=TODAY(),off=UI.wk[c.id]||0,mon=add(monday(T),off*7),sun=add(mon,6),D=days(c.id),isT=who().role!=='client';
+  const tg=tgtAt(c,sun>T?T:sun),n=weekNo(c,mon);
+  const aw=avg(vals(c.id,mon,sun,'w')),pw=avg(vals(c.id,add(mon,-7),add(mon,-1),'w'));
+  const M=DB.meas[c.id]||[],mT=[...M].reverse().find(m=>m.date<=sun&&m.date>=mon),mP=[...M].reverse().find(m=>m.date<mon);
+  const good=(dv,up)=>{const want=c.goal==='bulk'?1:c.goal==='cut'?-1:0;if(Math.abs(dv)<.05||!want)return'';return(dv>0?1:-1)===want*(up?1:1)?'':'bad'};
+  const dl=(lab,dv,unit)=>dv==null||isNaN(dv)?null:h('span',{className:'dl '+good(dv)},(dv>0?'▲':dv<0?'▼':'•')+' '+lab+' '+fmtN(Math.abs(r1(dv)))+(unit||''));
+  const chips=[aw&&pw?dl('вес',aw-pw,' кг'):null];
+  if(mT&&mP){chips.push(dl('талия',mT.waist-mP.waist),dl(c.sex==='m'?'живот':'ягод.',c.sex==='m'?mT.belly-mP.belly:mT.hips-mP.hips));const f1=fat(c,mT),f0=fat(c,mP);if(f1&&f0)chips.push(dl('жир',f1-f0,'%'))}
+  const head=h('div',{className:'wkh'},h('div',{className:'f1'},h('div',{className:'lb'},n>=1?'Неделя':'До старта'),h('div',{className:'wkn'},n>=1?n:'—'),h('div',{className:'mu',style:'margin-top:4px'},fmtD(mon)+' — '+fmtD(sun))),
+    h('button',{className:'ib',onclick:()=>{UI.wk[c.id]=off-1;UI.wkDir='R';hapSel();refresh()}},ic('back',2)),
+    h('button',{className:'ib',disabled:off>=0,onclick:()=>{if(off>=0)return;UI.wk[c.id]=off+1;UI.wkDir='L';hapSel();refresh()}},ic('chev',2)));
+  const tgt=h('div',{className:'chips mt'},h('span',{className:'chip sm'},'К '+fmtN(tg.k)),h('span',{className:'chip sm'},'Б '+fmtN(tg.p)),h('span',{className:'chip sm'},'Ш '+fmtN(tg.s)),isT?h('button',{className:'chip sm',style:'border-style:dashed',onclick:()=>targetsSheet(c)},'изменить планки'):null);
+  const g=h('div',{className:'wk'},['Дата','Вес','Шаги','Ккал','Белок'].map(x=>h('div',{className:'h'},x)));
+  for(let k=0;k<7;k++){const d=add(mon,k),r=D[d]||{},fut=d>T;
+    g.append(h('div',{className:'wr'+(d===T?' today':'')+(fut?' fut':''),onclick:fut?null:()=>openDay(c,d)},
+      h('div',{className:'d'},WD[k],h('small',{},pd(d).getDate()),mkArr(r).length?h('span',{className:'mk'},mkArr(r).map(mkShow).join('')):null),
+      h('div',{},r.w!=null?fmtN(r.w):'—'),
+      h('div',{className:r.s&&tg.s&&r.s<tg.s*.7?'bad':''},r.s!=null?fmtN(r.s):'—'),
+      h('div',{className:r.k&&tg.k&&r.k>tg.k*1.1?'bad':''},r.k!=null?fmtN(r.k):'—'),
+      h('div',{className:r.p&&tg.p&&r.p<tg.p*.8?'bad':''},r.p!=null?fmtN(r.p):'—')))}
+  const A=k=>{const a=avg(vals(c.id,mon,sun>T?T:sun,k));return a==null?'—':fmtN(k==='w'?r1(a):Math.round(a))};
+  g.append(h('div',{className:'wr ft'},h('div',{},'Среднее'),h('div',{},A('w')),h('div',{},A('s')),h('div',{},A('k')),h('div',{},A('p'))));
+  const gw=h('div',{className:UI.wkDir?'wk'+UI.wkDir:''},g);let x0=null,y0=null;
+  gw.ontouchstart=e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY};
+  gw.ontouchend=e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx))return;if(dx>0){UI.wk[c.id]=off-1;UI.wkDir='R'}else if(off<0){UI.wk[c.id]=off+1;UI.wkDir='L'}else return;hapSel();refresh()};
+  const ex=[];for(let k=0;k<7;k++){const d=add(mon,k),r=D[d];if(!r)continue;const cu=mkArr(r).filter(x=>!MK.some(m=>m[0]===x)&&mkShow(x)==='💬');cu.forEach(t=>ex.push([d,'💬 '+t]));if(r.n)ex.push([d,r.n])}
+  const notes=ex.length?h('div',{className:'mt2'},h('div',{className:'lb'},'Пояснения за неделю'),ex.map(([d,t])=>h('div',{className:'row press',style:'align-items:flex-start;margin-top:8px;cursor:pointer',onclick:()=>openDay(c,d)},h('span',{className:'mu',style:'flex:none;width:44px'},WD[wdi(d)]+' '+pd(d).getDate()),h('span',{style:'font-size:14px'},t)))):null;
+  return h('div',{className:'card st',style:'--i:'+i},head,chips.filter(Boolean).length?h('div',{className:'chips mt'},chips.filter(Boolean)):null,tgt,h('div',{className:'sep'}),gw,notes)}
+
+function openDay(c,d){
+  const isT=who().role!=='client',D=days(c.id),r=Object.assign({},D[d]||{}),tg=tgtAt(c,d);
+  sheet(cap(WDL[wdi(d)])+', '+fmtD(d),(b,close)=>{
+    const lw=lastW(c,d);const wIn=h('input',{type:'number',inputMode:'decimal',step:'0.1',className:'big',value:r.w??'',placeholder:lw!=null?fmtN(lw):'—'});
+    const step=dv=>{const v=parseFloat(wIn.value||lw||0)||0;wIn.value=(Math.round((v+dv)*10)/10).toFixed(1);hapSel()};
+    b.append(h('div',{className:'wbox'},h('button',{className:'ib',onclick:()=>step(-.1)},'−'),h('div',{},wIn,h('div',{className:'mu c'},'вес, кг'+(lw!=null?' · прошлый '+fmtN(lw):''))),h('button',{className:'ib',onclick:()=>step(.1)},'+')));
+    const F={};const fld=(k,lab,ph)=>{const i=h('input',{type:'number',inputMode:'numeric',value:r[k]??'',placeholder:ph||''});F[k]=i;return h('label',{className:'fld'},h('span',{},lab),i)};
+    b.append(h('div',{className:'g2'},fld('s','Шаги',tg.s?'планка '+fmtN(tg.s):''),fld('k','Ккал',tg.k?'планка '+fmtN(tg.k):'')));
+    b.append(h('div',{className:'g3 mt'},fld('p','Белки',tg.p?'≥ '+tg.p:''),fld('f','Жиры'),fld('c','Углев.')));
+    const auto=()=>{const p=+F.p.value||0,f=+F.f.value||0,cc=+F.c.value||0;if(p||f||cc)F.k.placeholder='≈ '+fmtN(p*4+f*9+cc*4)+' по БЖУ'};['p','f','c'].forEach(k=>F[k].oninput=auto);auto();
+    const isP=x=>MK.some(m=>m[0]===x),cur=mkArr(r);let sel=cur.filter(isP);
+    const mkBox=h('div',{className:'mks mt'}),cnt=h('span',{className:'mu',style:'font-size:12px'});
+    const cust=h('input',{placeholder:'Своя отметка, например «болит колено»',maxLength:MKLEN,value:cur.find(x=>!isP(x))||'',style:'margin-top:8px'});
+    const total=()=>sel.length+(cust.value.trim()?1:0);
+    const drawMk=()=>{cnt.textContent=total()+' из '+MKMAX;mkBox.replaceChildren(...MK.map(([e,l])=>h('button',{className:'mk-b'+(sel.includes(e)?' on':''),onclick:()=>{if(sel.includes(e))sel=sel.filter(x=>x!==e);else{if(total()>=MKMAX){hapErr();toast('Не больше '+MKMAX+' отметок за день');return}sel.push(e)}hapSel();drawMk()}},h('b',{},e),l)))};
+    cust.oninput=()=>{if(total()>MKMAX){cust.value='';hapErr();toast('Уже '+MKMAX+' отметки — снимите одну')}drawMk()};drawMk();
+    b.append(h('div',{className:'row mt2',style:'justify-content:space-between'},h('div',{className:'lb'},'Отметки дня'),cnt),h('div',{className:'mu',style:'font-size:12px;margin-top:3px'},'До '+MKMAX+' отметок. Тренер видит их в недельном окне рядом с датой.'),mkBox,cust);
+    const note=h('textarea',{rows:2,placeholder:'Самочувствие, сон, настроение…',value:r.n||''});b.append(h('div',{className:'lb mt2'},'Заметка'),note);
+    b.append(h('div',{className:'g2 mt'},h('button',{className:'btn ghost sm',style:'width:100%',onclick:()=>measSheet(c,d)},'📏 Замеры'),h('button',{className:'btn ghost sm',style:'width:100%',onclick:()=>photoAdd(c,d)},ic('cam'),'Фото')));
+    // комментарии
+    const th=h('div');const drawTh=()=>{const L=(DB.com[c.id]||[]).filter(m=>m.date===d);th.replaceChildren(...L.map(m=>h('div',{className:'bub'+(m.by===who().id?' me':'')},h('small',{},nameOf(m.by)),m.text)))};drawTh();
+    const ci=h('input',{placeholder:isT?'Комментарий клиенту…':'Написать тренеру…'});
+    const send=()=>{if(!ci.value.trim()||!canWrite())return;const m={id:uid('m'),date:d,at:Date.now(),by:who().id,text:ci.value.trim()};(DB.com[c.id]=DB.com[c.id]||[]).push(m);ci.value='';if(LIVE)bg(api('put',{client_id:c.id,key:'com:'+m.id,data:{date:m.date,text:m.text}}));else persist();drawTh();hapOk()};ci.onkeydown=e=>{if(e.key==='Enter')send()};
+    b.append(h('div',{className:'lb mt2'},'Комментарии'),th,h('div',{className:'row mt'},ci,h('button',{className:'ib',onclick:send},ic('send',2))));
+    b.append(h('button',{className:'btn mt2',onclick:()=>{if(!canWrite())return;const o={};const w=parseFloat(String(wIn.value).replace(',','.'));if(!isNaN(w))o.w=r1(w);
+      for(const k in F){const v=parseFloat(F[k].value);if(!isNaN(v))o[k]=Math.round(v)}if(o.k==null&&(o.p||o.f||o.c))o.k=Math.round((o.p||0)*4+(o.f||0)*9+(o.c||0)*4);
+      const mm=[...sel];if(cust.value.trim())mm.push(cust.value.trim());if(mm.length)o.m=mm.slice(0,MKMAX);if(note.value.trim())o.n=note.value.trim();if(Object.keys(o).length)D[d]=o;else delete D[d];S.day(c.id,d);hapOk();close();toast('Сохранено');refresh()}},'Сохранить'))})}
+function targetsSheet(c){const T=TODAY(),tg=tgtAt(c,T);
+  sheet('Планки · '+c.name.split(' ')[0],(b,close)=>{const k=h('input',{type:'number',value:tg.k??''}),p=h('input',{type:'number',value:tg.p??''}),s=h('input',{type:'number',value:tg.s??''}),fr=h('input',{type:'date',value:T});
+    b.append(h('div',{className:'g3'},h('label',{className:'fld'},h('span',{},'Ккал'),k),h('label',{className:'fld'},h('span',{},'Белок, г'),p),h('label',{className:'fld'},h('span',{},'Шаги'),s)),h('label',{className:'fld mt'},h('span',{},'Действуют с'),fr),
+      h('div',{className:'lb mt2'},'История'),...[...c.targets].reverse().map(t=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{className:'mu'},'с '+fmtD(t.from)),h('span',{},`К ${fmtN(t.k)} · Б ${fmtN(t.p)} · Ш ${fmtN(t.s)}`))),
+      h('button',{className:'btn mt2',onclick:()=>{if(!canWrite())return;const n={from:fr.value||T,k:+k.value||null,p:+p.value||null,s:+s.value||null};c.targets=c.targets.filter(t=>t.from!==n.from).concat(n).sort((a,b)=>a.from<b.from?-1:1);S.client(c,{targets:c.targets});hapOk();close();refresh();toast('Планки обновлены')}},'Сохранить'))})}
+function measSheet(c,d){const M=DB.meas[c.id]||(DB.meas[c.id]=[]);const cur=M.find(m=>m.date===d)||{},prev=[...M].reverse().find(m=>m.date<d)||{};
+  sheet('Замеры · '+fmtD(d),(b,close)=>{const I={};const res=h('div',{className:'stat mt',style:'text-align:center'});
+    const calc=()=>{const m={};for(const k in I)if(I[k].value)m[k]=+I[k].value;const f=fat(c,m);res.replaceChildren(h('div',{className:'lb'},'% жира · метод ВМС США'),h('b',{style:'font-size:28px'},f!=null?f+' %':'—'),h('div',{className:'mu',style:'font-size:12px'},c.height?(c.sex==='m'?'нужны: шея, живот, рост':'нужны: шея, талия, ягодицы, рост'):'укажите рост в анкете'))};
+    b.append(h('div',{className:'g3'},MS.map(([k,l])=>{const i=h('input',{type:'number',inputMode:'decimal',step:'0.1',value:cur[k]??'',placeholder:prev[k]!=null?String(prev[k]):'см'});i.oninput=calc;I[k]=i;return h('label',{className:'fld'},h('span',{},l),i)})),res,
+      h('div',{className:'mu mt',style:'font-size:12px'},'Измеряйте утром, натощак, на расслабленных мышцах. Живот — по пупку, талия — самое узкое место.'),
+      h('button',{className:'btn mt2',onclick:()=>{if(!canWrite())return;const m={date:d};let any=0;for(const k in I)if(I[k].value){m[k]=r1(+I[k].value);any=1}const j=M.findIndex(x=>x.date===d);if(j>=0)M.splice(j,1);if(any){M.push(m);M.sort((a,b)=>a.date<b.date?-1:1)}S.meas(c.id,d);hapOk();close();toast('Замеры сохранены');refresh()}},'Сохранить'));calc()})}
+
+/* ----- фото ----- */
+function compress(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);ok(cv.toDataURL('image/jpeg',.82))};im.onerror=no;im.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
+const VIEWS=[['front','Спереди'],['side','Сбоку'],['back','Сзади']];
+function photoAdd(c,d){const P=DB.photos[c.id]||(DB.photos[c.id]={});const cur=Object.assign({},P[d]||{});
+  sheet('Фото · '+fmtD(d),(b,close)=>{const g=h('div',{className:'g3'});
+    const draw=()=>g.replaceChildren(...VIEWS.map(([k,l])=>{const fi=h('input',{type:'file',accept:'image/*',style:'display:none',onchange:async()=>{if(!fi.files[0])return;try{cur[k]=await compress(fi.files[0]);hapOk();draw()}catch(e){toast('Не удалось открыть фото')}}});
+      return h('div',{},cur[k]?h('div',{className:'ph press',onclick:()=>fi.click()},h('img',{src:cur[k]}),h('span',{className:'lab'},l)):h('button',{className:'ph add press',style:'width:100%',onclick:()=>fi.click()},h('div',{},ic('cam'),h('div',{},l))),fi)}));draw();
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'В полный рост, при одинаковом свете, в белье. Видите только вы и ваш тренер.'),g,
+      h('button',{className:'btn mt2',onclick:async e=>{if(!canWrite())return;if(!Object.keys(cur).length){toast('Добавьте хотя бы одно фото');return}
+        if(LIVE){const bt=e.currentTarget,ch=VIEWS.map(v=>v[0]).filter(k=>cur[k]&&String(cur[k]).startsWith('data:'));bt.disabled=true;try{for(let i=0;i<ch.length;i++){bt.textContent=`Загружаю ${i+1} из ${ch.length}…`;const r=await api('photo_put',{client_id:c.id,date:d,view:ch[i],b64:cur[ch[i]]});cur[ch[i]]=r.url}}catch(er){bt.disabled=false;bt.textContent='Сохранить';hapErr();toast('Не загрузилось: '+er.message);return}}
+        P[d]=cur;persist();hapOk();close();toast('Фото сохранены');refresh()}},'Сохранить'))})}
+function photosView(c,host){
+  if(LIVE&&!UI.phl[c.id]){host.append(h('div',{className:'empty',style:'animation:pulse 1.4s infinite'},'Загружаю фото…'));if(!UI.phl['_'+c.id]){UI.phl['_'+c.id]=1;api('photos',{client_id:c.id}).then(r=>{DB.photos[c.id]=r.photos||{};UI.phl[c.id]=1;refresh()}).catch(e=>{delete UI.phl['_'+c.id];host.replaceChildren(h('div',{className:'empty'},'Не удалось загрузить фото: '+e.message))})}return}
+  const P=DB.photos[c.id]||(DB.photos[c.id]={}),dates=Object.keys(P).sort();const st=UI.cmp[c.id]||(UI.cmp[c.id]={});
+  host.append(h('button',{className:'btn ghost',onclick:()=>photoAdd(c,TODAY())},ic('cam'),'Добавить фото за сегодня'));
+  if(!dates.length){host.append(h('div',{className:'empty'},'Фото пока нет. Делайте их раз в 2–4 недели — так прогресс виден лучше всего.'));return}
+  if(dates.length>=2){if(!P[st.a])st.a=dates[0];if(!P[st.b])st.b=dates[dates.length-1];st.v=st.v||'front';
+    const sel=(k)=>{const s=h('select',{onchange:e=>{st[k]=e.target.value;refresh()}},dates.map(d=>h('option',{value:d,selected:d===st[k]},fmtD(d))));return s};
+    const A=P[st.a][st.v],B=P[st.b][st.v];
+    const box=h('div',{className:'card mt'},h('div',{className:'row',style:'justify-content:space-between;margin-bottom:10px'},h('h3',{},'До / после'),seg('cv'+c.id,VIEWS,st.v,v=>{st.v=v;refresh()},'sm')),
+      h('div',{className:'g2',style:'margin-bottom:10px'},sel('a'),sel('b')));
+    if(A&&B)box.append(compare(A,B,fmtD(st.a),fmtD(st.b)));else box.append(h('div',{className:'empty'},'Для этого ракурса нет фото на одну из дат'));
+    const M=DB.meas[c.id]||[],near=d=>[...M].reverse().find(m=>m.date<=d)||M[0];const ma=near(st.a),mb=near(st.b);
+    const wa=avg(vals(c.id,add(st.a,-3),add(st.a,3),'w')),wb=avg(vals(c.id,add(st.b,-3),add(st.b,3),'w'));
+    const rows=[['Вес',wa,wb,' кг'],['Талия',ma&&ma.waist,mb&&mb.waist,' см'],[c.sex==='m'?'Живот':'Ягодицы',ma&&(c.sex==='m'?ma.belly:ma.hips),mb&&(c.sex==='m'?mb.belly:mb.hips),' см'],['% жира',fat(c,ma),fat(c,mb),' %']];
+    box.append(h('table',{className:'tbl mt'},h('tr',{},h('th',{},''),h('th',{},fmtDs(st.a)),h('th',{},fmtDs(st.b)),h('th',{},'Δ')),rows.map(([l,a,b2,u])=>h('tr',{},h('td',{},l),h('td',{},a?fmtN(r1(a)):'—'),h('td',{},b2?fmtN(r1(b2)):'—'),h('td',{className:a&&b2&&b2<a?'':'mu'},a&&b2?sgn(r1(b2-a)):'—')))),
+      h('button',{className:'btn ghost mt',onclick:()=>collage(c,st,rows)},'Собрать коллаж'));
+    host.append(box)}
+  dates.slice().reverse().forEach((d,i)=>host.append(h('div',{className:'card'},h('div',{className:'row',style:'margin-bottom:8px'},h('b',{className:'f1'},fmtD(d)),h('button',{className:'chip sm',onclick:()=>ask('Удалить фото за '+fmtD(d)+'?',()=>{if(!canWrite())return;delete P[d];if(LIVE)bg(api('photo_del',{client_id:c.id,date:d}));else persist();refresh()})},'Удалить')),
+    h('div',{className:'g3'},VIEWS.map(([k,l])=>P[d][k]?h('div',{className:'ph press',onclick:()=>viewer(P[d],k,d)},h('img',{src:P[d][k],loading:'lazy'}),h('span',{className:'lab'},l)):h('div',{className:'ph add'},'нет'))))))}
+function compare(a,b,la,lb){const w=h('div',{className:'cmp'}),top=h('div',{className:'top'},h('img',{src:b})),hd=h('div',{className:'hd'},h('i',{},'‹ ›'));
+  w.append(h('img',{src:a}),top,hd,h('span',{className:'tg',style:'left:10px'},la),h('span',{className:'tg',style:'right:10px'},lb));
+  const set=v=>{v=Math.max(0,Math.min(100,v));top.style.clipPath=`inset(0 0 0 ${v}%)`;hd.style.left=v+'%'};set(50);let drag=false;
+  const mv=e=>{const r=w.getBoundingClientRect();set((e.clientX-r.left)/r.width*100)};
+  w.onpointerdown=e=>{drag=true;w.setPointerCapture(e.pointerId);mv(e);hapSel()};w.onpointermove=e=>{if(drag)mv(e)};w.onpointerup=w.onpointercancel=()=>drag=false;
+  onMount(()=>{const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/1100),v=50+Math.sin(k*Math.PI*2)*(1-k)*28;set(v);if(k<1&&!drag)requestAnimationFrame(f)};requestAnimationFrame(f)});return w}
+function viewer(P,k,d){sheet(fmtD(d),(b)=>{let cur=k;const im=h('img',{style:'width:100%;border-radius:14px;display:block;animation:fadeIn .3s'});const sw=h('div');
+  const draw=()=>{im.src=P[cur]||'';sw.replaceChildren(seg('vw',VIEWS.filter(v=>P[v[0]]),cur,v=>{cur=v;draw();flushMount()}))};draw();b.append(sw,im)})}
+function collage(c,st,rows){const L=[st.a,st.b].map(d=>DB.photos[c.id][d][st.v]);let n=0;const imgs=L.map(src=>{const i=new Image();if(!String(src).startsWith('data:'))i.crossOrigin='anonymous';i.onload=()=>{if(++n===2)go2()};i.onerror=()=>toast('Не удалось открыть фото');i.src=src;return i});
+  function go2(){const W=1080,H=1500,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.fillStyle='#0b0b0c';x.fillRect(0,0,W,H);
+    const cw=520,ch=760;imgs.forEach((im,i)=>{const k=Math.max(cw/im.width,ch/im.height),w=im.width*k,hh=im.height*k;x.save();x.beginPath();x.rect(13+i*(cw+14),110,cw,ch);x.clip();x.drawImage(im,13+i*(cw+14)+(cw-w)/2,110+(ch-hh)/2,w,hh);x.restore();
+      x.fillStyle='#fff';x.font='600 34px system-ui';x.fillText(fmtD(i?st.b:st.a),13+i*(cw+14),90)});
+    x.fillStyle='#e5202e';x.fillRect(13,920,18,18);x.fillStyle='#f2f2f3';x.font='700 30px system-ui';x.fillText(APP.name.toUpperCase(),46,938);x.font='600 40px system-ui';x.fillText(c.name,13,1010);
+    rows.forEach(([l,a,b2,u],i)=>{const y=1090+i*90;x.fillStyle='#8a8a92';x.font='30px system-ui';x.fillText(l,13,y);x.fillStyle='#f2f2f3';x.font='600 38px system-ui';x.fillText((a?fmtN(r1(a)):'—')+'  →  '+(b2?fmtN(r1(b2)):'—')+u,360,y);if(a&&b2){x.fillStyle=b2<a?'#e5202e':'#8a8a92';x.fillText(sgn(r1(b2-a)),860,y)}});
+    let url;try{url=cv.toDataURL('image/jpeg',.9)}catch(e){toast('Не удалось собрать коллаж');return}
+    sheet('Коллаж',b=>b.append(h('img',{src:url,style:'width:100%;border-radius:12px;display:block'}),h('div',{className:'mu c mt'},'Нажмите и удерживайте картинку, чтобы сохранить или переслать')))}}
+
+/* ----- прогресс ----- */
+function cProgress(page,c){page.append(hdr('Прогресс',GOALS[c.goal]||''));page.append(progressView(c,1))}
+function progressView(c,i){const k='pg'+c.id,cur=UI.seg[k]||'w';const box=h('div',{className:'st',style:'--i:'+i});
+  box.append(seg(k,[['w','Вес'],['s','Шаги'],['n','КБЖУ'],['m','Замеры'],['ph','Фото'],['st','Тренировки']],cur,v=>{UI.seg[k]=v;refresh()}));
+  const body=fxBox();box.append(body);const T=TODAY(),per=UI.per[c.id]||'30';
+  const perSeg=()=>h('div',{style:'margin-bottom:10px'},seg('per'+c.id,[['7','7 дней'],['30','30 дней'],['120','4 месяца']],per,v=>{UI.per[c.id]=v;refresh()},'sm'));
+  const from=add(T,-(+per)+1);
+  if(cur==='w'){body.append(perSeg());let pts=series(c.id,from,T,'w');if(per==='120')pts=weekly(pts);const tr=ema(pts.map(p=>p.y),.22);
+    const a7=avg(vals(c.id,add(T,-6),T,'w')),p7=avg(vals(c.id,add(T,-13),add(T,-7),'w'));
+    body.append(h('div',{className:'card'},h('div',{className:'row'},h('h3',{className:'f1'},per==='120'?'Вес по неделям':'Вес'),h('span',{className:'mu',style:'font-size:12px'},'красная — тренд')),h('div',{className:'mt'},chart(pts,{trend:per!=='120',fmt:v=>fmtN(r1(v))+' кг',avg:per==='120'}))),
+      h('div',{className:'stats'},stat('Сейчас (тренд)',tr.length?fmtN(r1(tr[tr.length-1]))+' кг':'—'),stat('За неделю',a7&&p7?sgn(r1(a7-p7))+' кг':'—'),stat('За период',tr.length>1?sgn(r1(tr[tr.length-1]-tr[0]))+' кг':'—'),stat('Среднее',pts.length?fmtN(r1(avg(pts.map(p=>p.y))))+' кг':'—')),
+      h('div',{className:'mu mt',style:'font-size:12px'},'Вес за день колеблется на 1–2 кг из-за воды и соли. Ориентируйтесь на тренд — сглаженную линию.'))}
+  if(cur==='s'){body.append(perSeg());let pts=series(c.id,from,T,'s');if(per==='120')pts=weekly(pts).map(p=>({...p,y:Math.round(p.y)}));const tg=tgtAt(c,T).s;
+    body.append(h('div',{className:'card'},h('h3',{},'Шаги'),h('div',{className:'mt'},chart(pts,{bars:1,target:tg,fmt:v=>fmtN(Math.round(v))}))),
+      h('div',{className:'stats'},stat('В среднем',fmtN(Math.round(avg(pts.map(p=>p.y))||0))),stat('Планка',fmtN(tg)),stat('Лучший день',pts.length?fmtN(Math.max(...pts.map(p=>p.y))):'—'),stat('Дней с планкой',per==='120'?'—':pts.filter(p=>tg&&p.y>=tg).length+' из '+pts.length)))}
+  if(cur==='n'){body.append(perSeg());let pk=series(c.id,from,T,'k'),pp=series(c.id,from,T,'p');if(per==='120'){pk=weekly(pk).map(p=>({...p,y:Math.round(p.y)}));pp=weekly(pp).map(p=>({...p,y:Math.round(p.y)}))}const tg=tgtAt(c,T);
+    const af=avg(vals(c.id,from,T,'f')),ac=avg(vals(c.id,from,T,'c')),ap=avg(pp.map(p=>p.y)),ak=avg(pk.map(p=>p.y));
+    body.append(h('div',{className:'card'},h('h3',{},'Калории'),h('div',{className:'mt'},chart(pk,{target:tg.k,avg:1,fmt:v=>fmtN(Math.round(v))}))),
+      h('div',{className:'card'},h('h3',{},'Белок, г'),h('div',{className:'mt'},chart(pp,{target:tg.p,h:130,fmt:v=>fmtN(Math.round(v))+' г'}))),
+      h('div',{className:'card'},h('h3',{},'В среднем за день'),hbar('Ккал',ak||0,Math.max(ak||0,tg.k||0)*1.15||1,fmtN(Math.round(ak||0))),hbar('Белки',ap||0,Math.max(ap||0,tg.p||0)*1.15||1,fmtN(Math.round(ap||0))),hbar('Жиры',af||0,120,fmtN(Math.round(af||0))),hbar('Углеводы',ac||0,350,fmtN(Math.round(ac||0)))))}
+  if(cur==='m'){const M=DB.meas[c.id]||[];const mk=UI.seg['mk'+c.id]||'fat';const opts=[['fat','% жира'],...MS];
+    body.append(h('button',{className:'btn ghost',onclick:()=>measSheet(c,T)},'📏 Внести замеры за сегодня'));
+    if(!M.length){body.append(h('div',{className:'empty'},'Замеров ещё нет'));return box}
+    body.append(h('div',{className:'hs mt'},opts.map(([k,l])=>h('button',{className:'chip'+(k===mk?' on':''),onclick:()=>{UI.seg['mk'+c.id]=k;hapSel();refresh()}},l))));
+    const pts=M.map(m=>({x:m.date,y:mk==='fat'?fat(c,m):m[mk]})).filter(p=>p.y!=null);
+    body.append(h('div',{className:'card mt'},h('h3',{},opts.find(o=>o[0]===mk)[1]+' · за всё время'),h('div',{className:'mt'},chart(pts,{fmt:v=>fmtN(r1(v))+(mk==='fat'?' %':' см'),avg:1}))));
+    const f=M[0],l=M[M.length-1];body.append(h('div',{className:'card'},h('div',{className:'row',style:'justify-content:space-between'},h('h3',{},'Было → стало'),h('span',{className:'mu'},fmtDs(f.date)+' → '+fmtDs(l.date))),
+      h('table',{className:'tbl mt'},[['fat','% жира'],...MS].map(([k,lab])=>{const a=k==='fat'?fat(c,f):f[k],b2=k==='fat'?fat(c,l):l[k];return h('tr',{},h('td',{},lab),h('td',{},a!=null?fmtN(a):'—'),h('td',{},b2!=null?fmtN(b2):'—'),h('td',{},a!=null&&b2!=null?sgn(r1(b2-a)):'—'))}))))}
+  if(cur==='ph')photosView(c,body);
+  if(cur==='st')strengthView(c,body);
+  return box}
+const stat=(l,v)=>h('div',{className:'stat'},h('div',{className:'lb'},l),h('b',{},v));
+function strengthView(c,body){const L=DB.logs[c.id]||[];if(!L.length){body.append(h('div',{className:'empty'},'Появится после первой тренировки'));return}
+  const exs=[];L.forEach(l=>l.items.forEach(i=>{if(!i.cardio&&!exs.includes(i.name))exs.push(i.name)}));const k='sx'+c.id;let cur=UI.seg[k];if(!exs.includes(cur))cur=exs[0];
+  if(exs.length){body.append(h('select',{onchange:e=>{UI.seg[k]=e.target.value;refresh()}},exs.map(n=>h('option',{value:n,selected:n===cur},n))));
+    const pts=L.map(l=>{const i=l.items.find(z=>z.name===cur);return i&&i.sets.length&&{x:l.date,y:Math.max(...i.sets.map(s=>s.w))}}).filter(Boolean);
+    const best=L.flatMap(l=>(l.items.find(z=>z.name===cur)||{sets:[]}).sets.map(s=>({...s,d:l.date}))).sort((a,b)=>b.w-a.w||b.r-a.r)[0];
+    body.append(h('div',{className:'card mt'},h('h3',{},'Рабочий вес, кг'),h('div',{className:'mt'},chart(pts,{fmt:v=>fmtN(v)+' кг'})),best?h('div',{className:'mu mt'},'Лучший подход: ',h('b',{style:'color:var(--tx)'},best.w+' × '+best.r),' · '+fmtD(best.d)):null))}
+  body.append(volCard(c))}
+/* ----- тренировка (клиент) ----- */
+let restT=null,endAt=0,restTot=0;
+const restSec=()=>+(localStorage.getItem(RSK)||180);
+function startRest(){restTot=restSec();endAt=Date.now()+restTot*1000;$('#tm').classList.add('on');clearInterval(restT);restT=setInterval(updRest,250);updRest()}
+function addRest(d){endAt+=d*1000;restTot=Math.max(1,restTot+d);updRest();hapSel()}
+function stopRest(){clearInterval(restT);$('#tm').classList.remove('on')}
+function updRest(){const left=Math.round((endAt-Date.now())/1000);if(left<=0){stopRest();try{navigator.vibrate&&navigator.vibrate([300,150,300]);hapOk();const a=new AudioContext(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=880;o.start();o.stop(a.currentTime+.4)}catch(e){}return}$('#tt').textContent=Math.floor(left/60)+':'+pad(left%60);$('#tmp').style.width=Math.max(0,100-left/restTot*100)+'%'}
+const loadDraft=id=>{try{return JSON.parse(localStorage.getItem(DRK+id)||'null')}catch(e){return null}};
+const saveDraft=(id,w)=>{try{localStorage.setItem(DRK+id,JSON.stringify(w))}catch(e){}};
+function lastOf(c,name){const L=DB.logs[c.id]||[];for(let i=L.length-1;i>=0;i--){const x=L[i].items.find(it=>it.name===name);if(x)return x}return null}
+function newDraft(c,day){const W={dayId:day.id,ex:day.ex.map(x=>({...x})),sets:{},opts:{},note:''};W.ex.forEach(x=>initSets(c,W,x));return W}
+function initSets(c,W,x){const l=lastOf(c,x.name);
+  if(x.cardio){const ls=l&&l.sets[0];W.sets[x.id]=[{min:ls?ls.min:x.min,km:'',lvl:ls&&ls.lvl||'',ok:false}];return}
+  W.sets[x.id]=Array.from({length:x.sets},(_,k)=>{const ls=l&&(l.sets[k]||l.sets[0]);return{w:ls?ls.w:'',r:ls?ls.r:x.reps,f:'',ok:false}});W.opts[x.id]=l&&l.opt!=null?l.opt:(kindOf(x)==='bench'?'скамья 45°':'')}
+function cWorkout(page,c){const k='wo'+c.id,cur=UI.seg[k]||'now';
+  page.append(hdr('Тренировка',''),h('div',{className:'st',style:'--i:1'},seg(k,[['now','Сегодня'],['hist','История']],cur,v=>{UI.seg[k]=v;refresh()})));
+  const body=fxBox();page.append(body);if(cur==='hist')return histView(c,body);
+  const P=DB.prog[c.id]||[];if(!P.length){body.append(card(2,h('div',{className:'empty'},'Тренер ещё не составил программу. Как только он это сделает, она появится здесь.')));return}
+  let W=loadDraft(c.id);if(!W||!P.find(d=>d.id===W.dayId)){W=newDraft(c,P[0]);saveDraft(c.id,W)}const day=P.find(d=>d.id===W.dayId);const sv=()=>saveDraft(c.id,W);
+  const started=Object.values(W.sets).some(a=>a.some(s=>s.ok));
+  body.append(h('div',{className:'hs st',style:'--i:2;margin-bottom:10px'},P.map(d=>h('button',{className:'chip'+(d.id===W.dayId?' on':''),onclick:()=>{if(d.id===W.dayId)return;const sw=()=>{saveDraft(c.id,newDraft(c,d));hapSel();UI.fx=1;refresh()};started?ask('Начать другой день? Отмеченные подходы сбросятся.',sw):sw()}},d.name))));
+  if(day.focus)body.append(h('div',{className:'mu st',style:'--i:2;margin:-2px 0 10px'},day.focus));
+  const rs=h('select',{style:'width:auto',onchange:e=>{localStorage.setItem(RSK,e.target.value)}},[60,90,120,150,180,240,300].map(v=>h('option',{value:v,selected:v===restSec()},'отдых '+v/60+' мин')));
+  body.append(h('div',{className:'row st',style:'--i:2;margin-bottom:10px'},h('div',{className:'mu f1'},started?'Черновик сохраняется автоматически':'Отмечайте подходы галочкой'),rs));
+  const pk={g:grpOf(day.name),tid:c.trainerId};
+  W.ex.forEach((x,i)=>{const l=lastOf(c,x.name),dr=W.sets[x.id]||(initSets(c,W,x),W.sets[x.id]),kd=kindOf(x);
+    const box=h('div',{className:'card ex st',style:'--i:'+(3+i)},
+      h('div',{className:'row'},h('h3',{className:'f1'},x.cardio?'🏃 '+x.name:x.name),h('button',{className:'chip sm',onclick:()=>pickEx({...pk,g:x.mg||pk.g},([nx])=>{W.ex[i]=nx;delete W.sets[x.id];initSets(c,W,nx);sv();UI.fx=1;refresh()})},'⇄ Заменить'),h('button',{className:'chip sm',onclick:()=>{W.ex.splice(i,1);sv();refresh()}},'✕')),
+      h('div',{className:'mu',style:'margin-top:3px'},`${x.mg?gLabel(x.mg)+' · ':''}план ${exPlan(x)}`+(l?' · прошлый раз: '+fmtSets(l)+(l.opt?' ('+l.opt+')':''):'')),
+      x.note?h('div',{className:'quote',style:'margin-top:8px;font-size:13px'},x.note):null);
+    if(x.cardio){
+      box.append(h('div',{className:'set cset mt',style:'margin-bottom:-4px'},h('span'),h('span',{className:'lb'},'Минут'),h('span',{className:'lb'},'Км'),h('span',{className:'lb'},'Интенсивность'),h('span')));
+      dr.forEach((s,k)=>{const row=h('div',{className:'set cset'+(s.ok?' done':'')},h('span',{className:'n'},k+1),
+        h('input',{type:'number',inputMode:'numeric',placeholder:'мин',value:s.min,oninput:e=>{s.min=e.target.value;sv()}}),
+        h('input',{type:'number',inputMode:'decimal',step:'0.1',placeholder:'—',value:s.km,oninput:e=>{s.km=e.target.value;sv()}}),
+        h('select',{onchange:e=>{s.lvl=e.target.value;sv()}},Object.entries(LVL).map(([q,t])=>h('option',{value:q,selected:q===s.lvl},t))),
+        h('button',{className:'chk',onclick:()=>{s.ok=!s.ok;row.classList.toggle('done',s.ok);sv();s.ok?hap('medium'):hapSel()}},'✓'));box.append(row)});
+      box.append(h('button',{className:'chip sm mt',onclick:()=>{dr.push({min:'',km:'',lvl:'',ok:false});sv();refresh()}},'+ отрезок'));body.append(box);return}
+    if(kd==='band')box.append(h('label',{className:'row mt'},h('input',{type:'checkbox',checked:W.opts[x.id]==='с резинкой',onchange:e=>{W.opts[x.id]=e.target.checked?'с резинкой':'';sv()}}),'С резинкой'));
+    if(kd==='bench')box.append(h('div',{className:'mt'},h('select',{style:'width:auto',onchange:e=>{W.opts[x.id]=e.target.value;sv()}},['скамья прямая','скамья 45°'].map(o=>h('option',{value:o,selected:o===W.opts[x.id]},o)))));
+    dr.forEach((s,k)=>{const row=h('div',{className:'set'+(s.ok?' done':'')},h('span',{className:'n'},k+1),
+      h('input',{type:'number',inputMode:'decimal',step:'0.5',placeholder:'кг',value:s.w,oninput:e=>{s.w=e.target.value;sv()}}),h('span',{className:'mu'},'×'),
+      h('input',{type:'number',inputMode:'numeric',placeholder:/сек/.test(x.name)?'сек':'повт',value:s.r,oninput:e=>{s.r=e.target.value;sv()}}),
+      h('select',{onchange:e=>{s.f=e.target.value;sv()}},Object.entries(FL).map(([q,t])=>h('option',{value:q,selected:q===s.f},t))),
+      h('button',{className:'chk',onclick:()=>{s.ok=!s.ok;row.classList.toggle('done',s.ok);sv();if(s.ok){hap('medium');startRest()}else hapSel()}},'✓'));box.append(row)});
+    box.append(h('button',{className:'chip sm mt',onclick:()=>{const p=dr[dr.length-1]||{};dr.push({w:p.w||'',r:p.r||x.reps,f:'',ok:false});sv();refresh()}},'+ подход'));
+    body.append(box)});
+  body.append(h('button',{className:'btn ghost',onclick:()=>pickEx({...pk,multi:1},arr=>{arr.forEach(n=>{W.ex.push(n);initSets(c,W,n)});sv();refresh()})},ic('plus'),'Добавить упражнение или кардио'));
+  const note=h('textarea',{rows:2,placeholder:'Как прошла тренировка?',value:W.note||'',oninput:e=>{W.note=e.target.value;sv()}});body.append(h('div',{className:'card mt'},h('div',{className:'lb'},'Заметка'),note));
+  body.append(h('button',{className:'btn',onclick:()=>finishWorkout(c,W,day)},'Завершить тренировку'))}
+/* выбор упражнений: группы мышц, поиск по всей базе, свои упражнения тренера, множественный выбор */
+function pickEx(o,cb){const tid=o.tid,mine=()=>(tid&&DB.custom&&DB.custom[tid])||[];
+  sheet(o.multi?'Добавить упражнения':'Выберите упражнение',(b,close)=>{let g=o.g&&EXDB[o.g]?o.g:'Грудь',q='';const picked=new Map();
+    const qi=h('input',{type:'search',placeholder:'Поиск по всей базе: «жим», «тяга», «дорожка»…'});
+    const chips=h('div',{className:'hs',style:'margin-top:10px'}),list=h('div',{style:'min-height:45vh'}),foot=h('div',{className:'pkfoot'});
+    const all=()=>[...mine().map(x=>({...x,mine:1})),...GROUPS.flatMap(gg=>EXDB[gg].map(s=>libEx(gg,s)))];
+    const items=()=>q?all().filter(x=>x.name.toLowerCase().includes(q)):g==='Мои'?mine().map(x=>({...x,mine:1})):EXDB[g].map(s=>libEx(g,s));
+    const fresh=x=>{const n={...x,id:uid('x')};delete n.mine;return n};
+    const drawChips=()=>chips.replaceChildren(...[...(mine().length?['Мои']:[]),...GROUPS].map(x=>h('button',{className:'chip'+(!q&&x===g?' on':''),onclick:()=>{g=x;q='';qi.value='';hapSel();drawChips();drawList()}},x===CARDIO?'🏃 '+x:gLabel(x))));
+    const drawFoot=()=>{if(!o.multi)return;foot.replaceChildren(h('button',{className:'btn',disabled:!picked.size,onclick:()=>{close();cb([...picked.values()].map(fresh))}},picked.size?`Добавить · ${picked.size}`:'Отметьте упражнения'))};
+    const drawList=()=>{const L=items();list.replaceChildren(...(L.length?L.map(x=>{const on=picked.has(x.name);const btn=h('button',{className:'it'+(on?' on':''),onclick:()=>{if(!o.multi){close();cb([fresh(x)]);return}if(picked.has(x.name))picked.delete(x.name);else picked.set(x.name,x);hapSel();btn.classList.toggle('on');drawFoot()}},
+        h('span',{className:'f1'},x.name,q?h('span',{className:'mu',style:'font-size:12px;margin-left:6px'},gLabel(x.mg)):null),h('span',{className:'mu',style:'white-space:nowrap'},exPlan(x)),o.multi?h('i',{className:'tick'}):null);return btn}):[h('div',{className:'empty'},'Ничего не найдено — добавьте своё упражнение ниже')]))};
+    qi.oninput=()=>{q=qi.value.trim().toLowerCase();drawChips();drawList()};
+    const nm=h('input',{placeholder:'Своё упражнение'}),mg=h('select',{style:'width:auto'},GROUPS.map(m=>h('option',{value:m,selected:m===g},gLabel(m))));
+    const addOwn=()=>{const n=nm.value.trim();if(!n){nm.focus();return}const x=mg.value===CARDIO?{name:n,mg:CARDIO,cardio:1,min:30}:{name:n,mg:mg.value,sets:3,reps:10};
+      if(tid&&!AS&&who().role==='trainer'){DB.custom=DB.custom||{};(DB.custom[tid]=DB.custom[tid]||[]).push(x);S.tput('custom',DB.custom[tid])}nm.value='';hapOk();
+      if(!o.multi){close();cb([fresh(x)]);return}picked.set(x.name,x);g='Мои';q='';qi.value='';drawChips();drawList();drawFoot();toast('Добавлено в «Мои»')};
+    drawChips();drawList();drawFoot();
+    b.append(qi,chips,list,h('div',{className:'lb mt2'},'Нет в списке?'),h('div',{className:'row mt'},nm,mg,h('button',{className:'ib',onclick:addOwn},ic('plus',2))),o.multi?foot:null)})}
+function finishWorkout(c,W,day){if(!canWrite())return;
+  const items=W.ex.map(x=>x.cardio?{exId:x.id,name:x.name,mg:CARDIO,cardio:1,sets:(W.sets[x.id]||[]).filter(s=>s.ok&&s.min!=='').map(s=>({min:+s.min,km:s.km!==''&&s.km!=null?+s.km:null,lvl:s.lvl||''}))}
+    :{exId:x.id,name:x.name,mg:x.mg||'',opt:W.opts[x.id]||'',sets:(W.sets[x.id]||[]).filter(s=>s.ok&&s.w!==''&&s.r!=='').map(s=>({w:+s.w,r:+s.r,f:s.f}))}).filter(i=>i.sets.length);
+  if(!items.length){hapErr();toast('Отметьте хотя бы один подход или кардио (✓)');return}
+  const L=DB.logs[c.id]||(DB.logs[c.id]=[]);const prs=[];items.filter(i=>!i.cardio).forEach(it=>{const prev=Math.max(0,...L.flatMap(l=>(l.items.find(z=>z.name===it.name)||{sets:[]}).sets.map(s=>s.w||0)));const mx=Math.max(...it.sets.map(s=>s.w));if(mx>prev&&prev>0)prs.push(it.name+': '+mx+' кг')});
+  const T=TODAY(),lg={id:uid('l'),date:T,day:day.name,note:W.note||'',items};L.push(lg);const D=days(c.id);D[T]=D[T]||{};const ma=mkArr(D[T]);if(!ma.includes('✅')&&ma.length<MKMAX)D[T].m=[...ma,'✅'];
+  localStorage.removeItem(DRK+c.id);stopRest();if(LIVE){const o={...lg};delete o.id;S.put(c.id,'log:'+lg.id,o);S.day(c.id,T)}else persist();hapOk();
+  const st_=items.filter(i=>!i.cardio),sets=st_.reduce((a,i)=>a+i.sets.length,0),ton=st_.reduce((a,i)=>a+i.sets.reduce((b,s)=>b+s.w*s.r,0),0),cmin=items.filter(i=>i.cardio).reduce((a,i)=>a+i.sets.reduce((b,s)=>b+s.min,0),0);
+  sheet(null,(b,close)=>{b.append(h('div',{html:'<svg class="okc" viewBox="0 0 84 84"><circle cx="42" cy="42" r="38"/><path d="M27 43l10 10 20-22"/></svg>'}),h('h2',{className:'c'},'Тренировка сохранена'),h('div',{className:'mu c'},day.name+' · тренер увидит её сразу'),
+    h('div',{className:'stats mt2'},stat('Подходов',sets),stat('Тоннаж',fmtN(Math.round(ton))+' кг'),cmin?stat('Кардио',cmin+' мин'):null),prs.length?h('div',{className:'card mt'},h('div',{className:'lb'},'🔥 Новые рекорды'),prs.map(p=>h('div',{className:'mt'},p))):null,
+    h('button',{className:'btn mt2',onclick:close},'Отлично'))},{onClose:()=>{UI.seg['wo'+c.id]='hist';render('tab')}})}
+function histView(c,body,editable){const L=DB.logs[c.id]||[];if(!L.length){body.append(h('div',{className:'empty'},'Пока нет завершённых тренировок'));return}
+  [...L].reverse().slice(0,30).forEach((l,i)=>{body.append(h('div',{className:'card st',style:'--i:'+Math.min(i+2,8)},h('div',{className:'row'},h('b',{className:'f1'},l.day),h('span',{className:'mu'},fmtD(l.date)),who().role==='client'||editable?h('button',{className:'chip sm',onclick:()=>ask('Удалить запись?',()=>{if(!canWrite())return;DB.logs[c.id]=L.filter(z=>z!==l);S.del(c.id,'log:'+l.id);refresh()})},'✕'):null),
+    ...l.items.map(it=>h('div',{className:'mu',style:'margin-top:5px'},h('span',{style:'color:var(--tx)'},(it.cardio?'🏃 ':'')+it.name),it.opt?' ('+it.opt+')':'',': '+fmtSets(it))),
+    l.note?h('div',{className:'quote'},l.note):null))})}
+/* объём за неделю по группам мышц + кардио */
+function volCard(c){const T=TODAY(),ws=monday(T),L=DB.logs[c.id]||[],vol={};let cm=0;const cw={};
+  L.filter(l=>l.date>=ws).forEach(l=>l.items.forEach(i=>{if(i.cardio){i.sets.forEach(s=>{cm+=s.min;cw[i.name]=(cw[i.name]||0)+s.min})}else if(i.mg)vol[i.mg]=(vol[i.mg]||0)+i.sets.length}));
+  const wk=[];for(let k=7;k>=0;k--){const m=add(ws,-7*k);wk.push({x:m,wk:1,y:L.filter(l=>l.date>=m&&l.date<add(m,7)).reduce((a,l)=>a+l.items.filter(i=>i.cardio).reduce((b,i)=>b+i.sets.reduce((q,s)=>q+s.min,0),0),0)})}
+  return[h('div',{className:'card'},h('h3',{},'Объём за неделю'),h('div',{className:'mu'},'Рабочих подходов на группу. Целевая зона 4–8.'),MG.map(g=>hbar(gLabel(g),vol[g]||0,12,String(vol[g]||0),[4,8]))),
+    h('div',{className:'card'},h('div',{className:'row'},h('h3',{className:'f1'},'🏃 Кардио'),h('b',{},cm+' мин за неделю')),Object.keys(cw).length?h('div',{className:'chips mt'},Object.entries(cw).map(([n,m])=>h('span',{className:'chip sm'},n+' · '+m+' мин'))):null,
+      wk.some(p=>p.y)?h('div',{className:'mt'},chart(wk,{bars:1,h:110,fmt:v=>Math.round(v)+' мин',axis:v=>Math.round(v)})):h('div',{className:'mu mt'},'Кардио пока не было'))]}
+
+/* ----- профиль клиента ----- */
+function cProfile(page,c){const t=Tr(c.trainerId);
+  page.append(hdr('Профиль'),card(1,h('div',{className:'row'},av(c.name,0,1),h('div',{className:'f1'},h('div',{style:'font-size:19px;font-weight:600'},c.name),h('div',{className:'mu'},'с '+fmtD(c.start)+' · неделя '+weekNo(c,TODAY()))))));
+  if(t)page.append(card(2,h('div',{className:'lb'},'Ваш тренер'),h('div',{className:'row mt'},av(t.name),h('b',{className:'f1'},t.name),h('button',{className:'btn sm',onclick:()=>{if(TG&&t.tg)TG.openTelegramLink('https://t.me/'+t.tg);else toast('Откроется чат с @'+(t.tg||'тренером'))}},'Написать'))));
+  page.append(card(3,h('h3',{},'Анкета'),anketa(c)));
+  page.append(card(4,h('h3',{},'Напоминания'),h('div',{className:'mu',style:'margin:4px 0 10px'},'Бот напомнит внести данные. Заработает на этапе 2.'),h('div',{className:'row'},h('span',{className:'f1'},'Вес и шаги'),h('input',{type:'time',value:'09:00',style:'width:auto',disabled:true})),h('div',{className:'row mt'},h('span',{className:'f1'},'Питание за день'),h('input',{type:'time',value:'22:00',style:'width:auto',disabled:true}))));
+  page.append(commonLinks(5))}
+function anketa(c){const isT=who().role!=='client';const w=h('div',{className:'mt'});
+  const ht=h('input',{type:'number',value:c.height||''}),bd=h('input',{type:'date',value:c.birth||''}),sx=h('select',{},[['f','Женский'],['m','Мужской']].map(([k,l])=>h('option',{value:k,selected:c.sex===k},l))),gl=h('select',{disabled:!isT},Object.entries(GOALS).map(([k,l])=>h('option',{value:k,selected:c.goal===k},l)));
+  const st=h('input',{type:'date',value:c.start,disabled:!isT});
+  w.append(h('div',{className:'g2'},h('label',{className:'fld'},h('span',{},'Пол'),sx),h('label',{className:'fld'},h('span',{},'Рост, см'),ht)),h('div',{className:'g2 mt'},h('label',{className:'fld'},h('span',{},'Дата рождения'),bd),h('label',{className:'fld'},h('span',{},'Цель'),gl)),
+    isT?h('label',{className:'fld mt'},h('span',{},'Начало работы (для номера недели)'),st):null,
+    h('button',{className:'btn ghost mt',onclick:()=>{if(!canWrite())return;c.height=+ht.value||null;c.birth=bd.value;c.sex=sx.value;if(isT){c.goal=gl.value;if(st.value)c.start=st.value}S.client(c,isT?{height:c.height,birth:c.birth||null,sex:c.sex,goal:c.goal,start:c.start}:{height:c.height,birth:c.birth||null,sex:c.sex});hapOk();toast('Сохранено')}},'Сохранить анкету'));return w}
+function commonLinks(i){return card(i,h('button',{className:'li',onclick:()=>supportSheet()},h('div',{className:'ic',style:'color:var(--ac)'},ic('chat')),h('div',{className:'f1'},h('div',{className:'t'},'Поддержка и идеи'),h('div',{className:'s'},'Вопрос, проблема или предложение — напишите нам')),ic('chev')),
+  h('button',{className:'li',onclick:privacy},h('div',{className:'ic',style:'color:var(--mu)'},ic('eye')),h('div',{className:'f1'},h('div',{className:'t'},'Конфиденциальность')),ic('chev')),
+  AS||LIVE?null:h('button',{className:'li',onclick:()=>ask('Выйти из демо-роли?',logout)},h('div',{className:'ic',style:'color:var(--mu)'},ic('back')),h('div',{className:'f1'},h('div',{className:'t'},'Сменить роль (демо)')),ic('chev')))}
+function supportSheet(pre){sheet('Поддержка и идеи',(b,close)=>{let ty=pre&&pre.type||'q';const tw=h('div');const tr=()=>tw.replaceChildren(seg('sup',[['q','Вопрос / проблема'],['idea','Идея']],ty,v=>{ty=v;tr();flushMount()}));tr();
+  const ta=h('textarea',{rows:5,placeholder:'Опишите подробно. Можно приложить скриншот в ответ в боте.',value:pre&&pre.text||''});
+  b.append(tw,ta,h('div',{className:'mu mt',style:'font-size:12px'},'Ответ придёт сообщением от бота.'),h('button',{className:'btn mt',onclick:async e=>{if(!ta.value.trim()){hapErr();return}if(AS){toast('Режим просмотра');return}if(LIVE){const bt=e.currentTarget;bt.disabled=true;try{await api('support_new',{type:ty,text:ta.value.trim()});hapOk();close();toast(ty==='idea'?'Спасибо за идею!':'Отправлено, ответ придёт в бот')}catch(er){bt.disabled=false;hapErr();toast(er.message)}return}DB.support.unshift({id:uid('s'),uid:ME?ME.id:'guest',role:ME?ME.role:'guest',type:ty,text:ta.value.trim(),at:Date.now(),status:'new'});persist();hapOk();close();toast(ty==='idea'?'Спасибо за идею!':'Отправлено, скоро ответим')}},'Отправить'))})}
+function privacy(){sheet('Конфиденциальность',b=>b.append(h('div',{className:'mu',style:'font-size:14px;line-height:1.55'},
+  h('p',{},'Мы храним данные, которые вы вносите: вес, шаги, питание, замеры, фото, тренировки и заметки, а также имя и ID вашего Telegram-аккаунта.'),
+  h('p',{},'Доступ к данным клиента есть только у самого клиента и его текущего тренера. Фото хранятся в закрытом хранилище и открываются по временным ссылкам.'),
+  h('p',{},'При отключении от тренера доступ тренера закрывается, история остаётся у клиента. Удалить все данные можно запросом в поддержку.'),
+  h('p',{},'Полный текст политики будет опубликован до запуска.'))))}
+
+/* ===== ТРЕНЕР ===== */
+function subWarn(t,i){const s=tStatus(t);if(s==='paid'||s==='trial'){const left=diff(tUntil(t),TODAY());if(left<=5)return card(i,h('div',{className:'row'},h('div',{className:'f1'},h('b',{},s==='trial'?'Пробный период заканчивается':'Подписка заканчивается'),h('div',{className:'mu'},left<=0?'сегодня':'через '+left+' '+plural(left,['день','дня','дней']))),h('button',{className:'btn sm',onclick:()=>{UI.tab.trainer='cabinet';render('tab')}},'Продлить')));return null}
+  const w=card(i,h('b',{},s==='blocked'?'Аккаунт заблокирован':'Подписка закончилась'),h('div',{className:'mu',style:'margin:4px 0 10px'},'Клиенты продолжают вносить данные — ничего не потеряется. Данные откроются сразу после продления.'),h('button',{className:'btn sm',onclick:()=>{UI.tab.trainer='cabinet';render('tab')}},'Выбрать тариф'));w.classList.add('warn');return w}
+function tClients(page,t){const cl=myClients(t.id),s=tStatus(t),lock=s==='expired'||s==='blocked';
+  page.append(hdr('Клиенты',`${planName(t)} · ${counted(t)} из ${tLimit(t)||PLANS[t.plan].max}`,h('button',{className:'ib',onclick:()=>inviteSheet(t)},ic('plus',2))));
+  const w=subWarn(t,1);if(w)page.append(w);
+  page.append(h('div',{className:'g2 st',style:'--i:1;margin-bottom:10px'},h('button',{className:'btn ghost',onclick:()=>inviteSheet(t)},ic('link'),'Пригласить'),h('button',{className:'btn ghost',onclick:()=>broadcast(t)},ic('mega'),'Рассылка')));
+  if(!cl.length){page.append(card(2,h('div',{className:'empty'},'Пока нет клиентов. Отправьте ссылку-приглашение — клиент откроет её в Telegram и сразу появится здесь.'),h('button',{className:'btn',onclick:()=>inviteSheet(t)},'Пригласить первого клиента')));return}
+  const k='tc'+t.id,cur=UI.seg[k]||'att';const withI=cl.map(c=>({c,is:issues(c)}));const att=withI.filter(x=>x.is.some(i=>i.l>=2)).sort((a,b)=>score(b.c)-score(a.c));
+  const q=h('input',{placeholder:'Поиск клиента',value:UI.q,oninput:e=>{UI.q=e.target.value;const v=UI.q.toLowerCase();list.querySelectorAll('[data-n]').forEach(r=>r.style.display=r.dataset.n.includes(v)?'':'none')}});
+  page.append(h('div',{className:'st',style:'--i:2'},seg(k,[['att',`Внимание · ${att.length}`],['all',`Все · ${cl.length}`]],cur,v=>{UI.seg[k]=v;refresh()})),h('div',{className:'st',style:'--i:2;margin-bottom:10px'},q));
+  const list=h('div',{className:'card st'+(UI.fx?' fx':''),style:'--i:3;padding:2px 14px'});page.append(list);
+  const open=c=>{if(lock){hapErr();toast('Продлите подписку, чтобы открыть данные');return}go('client',{id:c.id})};
+  const arr=cur==='att'?att:withI.sort((a,b)=>a.c.name.localeCompare(b.c.name));
+  if(!arr.length)list.append(h('div',{className:'empty'},'Все в порядке — никто не требует внимания 👌'));
+  arr.forEach(({c,is})=>{const T=TODAY();list.append(h('button',{className:'li','data-n':c.name.toLowerCase(),onclick:()=>open(c)},av(c.name,is.some(i=>i.l>=2)),
+    h('div',{className:'f1'},h('div',{className:'t'},c.name),cur==='att'?h('div',{className:'chips',style:'margin-top:5px'},is.slice(0,3).map(i=>h('span',{className:'chip sm'+(i.l>=2?' bad':'')},i.t))):h('div',{className:'s'},`Неделя ${weekNo(c,T)} · ${GOALS[c.goal]}`)),
+    lock?h('span',{className:'mu'},'🔒'):h('div',{style:'display:flex;flex-direction:column;align-items:flex-end;gap:5px'},spark(c.id),heat(c.id,7))))});
+  if(UI.q)onMount(()=>q.oninput({target:q}))}
+function inviteSheet(t){const full=counted(t)>=tLimit(t);const url=`https://t.me/${APP.bot}?startapp=inv_${t.invite}`;
+  sheet('Пригласить клиента',(b,close)=>{if(full){b.append(h('div',{className:'card warn'},h('b',{},tLimit(t)?'Лимит тарифа исчерпан':'Подписка не активна'),h('div',{className:'mu',style:'margin-top:4px'},tLimit(t)?`Подключено ${counted(t)} из ${tLimit(t)}. Чтобы добавить клиента, перейдите на тариф больше.`:'Продлите подписку, чтобы приглашать клиентов.')),h('button',{className:'btn mt',onclick:()=>{close();UI.tab.trainer='cabinet';render('tab')}},'Выбрать тариф'));return}
+    const txt=`Привет! Я веду твои тренировки и питание в «${APP.name}». Открой ссылку — и мы на связи:`;
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Клиент откроет ссылку в Telegram, заполнит анкету и сразу появится в вашем списке.'),
+      h('div',{className:'card'},h('div',{style:'font-size:14px'},txt),h('div',{style:'color:var(--ac2);font-size:13.5px;margin-top:8px;word-break:break-all'},url)),
+      h('div',{className:'g2'},h('button',{className:'btn ghost',onclick:()=>{try{navigator.clipboard.writeText(txt+' '+url)}catch(e){}hapOk();toast('Ссылка скопирована')}},'Копировать'),
+        h('button',{className:'btn',onclick:()=>{const s='https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(txt);if(TG)TG.openTelegramLink(s);else window.open(s,'_blank')}},'Отправить')),
+      h('div',{className:'mu c mt'},`Свободно мест: ${tLimit(t)-counted(t)} · код: ${t.invite}`))})}
+function broadcast(t){sheet('Сообщение всем клиентам',(b,close)=>{const ta=h('textarea',{rows:5,placeholder:'Например: на этой неделе разгрузка — веса −40%'});
+  b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},`Получат ${myClients(t.id).length} клиентов — сообщением от бота.`),ta,h('button',{className:'btn mt',onclick:()=>{if(!ta.value.trim()||!canWrite())return;hapOk();close();toast('Отправлено (на этапе 2 — через бота)')}},'Отправить'))})}
+function clientCard(page,c){if(!c){page.append(hdr('Клиент не найден'));return}const T=TODAY(),is=issues(c);
+  page.append(hdr(c.name,`Неделя ${weekNo(c,T)} · ${GOALS[c.goal]}`,c.tg?h('button',{className:'ib',onclick:()=>{if(TG)TG.openTelegramLink('https://t.me/'+c.tg);else toast('@'+c.tg)}},ic('chat')):null));
+  if(is.length)page.append(h('div',{className:'chips st',style:'--i:1;margin:-4px 0 12px'},is.map(i=>h('span',{className:'chip sm'+(i.l>=2?' bad':'')},i.t))));
+  const k='cc',cur=UI.seg[k]||'week';page.append(h('div',{className:'st',style:'--i:1'},seg(k,[['week','Неделя'],['prog','Прогресс'],['train','Программа'],['info','Анкета']],cur,v=>{UI.seg[k]=v;refresh()})));
+  const body=fxBox();page.append(body);
+  if(cur==='week'){body.append(weekView(c,2));const L=(DB.com[c.id]||[]).slice(-3).reverse();if(L.length)body.append(card(3,h('h3',{},'Последние комментарии'),L.map(m=>h('div',{className:'bub'+(m.by===who().id?' me':''),style:'cursor:pointer',onclick:()=>openDay(c,m.date)},h('small',{},nameOf(m.by)+' · '+fmtD(m.date)),m.text))))}
+  if(cur==='prog')body.append(progressView(c,2));
+  if(cur==='train')trainView(c,body);
+  if(cur==='info'){body.append(card(2,h('h3',{},'Анкета'),anketa(c)),card(3,h('h3',{},'Планки'),...[...c.targets].reverse().map(t=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{className:'mu'},'с '+fmtD(t.from)),h('span',{},`К ${fmtN(t.k)} · Б ${fmtN(t.p)} · Ш ${fmtN(t.s)}`))),h('button',{className:'btn ghost mt',onclick:()=>targetsSheet(c)},'Изменить планки')),
+    card(4,h('h3',{},'Отключить клиента'),h('div',{className:'mu',style:'margin:4px 0 10px'},'Клиент пропадёт из списка, история останется у него. Место в тарифе освободится со следующего оплаченного месяца.'),h('button',{className:'btn ghost',onclick:()=>ask('Отключить '+c.name+'?',()=>{if(!canWrite())return;const l=c.links.find(x=>x.t===c.trainerId&&!x.to);if(l)l.to=TODAY();c.trainerId=null;if(LIVE)bg(api('disconnect',{client_id:c.id}));else persist();toast('Клиент отключён');back()})},'Отключить')))}}
+function trainView(c,body){const P=DB.prog[c.id]||(DB.prog[c.id]=[]);const sv=()=>S.prog(c.id);const tid=c.trainerId;
+  const dw=deloadWeeks(c);body.append(card(2,h('div',{className:'row'},h('div',{className:'f1'},h('h3',{},'Разгрузка'),h('div',{className:dw>=6?'bad':'mu',style:'font-size:13px;margin-top:2px'},`Прошло ${dw} нед. ${(DB.deload[c.id]||[]).length?'с последней разгрузки':'с начала работы'}`)),h('button',{className:'btn sm ghost',onclick:()=>{if(!canWrite())return;(DB.deload[c.id]=DB.deload[c.id]||[]).push(TODAY());S.put(c.id,'deload',DB.deload[c.id]);hapOk();refresh()}},'Отметить сегодня'))));
+  body.append(h('div',{className:'row st wrap',style:'--i:3;margin:16px 0 8px'},h('h3',{className:'f1'},'Программа'),h('button',{className:'chip',onclick:()=>tplSheet(c)},'📋 Шаблоны'),P.length?h('button',{className:'chip',onclick:()=>saveTpl(c)},'Сохранить как шаблон'):null));
+  if(!P.length)body.append(card(3,h('div',{className:'empty',style:'padding-bottom:12px'},'Программы ещё нет. Возьмите готовую, скопируйте у другого клиента или соберите с нуля.'),h('div',{className:'g2'},h('button',{className:'btn',onclick:()=>tplSheet(c)},'Выбрать шаблон'),h('button',{className:'btn ghost',onclick:()=>{if(!canWrite())return;P.push({id:uid('d'),name:'День 1',focus:'',ex:[]});sv();refresh()}},'С нуля'))));
+  const mini='width:46px;text-align:center;padding:7px 4px';
+  P.forEach((d,di)=>{const nm=h('input',{value:d.name,style:'font-weight:600',onchange:e=>{if(!canWrite())return;d.name=e.target.value;sv()}}),fo=h('input',{value:d.focus||'',placeholder:'Акцент дня (видит клиент)',style:'margin-top:6px',onchange:e=>{d.focus=e.target.value;sv()}});
+    const cd=card(4+di,h('div',{className:'row'},nm,h('button',{className:'ib',onclick:()=>{if(di&&canWrite()){[P[di-1],P[di]]=[P[di],P[di-1]];sv();refresh()}}},'↑'),h('button',{className:'ib',onclick:()=>ask('Удалить «'+d.name+'»?',()=>{if(!canWrite())return;P.splice(di,1);sv();refresh()})},ic('x'))),fo);
+    if(!d.ex.length)cd.append(h('div',{className:'mu',style:'margin-top:10px'},'Упражнений пока нет'));
+    d.ex.forEach((x,xi)=>{const num=(k,min)=>h('input',{type:'number',value:x[k],style:mini,onchange:e=>{x[k]=Math.max(min,+e.target.value||min);sv()}});
+      const nt=h('input',{value:x.note||'',placeholder:x.cardio?'Пульс, наклон, скорость…':'Заметка для клиента (техника, тренажёр…)',style:'font-size:13px;padding:7px 9px',onchange:e=>{x.note=e.target.value;sv()}});
+      cd.append(h('div',{className:'exrow'},h('div',{className:'row'},h('button',{className:'ib sm',onclick:()=>{if(xi&&canWrite()){[d.ex[xi-1],d.ex[xi]]=[d.ex[xi],d.ex[xi-1]];sv();refresh()}}},'↑'),
+        h('div',{className:'f1'},h('div',{},(x.cardio?'🏃 ':'')+x.name),h('div',{className:'mu',style:'font-size:12px'},gLabel(x.mg||''))),
+        ...(x.cardio?[num('min',1),h('span',{className:'mu'},'мин')]:[num('sets',1),h('span',{className:'mu'},'×'),num('reps',1)]),
+        h('button',{className:'chip sm',onclick:()=>{if(!canWrite())return;d.ex.splice(xi,1);sv();refresh()}},'✕')),h('div',{style:'margin-top:6px'},nt)))});
+    cd.append(h('button',{className:'chip mt',onclick:()=>pickEx({g:grpOf(d.name),multi:1,tid},arr=>{if(!canWrite())return;d.ex.push(...arr);sv();refresh();toast('Добавлено: '+arr.length)})},'+ упражнения и кардио'));body.append(cd)});
+  if(P.length){const nd=h('input',{placeholder:'Новый день, например «День 5 — Руки»'});body.append(h('div',{className:'row st',style:'--i:8'},nd,h('button',{className:'ib',onclick:()=>{if(!nd.value.trim()||!canWrite())return;P.push({id:uid('d'),name:nd.value.trim(),focus:'',ex:[]});sv();refresh()}},ic('plus',2))))}
+  body.append(h('div',{className:'mt2'},volCard(c)));
+  body.append(h('h3',{style:'margin:16px 0 8px'},'История тренировок'));histView(c,body)}
+/* шаблоны: готовые, свои и программы других клиентов */
+function tplSheet(c){const tid=c.trainerId,mine=(DB.tpl&&DB.tpl[tid])||[],others=myClients(tid).filter(x=>x.id!==c.id&&(DB.prog[x.id]||[]).length);
+  const meta=ds=>ds.length+' '+plural(ds.length,['день','дня','дней'])+' · '+ds.reduce((a,d)=>a+d.ex.length,0)+' упр.';
+  sheet('Шаблоны программ',(b,close)=>{const it=(t,s,get,del)=>h('div',{className:'row',style:'border-top:1px solid var(--bd)'},h('button',{className:'li',style:'border:0',onclick:()=>{close();setTimeout(()=>applyTpl(c,get(),t),250)}},h('div',{className:'f1'},h('div',{className:'t'},t),h('div',{className:'s'},s)),ic('chev')),del?h('button',{className:'chip sm',onclick:del},'✕'):null);
+    b.append(h('div',{className:'lb'},'Готовые'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},BUILTIN.map(x=>{const ds=x.days();return it(x.name,x.sub+' · '+meta(ds),()=>ds)})));
+    b.append(h('div',{className:'lb mt2'},'Мои шаблоны'),mine.length?h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},mine.map(x=>it(x.name,meta(x.days),()=>x.days,()=>ask('Удалить шаблон «'+x.name+'»?',()=>{if(!canWrite())return;DB.tpl[tid]=mine.filter(z=>z!==x);S.tdel('tpl:'+x.id);close();tplSheet(c)})))):h('div',{className:'mu',style:'margin:6px 0 4px'},'Пока пусто. Соберите программу клиенту и нажмите «Сохранить как шаблон».'));
+    if(others.length)b.append(h('div',{className:'lb mt2'},'Скопировать у клиента'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},others.map(x=>it(x.name,meta(DB.prog[x.id]),()=>DB.prog[x.id]))))})}
+function applyTpl(c,ds,name){if(!canWrite())return;const P=DB.prog[c.id]||(DB.prog[c.id]=[]);
+  const done=mode=>{const nd=cloneDays(ds);if(mode==='replace')DB.prog[c.id]=nd;else P.push(...nd);S.prog(c.id);hapOk();UI.fx=1;refresh();toast('Программа «'+name+'» добавлена')};
+  if(!P.length)return done('replace');
+  sheet('«'+name+'»',(b,close)=>b.append(h('div',{className:'mu',style:'margin:-6px 0 14px'},'У клиента уже есть программа. Что сделать?'),h('button',{className:'btn',onclick:()=>{close();done('replace')}},'Заменить текущую'),h('button',{className:'btn ghost mt',onclick:()=>{close();done('append')}},'Добавить дни к текущей')))}
+function saveTpl(c){const tid=c.trainerId;sheet('Сохранить как шаблон',(b,close)=>{const n=h('input',{value:'Программа · '+c.name.split(' ')[0]});
+  b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Шаблон появится в «Мои шаблоны» — его можно выдать любому клиенту в пару нажатий.'),n,h('button',{className:'btn mt',onclick:()=>{if(!n.value.trim()||!canWrite())return;DB.tpl=DB.tpl||{};const tp={id:uid('tp'),name:n.value.trim(),days:cloneDays(DB.prog[c.id]||[])};(DB.tpl[tid]=DB.tpl[tid]||[]).push(tp);S.tput('tpl:'+tp.id,{name:tp.name,days:tp.days});hapOk();close();toast('Шаблон сохранён')}},'Сохранить'))})}
+function tReport(page,t){const s=tStatus(t),lock=s==='expired'||s==='blocked';const T=TODAY(),d=UI.rep||add(T,-1),cl=myClients(t.id);
+  page.append(hdr('Отчёт','Кто сдал данные, а кто нет'));if(lock){page.append(subWarn(t,1));return}
+  page.append(h('div',{className:'row st',style:'--i:1;margin-bottom:10px'},h('button',{className:'ib',onclick:()=>{UI.rep=add(d,-1);hapSel();refresh()}},ic('back',2)),h('div',{className:'f1 c'},h('b',{},d===T?'Сегодня':d===add(T,-1)?'Вчера':cap(WDL[wdi(d)])),h('div',{className:'mu'},fmtD(d))),h('button',{className:'ib',disabled:d>=T,onclick:()=>{if(d<T){UI.rep=add(d,1);hapSel();refresh()}}},ic('chev',2))));
+  const ok=cl.filter(c=>hasData(days(c.id)[d])).length;
+  const mk=(v)=>h('td',{className:v?'ok-c':'no-c'},v?'✓':'✕');
+  page.append(card(2,h('div',{className:'row'},ring(cl.length?ok/cl.length:0,46),h('div',{},h('b',{style:'font-size:20px'},ok+' из '+cl.length),h('div',{className:'mu'},'сдали данные'))),
+    h('table',{className:'tbl mt'},h('tr',{},h('th',{},'Клиент'),h('th',{},'Вес'),h('th',{},'Шаги'),h('th',{},'Ккал'),h('th',{},'Трен.')),cl.sort((a,b)=>a.name.localeCompare(b.name)).map(c=>{const r=days(c.id)[d]||{};const tr=(DB.logs[c.id]||[]).some(l=>l.date===d)||mkArr(r).includes('✅');
+      return h('tr',{style:'cursor:pointer',onclick:()=>go('client',{id:c.id})},h('td',{},c.name.split(' ')[0]+' '+(c.name.split(' ')[1]||'').charAt(0)+'.'),mk(r.w),mk(r.s),mk(r.k),h('td',{className:tr?'ok-c':'mu'},tr?'✓':'—'))}))));
+  const M=c=>DB.meas[c.id]||[];page.append(card(3,h('h3',{},'Замеры для % жира'),h('div',{className:'mu',style:'margin-bottom:6px'},'✓ — сдан за последнюю неделю · ! — больше недели назад'),
+    h('table',{className:'tbl'},h('tr',{},h('th',{},'Клиент'),h('th',{},'Предыдущий'),h('th',{},'Последний')),cl.map(c=>{const m=M(c),l=m[m.length-1],p=m[m.length-2];const st=(x,main)=>!x?h('td',{className:'mu'},'—'):!main?h('td',{className:'mu'},fmtDs(x.date)):h('td',{className:diff(T,x.date)<=7?'ok-c':'no-c'},(diff(T,x.date)<=7?'✓ ':'! ')+fmtDs(x.date));return h('tr',{},h('td',{},c.name.split(' ')[0]),st(p),st(l,1))}))))}
+function tCabinet(page,t){const s=tStatus(t),u=tUntil(t),left=diff(u,TODAY()),lim=tLimit(t)||PLANS[t.plan].max,cn=counted(t);
+  page.append(hdr('Кабинет',t.name));
+  const usage=h('div',{className:'pbar',style:'height:6px;margin-top:10px'},h('i',{style:`width:${Math.min(100,cn/lim*100)}%`}));
+  page.append(card(1,h('div',{className:'row'},h('div',{className:'f1'},h('div',{className:'lb'},'Подписка'),h('div',{style:'font-size:20px;font-weight:700;margin-top:2px'},planName(t))),h('span',{className:'badge'+(s==='paid'?' ac':s==='trial'?'':' red')},s==='paid'?'активна':s==='trial'?'пробный':s==='blocked'?'заблокирован':'истекла')),
+    h('div',{className:'mu mt'},s==='expired'?'Закончилась '+fmtD(u):'До '+fmtD(u)+' · осталось '+left+' '+plural(left,['день','дня','дней'])),
+    h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{},'Клиенты в этом периоде'),h('b',{},cn+' / '+lim)),usage,
+    h('div',{className:'mu',style:'font-size:12px;margin-top:8px'},'Учитываются все клиенты, подключённые в течение оплаченного месяца, включая отключённых.')));
+  const per=UI.payPer||1;
+  page.append(h('div',{className:'row st',style:'--i:2;margin:16px 0 8px'},h('h3',{className:'f1'},'Тарифы'),seg('pp',PERIODS.map(p=>[p[0],p[0]+' мес']),per,v=>{UI.payPer=v;refresh()},'sm')));
+  const pp=PERIODS.find(p=>p[0]===per);
+  Object.entries(PLANS).forEach(([k,p],i)=>{const total=Math.round(p.price*per*pp[2]/10)*10,month=total/per;const cur=s==='paid'&&t.plan===k;
+    page.append(h('button',{className:'tier st'+(p.pop?' pop':''),style:'--i:'+(3+i),onclick:()=>paySheet(t,k,per,total)},
+      h('div',{className:'f1'},h('div',{className:'row'},h('b',{style:'font-size:16px'},p.n),p.pop?h('span',{className:'badge ac'},'популярный'):null,cur?h('span',{className:'badge'},'ваш'):null),h('div',{className:'mu',style:'margin-top:3px'},'до '+p.max+' клиентов · ≈ '+fmtN(Math.round(month/p.max))+' ₸ за клиента')),
+      h('div',{className:'r'},h('div',{className:'pr'},money(month)),h('div',{className:'mu',style:'font-size:11.5px'},per>1?'в месяц · '+money(total)+(pp[3]?' · '+pp[3]:''):'в месяц'))))});
+  page.append(h('div',{className:'mu st',style:'--i:6;font-size:12px;margin:6px 2px 14px'},'Нужно больше 30 клиентов — напишите в поддержку, подберём условия.'));
+  const tp=DB.tpl[t.id]||[];page.append(card(7,h('h3',{},'Мои шаблоны программ'),tp.length?tp.map(x=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{},x.name),h('span',{className:'mu'},x.days.length+' '+plural(x.days.length,['день','дня','дней'])))):h('div',{className:'mu',style:'margin-top:4px'},'Пока нет. Соберите программу клиенту и сохраните её как шаблон — потом выдавайте другим в два нажатия.'),h('div',{className:'mu',style:'font-size:12px;margin-top:8px'},'В базе '+Object.values(EXDB).reduce((a,l)=>a+l.length,0)+' упражнений по '+GROUPS.length+' группам + ваши собственные.')));
+  page.append(card(8,h('h3',{},'Ссылка-приглашение'),h('div',{className:'mu',style:'margin:4px 0 10px;word-break:break-all'},`t.me/${APP.bot}?startapp=inv_${t.invite}`),h('button',{className:'btn ghost',onclick:()=>inviteSheet(t)},'Пригласить клиента')));
+  page.append(commonLinks(9))}
+function paySheet(t,k,per,total){const p=PLANS[k];
+  sheet('Тариф «'+p.n+'»',(b,close)=>{const over=counted(t)>p.max;
+    b.append(h('div',{className:'card'},h('div',{className:'row',style:'justify-content:space-between'},h('span',{},'до '+p.max+' клиентов · '+per+' мес.'),h('b',{style:'font-size:20px'},money(total)))),
+      over?h('div',{className:'card warn'},`У вас ${counted(t)} клиентов в этом периоде — этот тариф не подойдёт.`):null,
+      h('div',{className:'mu',style:'margin:4px 0 12px'},'На старте оплата проходит через администратора: нажмите кнопку — заявка уйдёт в поддержку, вам пришлют реквизиты, и подписка продлится в течение дня.'),
+      h('button',{className:'btn',disabled:over,onclick:async e=>{if(over||AS){if(AS)toast('Режим просмотра');return}if(LIVE){const bt=e.currentTarget;bt.disabled=true;try{await api('support_new',{type:'pay',plan:k,months:per});hapOk();close();toast('Заявка отправлена')}catch(er){bt.disabled=false;hapErr();toast(er.message)}return}DB.support.unshift({id:uid('s'),uid:t.id,role:'trainer',type:'pay',text:`Заявка на оплату: тариф «${p.n}», ${per} мес. — ${money(total)}`,at:Date.now(),status:'new',pay:{plan:k,months:per,amount:total}});persist();hapOk();close();toast('Заявка отправлена')}},'Оставить заявку на оплату'))})}
+
+/* ===== АДМИН ===== */
+function aDash(page){const T=TODAY(),tr=DB.trainers,by=s=>tr.filter(t=>tStatus(t)===s);const paid=by('paid'),trial=by('trial'),exp=by('expired');
+  const mrr=paid.reduce((a,t)=>a+PLANS[t.plan].price,0),rev30=DB.pay.filter(p=>diff(T,p.date)<=30).reduce((a,p)=>a+p.amount,0);
+  const cl=DB.clients.filter(c=>c.trainerId),act=cl.filter(c=>{const l=lastDataDate(c.id);return l&&diff(T,l)<=1}).length;
+  page.append(hdr('Сводка',fmtD(T)));
+  const tile=(i,l,v,fmt,sub)=>{const b=h('b',{},'0');countUp(b,v,fmt);return h('div',{className:'card st',style:'--i:'+i},h('div',{className:'lb'},l),b,sub?h('div',{className:'mu',style:'font-size:12px;margin-top:2px'},sub):null)};
+  page.append(h('div',{className:'kpi'},tile(1,'Выручка в месяц',mrr,v=>money(v),'оплачено за 30 дн.: '+money(rev30)),tile(1,'Платящих тренеров',paid.length,v=>Math.round(v),'всего тренеров: '+tr.length),
+    tile(2,'В пробном',trial.length,v=>Math.round(v),'истекли: '+exp.length),tile(2,'Клиентов',cl.length,v=>Math.round(v),(cl.length?Math.round(act/cl.length*100)+'% вносили данные вчера/сегодня':'пока нет'))));
+  const wk=[];for(let i=11;i>=0;i--){const m=add(monday(T),-7*i);wk.push({x:m,y:tr.filter(t=>t.joined>=m&&t.joined<add(m,7)).length,wk:1})}
+  page.append(card(3,h('h3',{},'Новые тренеры по неделям'),h('div',{className:'mt'},chart(wk,{bars:1,h:130,fmt:v=>Math.round(v)+' чел.',axis:v=>Math.round(v)}))));
+  const ended=tr.filter(t=>t.trialUntil<T),conv=ended.filter(t=>DB.pay.some(p=>p.trainerId===t.id)).length;
+  page.append(card(4,h('h3',{},'Воронка'),hbar('Регистрации',tr.length,tr.length,String(tr.length)),hbar('Пробный закончен',ended.length,tr.length,String(ended.length)),hbar('Оплатили',conv,tr.length,String(conv)),h('div',{className:'mu mt'},'Конверсия пробный → оплата: ',h('b',{style:'color:var(--tx)'},ended.length?Math.round(conv/ended.length*100)+'%':'—'))));
+  page.append(card(5,h('h3',{},'Тарифы платящих'),...Object.entries(PLANS).map(([k,p])=>{const n=paid.filter(t=>t.plan===k).length;return hbar(p.n+' · '+p.max,n,Math.max(1,paid.length),n+'')}),h('div',{className:'mu mt'},'Средняя загрузка тарифа: ',h('b',{style:'color:var(--tx)'},paid.length?Math.round(avg(paid.map(t=>counted(t)/PLANS[t.plan].max))*100)+'%':'—'))));
+  const soon=tr.filter(t=>{const s=tStatus(t);return(s==='paid'||s==='trial')&&diff(tUntil(t),T)<=7}).sort((a,b)=>tUntil(a)<tUntil(b)?-1:1);
+  page.append(card(6,h('h3',{},'Истекают в ближайшие 7 дней'),soon.length?soon.map(t=>trainerRow(t)):h('div',{className:'empty'},'Никого')));
+  if(DEMO)page.append(card(7,h('h3',{},'Демо'),h('div',{className:'mu',style:'margin:4px 0 10px'},'Данные прототипа хранятся в этом браузере.'),h('div',{className:'g2'},h('button',{className:'btn ghost sm',style:'width:100%',onclick:()=>ask('Сбросить демо-данные?',()=>{localStorage.removeItem(LSK);DB=genDemo();persist();toast('Демо сброшено');refresh()})},'Сбросить демо'),h('button',{className:'btn ghost sm',style:'width:100%',onclick:logout},'Сменить роль'))))}
+function trainerRow(t){const s=tStatus(t),u=tUntil(t),l=diff(u,TODAY());const pill=s==='paid'?h('span',{className:'badge'+(l<=5?' red':'')},'до '+fmtDs(u)):s==='trial'?h('span',{className:'badge'},'пробный · '+l+' дн'):h('span',{className:'badge red'},s==='blocked'?'блок':'истёк '+(-l)+' дн');
+  return h('button',{className:'li',onclick:()=>go('trainer',{id:t.id})},av(t.name),h('div',{className:'f1'},h('div',{className:'t'},t.name),h('div',{className:'s'},`${s==='trial'?'Пробный':PLANS[t.plan].n} · ${myClients(t.id).length} / ${tLimit(t)||PLANS[t.plan].max} клиентов`)),pill)}
+function aTrainers(page){const k='af',cur=UI.seg[k]||'all';const tr=DB.trainers.filter(t=>cur==='all'||tStatus(t)===cur||(cur==='expired'&&tStatus(t)==='blocked'));
+  page.append(hdr('Тренеры',DB.trainers.length+' '+plural(DB.trainers.length,['тренер','тренера','тренеров'])),h('div',{className:'st',style:'--i:1'},seg(k,[['all','Все'],['paid','Платят'],['trial','Пробный'],['expired','Истекли']],cur,v=>{UI.seg[k]=v;refresh()})));
+  const list=h('div',{className:'card st'+(UI.fx?' fx':''),style:'--i:2;padding:2px 14px'});tr.sort((a,b)=>myClients(b.id).length-myClients(a.id).length).forEach(t=>list.append(trainerRow(t)));if(!tr.length)list.append(h('div',{className:'empty'},'Пусто'));page.append(list)}
+function aTrainer(page,t){if(!t){page.append(hdr('Не найден'));return}const T=TODAY(),s=tStatus(t),cl=myClients(t.id);const act=cl.filter(c=>{const l=lastDataDate(c.id);return l&&diff(T,l)<=2}).length;const paid=DB.pay.filter(p=>p.trainerId===t.id);
+  page.append(hdr(t.name,'@'+(t.tg||'—')+' · с '+fmtD(t.joined),h('button',{className:'ib',onclick:()=>viewAs('trainer',t.id)},ic('eye'))));
+  page.append(h('div',{className:'kpi'},h('div',{className:'card st',style:'--i:1'},h('div',{className:'lb'},'Клиентов'),h('b',{},cl.length+' / '+(tLimit(t)||PLANS[t.plan].max))),h('div',{className:'card st',style:'--i:1'},h('div',{className:'lb'},'Активны'),h('b',{},cl.length?Math.round(act/cl.length*100)+'%':'—')),
+    h('div',{className:'card st',style:'--i:2'},h('div',{className:'lb'},'Оплатил всего'),h('b',{},money(paid.reduce((a,p)=>a+p.amount,0)))),h('div',{className:'card st'+(UI.flash===t.id?' flash':''),style:'--i:2'},h('div',{className:'lb'},'Статус'),h('b',{style:'font-size:18px'},s==='paid'?'до '+fmtDs(t.paidUntil):s==='trial'?'пробный до '+fmtDs(t.trialUntil):s==='blocked'?'блок':'истёк'))));
+  const pk='ap'+t.id;const plan=UI.seg[pk]||t.plan;
+  const ext=m=>{const base=[T,t.paidUntil,t.trialUntil].filter(Boolean).sort().pop();const amount=Math.round(PLANS[plan].price*m*PERIODS.find(p=>p[0]===m)[2]/10)*10;const nu=add(base,30*m);
+    ask(`Продлить «${PLANS[plan].n}» на ${m} мес.?`,async()=>{if(LIVE){try{const r=await api('extend',{trainer_id:t.id,plan,months:m});setTrainer(r.trainer);DB.pay.push({id:r.payment.id,trainerId:t.id,date:r.payment.date,amount:r.payment.amount,plan,months:m});hapOk();UI.flash=t.id;toast('Продлено до '+fmtD(r.trainer.paid_until));refresh()}catch(er){hapErr();toast(er.message)}return}t.plan=plan;t.paidUntil=nu;t.blocked=false;DB.pay.push({id:uid('p'),trainerId:t.id,date:T,amount,plan,months:m});persist();hapOk();UI.flash=t.id;toast('Продлено до '+fmtD(nu));refresh()},{sub:`Оплата ${money(amount)} запишется в журнал. Подписка будет действовать до ${fmtD(nu)}.`,ok:'Продлить'})};
+  page.append(card(3,h('h3',{},'Подписка'),h('div',{className:'mt'},seg(pk,Object.entries(PLANS).map(([k,p])=>[k,p.n+' · '+p.max]),plan,v=>{UI.seg[pk]=v;refresh()})),
+    h('div',{className:'g3'},PERIODS.map(([m,l])=>h('button',{className:'btn sm',style:'width:100%',onclick:()=>ext(m)},'+'+m+' мес'))),
+    h('div',{className:'mu',style:'font-size:12px;margin-top:8px'},'Продление считается от даты окончания подписки или пробного периода. Оплата записывается в журнал.'),
+    h('button',{className:'btn ghost mt',onclick:()=>ask(t.blocked?'Разблокировать?':'Заблокировать тренера? Клиенты смогут вносить данные, тренер — нет.',async()=>{if(LIVE){try{const r=await api('block',{trainer_id:t.id,blocked:!t.blocked});setTrainer(r.trainer);refresh()}catch(er){toast(er.message)}return}t.blocked=!t.blocked;persist();refresh()})},t.blocked?'Разблокировать':'Заблокировать')));
+  const list=h('div',{className:'card st',style:'--i:4;padding:2px 14px'},h('div',{className:'lb',style:'padding-top:12px'},'Клиенты · нажмите, чтобы открыть глазами клиента'));
+  cl.forEach(c=>{const is=issues(c);list.append(h('button',{className:'li',onclick:()=>viewAs('client',c.id)},av(c.name,is.some(i=>i.l>=2)),h('div',{className:'f1'},h('div',{className:'t'},c.name),h('div',{className:'s'},is.length?is[0].t:'всё в порядке')),heat(c.id,7)))});if(!cl.length)list.append(h('div',{className:'empty'},'Клиентов нет'));page.append(list);
+  page.append(card(5,h('h3',{},'Платежи'),paid.length?[...paid].reverse().map(p=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{className:'mu'},fmtD(p.date)+' · '+PLANS[p.plan].n+' · '+p.months+' мес'),h('b',{},money(p.amount)))):h('div',{className:'empty'},'Платежей не было')))}
+function aSupport(page){const k='as',cur=UI.seg[k]||'new';const L=DB.support.filter(s=>cur==='new'?s.status==='new':s.status!=='new');
+  page.append(hdr('Поддержка','Вопросы, идеи и заявки на оплату'),h('div',{className:'st',style:'--i:1'},seg(k,[['new','Новые · '+DB.support.filter(s=>s.status==='new').length],['done','Закрытые']],cur,v=>{UI.seg[k]=v;refresh()})));
+  const body=fxBox();page.append(body);if(!L.length)body.append(h('div',{className:'empty'},'Пусто'));
+  const TY={q:['Вопрос',''],idea:['Идея','ac'],pay:['Оплата','red']};
+  L.forEach((s,i)=>{const ago=Math.round((Date.now()-s.at)/36e5);
+    body.append(h('div',{className:'card st',style:'--i:'+(2+i)},h('div',{className:'row'},av(nameOf(s.uid)),h('div',{className:'f1'},h('div',{className:'t',style:'font-weight:600'},nameOf(s.uid)),h('div',{className:'mu',style:'font-size:12px'},(s.role==='trainer'?'тренер':s.role==='client'?'клиент':'гость')+' · '+(ago<24?ago+' ч назад':Math.round(ago/24)+' дн назад'))),h('span',{className:'badge '+TY[s.type][1]},TY[s.type][0])),
+      h('div',{style:'margin-top:10px;font-size:14.5px'},s.text),s.reply?h('div',{className:'quote'},s.reply):null,
+      s.status==='new'?h('div',{className:'row mt'},
+        s.type==='pay'?h('button',{className:'btn sm',onclick:async()=>{if(LIVE){try{const r=await api('pay_confirm',{id:s.id});setTrainer(r.trainer);s.status='done';s.reply=r.support.reply;DB.pay.push({id:r.payment.id,trainerId:r.trainer.id,date:r.payment.date,amount:r.payment.amount,plan:r.payment.plan,months:r.payment.months});hapOk();toast('Подписка продлена');refresh()}catch(er){hapErr();toast(er.message)}return}const t=Tr(s.uid);if(!t)return;const T=TODAY(),base=[T,t.paidUntil,t.trialUntil].filter(Boolean).sort().pop();t.plan=s.pay.plan;t.paidUntil=add(base,30*s.pay.months);t.blocked=false;DB.pay.push({id:uid('p'),trainerId:t.id,date:T,amount:s.pay.amount,plan:s.pay.plan,months:s.pay.months});s.status='done';s.reply='Оплата получена, подписка продлена до '+fmtD(t.paidUntil);persist();hapOk();toast('Подписка продлена');refresh()}},'Оплата получена'):h('button',{className:'btn sm',onclick:()=>replySheet(s)},'Ответить'),
+        h('button',{className:'btn sm ghost',onclick:()=>{s.status='done';if(LIVE)bg(api('support_close',{id:s.id}));else persist();refresh()}},'Закрыть'),
+        Tr(s.uid)||C(s.uid)?h('button',{className:'ib',style:'margin-left:auto',onclick:()=>viewAs(Tr(s.uid)?'trainer':'client',s.uid)},ic('eye')):null):null))})}
+function replySheet(s){sheet('Ответ · '+nameOf(s.uid),(b,close)=>{const ta=h('textarea',{rows:5,placeholder:'Ответ придёт пользователю сообщением от бота'});b.append(h('div',{className:'quote',style:'margin:0 0 12px'},s.text),ta,h('button',{className:'btn mt',onclick:()=>{if(!ta.value.trim())return;s.reply=ta.value.trim();s.status='done';if(LIVE)bg(api('support_reply',{id:s.id,reply:s.reply}));else persist();hapOk();close();toast('Ответ отправлен');refresh()}},'Отправить'))})}
+
+/* ---------- запуск ---------- */
+function boot(){
+  if(TG){TG.ready();TG.expand();try{TG.setHeaderColor('#0b0b0c');TG.setBackgroundColor('#0b0b0c');TG.setBottomBarColor&&TG.setBottomBarColor('#0b0b0c')}catch(e){}try{TG.disableVerticalSwipes()}catch(e){}TG.BackButton&&TG.BackButton.onClick(back)}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')back()});
+  if(LIVE)return bootLive();
+  try{const s=JSON.parse(localStorage.getItem(LSK)||'null');if(s&&s.DB&&s.DB.v===1){DB=s.DB;ME=s.ME}}catch(e){}
+  if(!DB){DB=genDemo();persist()}
+  DB.custom=DB.custom||{};DB.tpl=DB.tpl||{};
+  startUI()}
+function startUI(){
+  /* если тренировка не завершена (Telegram перезапустил приложение) — сразу возвращаем на неё */
+  if(ME&&ME.role==='client'){const w=loadDraft(ME.id);if(w&&Object.values(w.sets||{}).some(x=>x.some(z=>z.ok))){UI.tab.client='workout';setTimeout(()=>toast('Продолжаем тренировку — отмеченные подходы на месте'),700)}}
+  stack=[{s:ME?'root':'onboard'}];render('fwd');
+  const sp=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param;
+  if(sp&&sp.startsWith('inv_')&&(!ME||(ME.role==='client'&&!(C(ME.id)||{}).trainerId)))setTimeout(()=>signupClient(sp.slice(4)),400)}
+async function bootLive(){
+  if(!TG||!TG.initData){$('#app').replaceChildren(h('div',{className:'ob'},h('div',{className:'logo'},h('i'),h('span',{},APP.name)),h('div',{className:'mu',style:'font-size:15px'},'Откройте приложение в Telegram.'),h('a',{className:'btn mt2',href:'https://t.me/'+APP.bot,style:'text-decoration:none'},'Открыть @'+APP.bot)));return}
+  $('#app').replaceChildren(loaderPage());
+  try{await reloadMe()}catch(e){$('#app').replaceChildren(h('div',{className:'ob'},h('div',{className:'logo'},h('i'),h('span',{},APP.name)),h('div',{className:'card warn'},h('b',{},'Не удалось подключиться'),h('div',{className:'mu',style:'margin-top:4px'},e.message)),h('button',{className:'btn mt',onclick:bootLive},'Повторить')));return}
+  startUI();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastLoad>60000&&!SH.length&&!AS&&!pending.size)reloadMe().then(()=>{if(stack[0].s==='root'||stack[0].s==='onboard')refresh()}).catch(()=>{})});
+}
+boot();
+</script></body></html>
