@@ -246,6 +246,29 @@ details.faq>div{padding:0 0 14px;font-size:14px;line-height:1.5;animation:inU .3
 .mtag{margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--card2);font-size:13.5px;animation:inU .5s .9s var(--ease) both}
 .mdraw{stroke-dasharray:420;stroke-dashoffset:420;animation:dash 1.6s .2s var(--ease) forwards}
 .dots{display:flex;justify-content:center;gap:7px;margin-top:22px}.dots i{width:7px;height:7px;border-radius:4px;background:var(--mu2);transition:width .3s var(--ease),background .3s;cursor:pointer}.dots i.on{width:22px;background:var(--ac)}
+
+/* программа по дням недели */
+.wrow{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border:0;border-top:1px solid var(--bd);background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}.wrow:first-child{border-top:0}
+.wrow .t{font-weight:600}.wrow .s,.wrow.s{font-size:13px;color:var(--mu)}.wrow>svg{width:16px;height:16px;color:var(--mu2);flex:none}
+.wrow.rest .s{color:var(--mu2)}.wrow:active{opacity:.7}
+.wdl{width:40px;height:40px;border-radius:12px;background:var(--card2);display:grid;place-items:center;font-weight:700;font-size:14px;flex:none}.wdl.now{background:rgba(229,32,46,.14);color:var(--ac2)}
+.wrow:not(.rest) .wdl{border:1px solid rgba(229,32,46,.35)}
+.plus{width:28px;height:28px;border-radius:50%;border:1px dashed var(--mu2);display:grid;place-items:center;color:var(--mu);flex:none}
+.wdp{display:flex;gap:5px;margin-top:10px}.wdp .chip{flex:1;min-width:0;justify-content:center;padding-left:0;padding-right:0}
+.tday{padding:12px 0;border-top:1px solid var(--bd)}.tday:first-child{border-top:0}
+.pcal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.pcal .wh{font-size:11px;color:var(--mu2);padding-bottom:4px}
+.pcal .cd{aspect-ratio:1/1.05;border:0;border-radius:12px;background:none;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+.pcal .cd b{font-size:15px;font-weight:500}.pcal .cd.past b{color:var(--mu)}.pcal .cd.today{background:rgba(229,32,46,.14)}.pcal .cd.today b{color:var(--ac2);font-weight:700}.pcal .cd:active{background:var(--card2)}
+.pcal i,.pleg i{font-style:normal;width:6px;height:6px;border-radius:50%;display:inline-block}.pcal i.dot,.pleg i.dot{background:var(--mu2)}.pcal i.own,.pleg i.own{background:var(--ac)}
+.pcal i.ok,.pleg i.ok{width:auto;height:auto;color:var(--ok,#3ecf8e);font-size:10px;line-height:1}.pcal i.rst{width:auto;height:auto;color:var(--mu2);font-size:11px;line-height:1}
+.pleg{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--mu)}.pleg span{display:flex;align-items:center;gap:6px}
+.wstrip{display:flex;align-items:stretch;gap:3px;margin-bottom:14px}
+.wsa{width:26px;border:0;background:none;color:var(--mu);display:grid;place-items:center;flex:none;padding:0}.wsa svg{width:16px;height:16px}
+.wsd{flex:1;min-width:0;border:1px solid var(--bd);background:var(--card);border-radius:14px;padding:8px 0 6px;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;transition:background .2s,border-color .2s,transform .15s}
+.wsd span{font-size:11px;color:var(--mu)}.wsd b{font-size:16px}.wsd i{font-style:normal;height:10px;font-size:10px;line-height:10px}.wsd i.dot{width:5px;height:5px;margin-top:3px;border-radius:50%;background:var(--ac)}.wsd i.ok{color:var(--ok,#3ecf8e)}
+.wsd.today span{color:var(--ac2)}.wsd.fut{opacity:.75}.wsd.on{background:var(--ac);border-color:var(--ac);opacity:1}.wsd.on span,.wsd.on i.ok{color:#fff}.wsd.on i.dot{background:#fff}.wsd:active{transform:scale(.95)}
+.whead{margin:0 2px 12px}.whead .wt{font-size:22px;font-weight:700;letter-spacing:-.01em;margin-top:2px}
+.okline{margin-top:8px;font-size:13px;color:var(--ok,#3ecf8e)}
 </style></head>
 <body>
 <div id="app"></div>
@@ -349,23 +372,23 @@ const EXI={};for(const g in EXDB)EXDB[g].forEach(s=>{const x=libEx(g,s);EXI[x.na
 const E=(n,s,r)=>{const b=EXI[n];if(!b)throw new Error('нет упражнения '+n);const x={...b,id:uid('x')};if(b.cardio){if(s)x.min=s}else{if(s)x.sets=s;if(r)x.reps=r}return x};
 const pe=s=>{const[n,mg,se,re]=s.split('|');return mg===CARDIO?{id:uid('x'),name:n,mg,cardio:1,min:+se}:{id:uid('x'),name:n,mg,sets:+se,reps:+re}};
 const PRESET=[
-['День 1 — Тяни','Акцент: ширина / толщина спины',['Подтягивания|Спина|3|8','Тяга штанги в наклоне|Спина|3|8','Тяга верхнего блока|Спина|3|10','Сгибания на бицепс|Бицепс|3|10']],
-['День 2 — Толкай','',['Жим лёжа|Грудь|3|6',PASS+'|Грудь|1|1','Жим гантелей на наклонной|Грудь|3|8','Жим стоя|Дельты|3|8','Разгибания на трицепс|Трицепс|3|10']],
-['День 3 — Ноги','',['Присед|Квадрицепс|3|6','Румынская тяга|Бицепс бедра|3|8','Сгибания ног|Бицепс бедра|3|10','Подъём на носки|Икры|4|12','Велотренажёр|Кардио|15']],
-['День 4 — Full Body (акцент: плечи)','Последний подход каждого упражнения — в отказ ⚡',['Жим стоя|Дельты|3|8','Махи в стороны|Дельты|4|12','Тяга штанги в наклоне|Спина|2|8','Подтягивания|Спина|2|8','Жим лёжа|Грудь|2|8','Беговая дорожка|Кардио|15']]];
+['Тяни','Акцент: ширина / толщина спины',['Подтягивания|Спина|3|8','Тяга штанги в наклоне|Спина|3|8','Тяга верхнего блока|Спина|3|10','Сгибания на бицепс|Бицепс|3|10']],
+['Толкай','',['Жим лёжа|Грудь|3|6',PASS+'|Грудь|1|1','Жим гантелей на наклонной|Грудь|3|8','Жим стоя|Дельты|3|8','Разгибания на трицепс|Трицепс|3|10']],
+['Ноги','',['Присед|Квадрицепс|3|6','Румынская тяга|Бицепс бедра|3|8','Сгибания ног|Бицепс бедра|3|10','Подъём на носки|Икры|4|12','Велотренажёр|Кардио|15']],
+['Всё тело · акцент на плечи','Последний подход каждого упражнения — в отказ ⚡',['Жим стоя|Дельты|3|8','Махи в стороны|Дельты|4|12','Тяга штанги в наклоне|Спина|2|8','Подтягивания|Спина|2|8','Жим лёжа|Грудь|2|8','Беговая дорожка|Кардио|15']]];
 /* готовые программы для тренера */
 const BUILTIN=[
  {id:'b1',name:'Тяни / Толкай / Ноги / Full Body',sub:'гибридный сплит',days:()=>PRESET.map(([n,f,ex])=>({name:n,focus:f,ex:ex.map(pe)}))},
  {id:'b2',name:'Full Body × 3',sub:'новичкам и при снижении веса',days:()=>[
-   {name:'День A',focus:'',ex:[E('Присед',3,8),E('Жим лёжа',3,8),E('Тяга верхнего блока'),E('Махи в стороны'),E('Скручивания'),E('Беговая дорожка',15)]},
-   {name:'День B',focus:'',ex:[E('Румынская тяга'),E('Жим гантелей сидя'),E('Тяга гантели в упор'),E('Жим ногами',3,12),E('Планка, сек')]},
-   {name:'День C',focus:'',ex:[E('Гакк-присед',3,10),E('Жим гантелей на наклонной',3,10),E('Тяга нижнего блока'),E('Сгибания гантелей стоя',3,12),E('Разгибания с канатом'),E('Эллипс',20)]}]},
+   {name:'Всё тело · присед и жим',focus:'',ex:[E('Присед',3,8),E('Жим лёжа',3,8),E('Тяга верхнего блока'),E('Махи в стороны'),E('Скручивания'),E('Беговая дорожка',15)]},
+   {name:'Всё тело · тяга и жим ногами',focus:'',ex:[E('Румынская тяга'),E('Жим гантелей сидя'),E('Тяга гантели в упор'),E('Жим ногами',3,12),E('Планка, сек')]},
+   {name:'Всё тело · гакк и наклонная',focus:'',ex:[E('Гакк-присед',3,10),E('Жим гантелей на наклонной',3,10),E('Тяга нижнего блока'),E('Сгибания гантелей стоя',3,12),E('Разгибания с канатом'),E('Эллипс',20)]}]},
  {id:'b3',name:'Верх / Низ',sub:'средний уровень',days:()=>[
-   {name:'Верх 1',focus:'Силовой',ex:[E('Жим лёжа',4,6),E('Тяга штанги в наклоне',4,8),E('Жим стоя'),E('Подтягивания'),E('Сгибания EZ-штанги'),E('Французский жим')]},
-   {name:'Низ 1',focus:'Силовой',ex:[E('Присед',4,6),E('Румынская тяга'),E('Выпады в ходьбе'),E('Сгибания ног',3,12),E('Подъём на носки')]},
-   {name:'Верх 2',focus:'Объёмный',ex:[E('Жим гантелей на наклонной',4,10),E('Тяга верхнего блока',4,10),E('Махи в стороны',4,15),E('Тяга с упором в грудь',3,12),E('Молотки',3,12),E('Разгибания с канатом')]},
-   {name:'Низ 2',focus:'Объёмный',ex:[E('Жим ногами',4,12),E('Ягодичный мост',4,10),E('Болгарские выпады'),E('Разгибания ног',3,15),E('Подъём на носки сидя'),E('Подъём ног в висе')]}]}];
-const cloneDays=ds=>ds.map(d=>({id:uid('d'),name:d.name,focus:d.focus||'',ex:d.ex.map(x=>({...x,id:uid('x')}))}));
+   {name:'Верх · силовая',focus:'',ex:[E('Жим лёжа',4,6),E('Тяга штанги в наклоне',4,8),E('Жим стоя'),E('Подтягивания'),E('Сгибания EZ-штанги'),E('Французский жим')]},
+   {name:'Ноги · силовая',focus:'',ex:[E('Присед',4,6),E('Румынская тяга'),E('Выпады в ходьбе'),E('Сгибания ног',3,12),E('Подъём на носки')]},
+   {name:'Верх · объёмная',focus:'',ex:[E('Жим гантелей на наклонной',4,10),E('Тяга верхнего блока',4,10),E('Махи в стороны',4,15),E('Тяга с упором в грудь',3,12),E('Молотки',3,12),E('Разгибания с канатом')]},
+   {name:'Ноги · объёмная',focus:'',ex:[E('Жим ногами',4,12),E('Ягодичный мост',4,10),E('Болгарские выпады'),E('Разгибания ног',3,15),E('Подъём на носки сидя'),E('Подъём ног в висе')]}]}];
+const cloneDays=ds=>ds.map(d=>({id:uid('d'),name:d.name,focus:d.focus||'',ex:d.ex.map(x=>({...x,id:uid('x')})),...(d.wd?{wd:d.wd.slice()}:{})}));
 const BASEW={'Подтягивания':0,'Тяга штанги в наклоне':60,'Тяга верхнего блока':55,'Сгибания на бицепс':14,'Жим лёжа':80,[PASS]:92.5,'Жим гантелей на наклонной':28,'Жим стоя':45,'Разгибания на трицепс':25,'Присед':100,'Румынская тяга':90,'Сгибания ног':40,'Подъём на носки':60,'Махи в стороны':10};
 const grpOf=n=>/верх/i.test(n)?'Грудь':/тяни|спин/i.test(n)?'Спина':/толкай|груд/i.test(n)?'Грудь':/ног|низ/i.test(n)?'Квадрицепс':/плеч/i.test(n)?'Дельты':/рук|бицеп/i.test(n)?'Бицепс':/кардио/i.test(n)?CARDIO:'Грудь';
 const kindOf=x=>/подтягива/i.test(x.name)&&!/гравитрон/i.test(x.name)?'band':x.name==='Сгибания на бицепс'?'bench':null;
@@ -664,6 +687,7 @@ root(page){const r=who().role;
   else({dash:aDash,trainers:aTrainers,support:aSupport})[curTab()](page)},
 client(page,p){clientCard(page,C(p.id))},
 logwo(page,p){scrLogWo(page,p)},
+wedit(page,p){scrWEdit(page,p)},
 trainer(page,p){aTrainer(page,Tr(p.id))}};
 
 function roleSheet(){if(LIVE){sheet('Режим',(b,close)=>{const it=(m,t,s2)=>h('button',{className:'li',onclick:async()=>{close();if(m===MODE)return;MODE=m;try{localStorage.setItem(MODEK,m)}catch(e){}AS=null;UI.tab={};UI.phl={};$('#tabs').replaceChildren();$('#app').replaceChildren(loaderPage());try{await reloadMe()}catch(er){toast(er.message)}startUI()}},h('div',{className:'f1'},h('div',{className:'t'},t+(MODE===m?'  ✓':'')),h('div',{className:'s'},s2)),ic('chev'));
@@ -750,7 +774,7 @@ function endTour(silent){const T=TS;if(!T)return;TS=null;clearTimeout(tourPoll);
   syncBack()}
 const FAQ={
   trainer:[['Как добавить клиента?','«Клиенты» → «Пригласить» → «Отправить» → выберите клиента в Telegram. Клиент откроет ссылку, заполнит короткую анкету и появится у вас в списке.'],
-    ['Как составить программу?','Откройте клиента → вкладка «Программа». Добавьте дни и упражнения из каталога или возьмите готовый шаблон. Свою программу можно сохранить как шаблон.'],
+    ['Как составить программу?','Откройте клиента → «Программа». Нажмите на день недели (Пн, Ср…) и добавьте упражнения или поставьте свой шаблон. Изменить один конкретный день — «По датам».'],['Как создать свой шаблон тренировки?','«Кабинет» → «Мои шаблоны» → «+ Создать»: название и упражнения. Потом в программе клиента нажмите на день → «Мои шаблоны».'],
     ['Как отметить тренировку за клиента?','Откройте клиента → «Программа» → «Отметить тренировку за клиента». Отмечайте подходы или целое упражнение. Нажали «Завершить» без отметок — всё засчитается как выполненное.'],
     ['Как поставить норму калорий и шагов?','Откройте клиента → «Анкета» → «Изменить планки».'],
     ['Что значит красная точка у клиента?','Клиенту нужно внимание: не внёс данные, пропустил тренировку или вес идёт не туда. Список — во вкладке «Внимание».'],
@@ -1012,7 +1036,7 @@ const dkey=(c,tr)=>c.id+(tr?'_t':'');
 const loadDraft=id=>{try{return JSON.parse(localStorage.getItem(DRK+id)||'null')}catch(e){return null}};
 const saveDraft=(id,w)=>{try{localStorage.setItem(DRK+id,JSON.stringify(w))}catch(e){}};
 function lastOf(c,name){const L=DB.logs[c.id]||[];for(let i=L.length-1;i>=0;i--){const x=L[i].items.find(it=>it.name===name);if(x)return x}return null}
-function newDraft(c,day){const W={dayId:day.id,date:TODAY(),ex:day.ex.map(x=>({...x})),sets:{},opts:{},note:''};W.ex.forEach(x=>initSets(c,W,x));return W}
+function newDraft(c,day,date){const W={dayId:day.id,name:wName(day),focus:day.focus||'',date:date||TODAY(),ex:day.ex.map(x=>({...x})),sets:{},opts:{},note:''};W.ex.forEach(x=>initSets(c,W,x));return W}
 function initSets(c,W,x){const l=lastOf(c,x.name);
   if(x.cardio){const ls=l&&l.sets[0];W.sets[x.id]=[{min:ls?ls.min:x.min,km:'',lvl:ls&&ls.lvl||'',ok:false}];return}
   W.sets[x.id]=Array.from({length:x.sets},(_,k)=>{const ls=l&&(l.sets[k]||l.sets[0]);return{w:ls&&ls.w!=null?ls.w:'',r:ls&&ls.r!=null?ls.r:x.reps,f:'',ok:false}});W.opts[x.id]=l&&l.opt!=null?l.opt:(kindOf(x)==='bench'?'скамья 45°':'')}
@@ -1023,18 +1047,42 @@ function cWorkout(page,c){const k='wo'+c.id,cur=UI.seg[k]||'now';
 /* тренер отмечает тренировку за клиента */
 function scrLogWo(page,p){const c=C(p.id);if(!c){page.append(hdr('Клиент не найден'));return}
   page.append(hdr('Тренировка за клиента',c.name));const body=h('div');page.append(body);workoutLogger(c,body,true)}
-/* общий журнал тренировки: клиент сам или тренер за клиента */
+/* общий журнал тренировки: клиент сам или тренер за клиента. Сверху — неделя по датам, тренировка подставляется по расписанию */
 function workoutLogger(c,body,tr){
-  const P=DB.prog[c.id]||[];if(!P.length){body.append(card(2,h('div',{className:'empty'},tr?'У клиента нет программы — сначала соберите её во вкладке «Программа».':'Тренер ещё не составил программу. Как только он это сделает, она появится здесь.')));return}
-  const key=dkey(c,tr);let W=loadDraft(key);if(!W||!P.find(d=>d.id===W.dayId)){W=newDraft(c,P[0]);saveDraft(key,W)}W.date=W.date||TODAY();const day=P.find(d=>d.id===W.dayId);const sv=()=>saveDraft(key,W);
-  const started=Object.values(W.sets).some(a=>a.some(s=>s.ok));
-  body.append(h('div',{className:'hs st',style:'--i:2;margin-bottom:10px'},P.map(d=>h('button',{className:'chip'+(d.id===W.dayId?' on':''),onclick:()=>{if(d.id===W.dayId)return;const sw=()=>{const nw=newDraft(c,d);nw.date=W.date;saveDraft(key,nw);hapSel();UI.fx=1;refresh()};started?ask('Начать другой день? Отмеченные подходы сбросятся.',sw):sw()}},d.name))));
-  if(day.focus)body.append(h('div',{className:'mu st',style:'--i:2;margin:-2px 0 10px'},day.focus));
-  const dt=h('input',{type:'date',value:W.date,max:TODAY(),style:'width:auto',onchange:e=>{W.date=e.target.value||TODAY();sv()}});
+  const P=progOf(c),key=dkey(c,tr),T=TODAY();UI.wsel=UI.wsel||{};UI.wws=UI.wws||{};
+  const started=w=>!!w&&Object.values(w.sets||{}).some(a=>a.some(s=>s.ok));
+  let W=loadDraft(key);if(W&&(!W.date||W.date>T))W=null;
+  if(W&&!W.name){const o=P.find(d=>d.id===W.dayId);W.name=o?wName(o):'Тренировка'}
+  const sel=UI.wsel[key]||(W?W.date:T);
+  if(W&&!started(W)&&(W.date!==sel||(W.dayId!=='free'&&W.dayId!=='pick'&&!P.find(d=>d.id===W.dayId))))W=null;
+  if(W&&W.date!==sel)W=null;
+  const plan=progFor(c,sel);if(!W&&sel<=T&&plan){W=newDraft(c,plan,sel);saveDraft(key,W)}
+  const sv=()=>saveDraft(key,W);
+  const ws=UI.wws[key]||add(sel,-wdi(sel)),LD=new Set((DB.logs[c.id]||[]).map(l=>l.date));
+  const choose=d=>{if(d===sel)return;const sw=()=>{UI.wsel[key]=d;if(W&&W.date!==d)localStorage.removeItem(DRK+key);hapSel();UI.fx=1;refresh()};started(W)&&W.date!==d?ask('Перейти на другой день? Отмеченные подходы сбросятся.',sw,{ok:'Перейти'}):sw()};
+  const mvw=n=>{UI.wws[key]=add(ws,n*7);hapSel();UI.fx=1;refresh()};
+  body.append(h('div',{className:'wstrip st',style:'--i:2'},h('button',{className:'wsa',onclick:()=>mvw(-1)},ic('back')),
+    ...Array.from({length:7},(_,j)=>{const d=add(ws,j);return h('button',{className:'wsd'+(d===sel?' on':'')+(d===T?' today':'')+(d>T?' fut':''),onclick:()=>choose(d)},h('span',{},WD[j]),h('b',{},pd(d).getDate()),LD.has(d)?h('i',{className:'ok'},'✓'):progFor(c,d)?h('i',{className:'dot'}):h('i'))}),
+    h('button',{className:'wsa',onclick:()=>mvw(1)},ic('chev'))));
+  const dl=sel===T?'Сегодня, '+fmtD(sel):cap(WDL[wdi(sel)])+', '+fmtD(sel);
+  body.append(h('div',{className:'whead st',style:'--i:2'},h('div',{className:'lb'},dl),h('div',{className:'wt'},W?W.name:plan?wName(plan):'Отдых'),(W?W.focus:plan&&plan.focus)?h('div',{className:'mu',style:'margin-top:2px'},W?W.focus:plan.focus):null,
+    LD.has(sel)?h('div',{className:'okline'},'✓ Тренировка за этот день уже записана'+(tr?' — смотрите историю ниже':' — смотрите «Историю»')):null));
+  if(sel>T){body.append(plan?card(3,h('div',{className:'lb'},'План'),plan.ex.map(x=>h('div',{className:'row',style:'padding:9px 0;border-top:1px solid var(--bd)'},h('span',{className:'f1'},(x.cardio?'🏃 ':'')+x.name),h('span',{className:'mu'},exPlan(x)))),h('div',{className:'mu',style:'font-size:12.5px;margin-top:10px'},'Отметить подходы можно в день тренировки.'))
+    :card(3,h('div',{className:'empty'},'На этот день тренировка не назначена.')));return}
+  if(!W){const pickW=()=>{const list=P.filter(d=>!d.rest&&d.ex.length),wt=tr?wTpls(c.trainerId):[];if(!list.length&&!wt.length){toast('В программе пока нет тренировок');return}
+      sheet('Какую тренировку делаем?',(b,close)=>{const row=(d,s)=>h('button',{className:'li',onclick:()=>{close();W=newDraft(c,d,sel);W.dayId=P.includes(d)?d.id:'pick';saveDraft(key,W);UI.wsel[key]=sel;hapSel();setTimeout(()=>{UI.fx=1;refresh()},220)}},h('div',{className:'f1'},h('div',{className:'t'},wName(d)),h('div',{className:'s'},s)),ic('chev'));
+        if(list.length)b.append(h('div',{className:'lb'},'Из программы'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},list.map(d=>row(d,wWhen(d)+' · '+wMeta(d)))));
+        if(wt.length)b.append(h('div',{className:'lb mt2'},'Мои шаблоны'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},wt.map(d=>row(d,wMeta(d)))))})};
+    const free=()=>{W={dayId:'free',name:'Свободная тренировка',focus:'',date:sel,ex:[],sets:{},opts:{},note:''};saveDraft(key,W);UI.wsel[key]=sel;hapSel();UI.fx=1;refresh();
+      setTimeout(()=>pickEx({g:'Грудь',multi:1,tid:c.trainerId},arr=>{arr.forEach(n=>{W.ex.push(n);initSets(c,W,n)});saveDraft(key,W);UI.fx=1;refresh()}),400)};
+    body.append(card(3,h('div',{className:'empty',style:'padding-bottom:12px'},P.length?'На этот день тренировка не назначена. Можно сделать любую из программы или свободную.':(tr?'Программы пока нет — соберите её во вкладке «Программа» или запишите свободную тренировку.':'Тренер ещё не составил программу. Можно записать свободную тренировку.')),
+      h('div',{className:'g2'},h('button',{className:'btn',disabled:!P.some(d=>!d.rest&&d.ex.length)&&!(tr&&wTpls(c.trainerId).length),onclick:pickW},'Выбрать'),h('button',{className:'btn ghost',onclick:free},'Свободная'))));return}
+  const day={name:W.name};
+  const started_=started(W);
   const rs=h('select',{style:'width:auto',onchange:e=>{localStorage.setItem(RSK,e.target.value)}},[60,90,120,150,180,240,300].map(v=>h('option',{value:v,selected:v===restSec()},'отдых '+v/60+' мин')));
-  body.append(h('div',{className:'row wrap st',style:'--i:2;margin-bottom:6px'},h('span',{className:'mu'},'Дата'),dt,tr?null:rs));
-  body.append(h('div',{className:'mu st',style:'--i:2;margin-bottom:10px;font-size:12.5px'},tr?'Отметьте, что клиент сделал. Можно ничего не отмечать и нажать «Завершить» — тренировка запишется по плану, веса допишете позже.':(started?'Черновик сохраняется автоматически':'Отмечайте подходы галочкой. Не успели — просто нажмите «Завершить», всё запишется по плану.')));
-  const pk={g:grpOf(day.name),tid:c.trainerId};
+  if(!tr)body.append(h('div',{className:'row wrap st',style:'--i:2;margin-bottom:6px;justify-content:flex-end'},rs));
+  body.append(h('div',{className:'mu st',style:'--i:2;margin-bottom:10px;font-size:12.5px'},tr?'Отметьте, что клиент сделал. Можно ничего не отмечать и нажать «Завершить» — тренировка запишется по плану, веса допишете позже.':(started_?'Черновик сохраняется автоматически':'Отмечайте подходы галочкой. Не успели — просто нажмите «Завершить», всё запишется по плану.')));
+  const pk={g:(W.ex.find(x=>!x.cardio)||{}).mg||'Грудь',tid:c.trainerId};
   W.ex.forEach((x,i)=>{const l=lastOf(c,x.name),dr=W.sets[x.id]||(initSets(c,W,x),W.sets[x.id]),kd=kindOf(x);
     const allOk=dr.length&&dr.every(s=>s.ok);
     const box=h('div',{className:'card ex st',style:'--i:'+(3+i)},
@@ -1196,38 +1244,136 @@ function clientCard(page,c){if(!c){page.append(hdr('Клиент не найде
   if(cur==='train')trainView(c,body);
   if(cur==='info'){body.append(card(2,h('h3',{},'Анкета'),anketa(c)),card(3,h('h3',{},'Планки'),...[...c.targets].reverse().map(t=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{className:'mu'},'с '+fmtD(t.from)),h('span',{},`К ${fmtN(t.k)} · Б ${fmtN(t.p)} · Ш ${fmtN(t.s)}`))),h('button',{className:'btn ghost mt',onclick:()=>targetsSheet(c)},'Изменить планки')),
     card(4,h('h3',{},'Отключить клиента'),h('div',{className:'mu',style:'margin:4px 0 10px'},'Клиент пропадёт из списка, история останется у него. Место в тарифе освободится со следующего оплаченного месяца.'),h('button',{className:'btn ghost',onclick:()=>ask('Отключить '+c.name+'?',()=>{if(!canWrite())return;const l=c.links.find(x=>x.t===c.trainerId&&!x.to);if(l)l.to=TODAY();c.trainerId=null;if(LIVE)bg(api('disconnect',{client_id:c.id}));else persist();toast('Клиент отключён');back()})},'Отключить')))}}
-function trainView(c,body){const P=DB.prog[c.id]||(DB.prog[c.id]=[]);const sv=()=>S.prog(c.id);const tid=c.trainerId;
+/* ===== программа: тренировки по дням недели и разовые на даты ===== */
+const WDA=['понедельник','вторник','среду','четверг','пятницу','субботу','воскресенье'],WDP=['понедельникам','вторникам','средам','четвергам','пятницам','субботам','воскресеньям'];
+const MONN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+/* старые программы («День 1», «Верх 1»…) без дней недели раскладываем по неделе: 3 тренировки → Пн, Ср, Пт */
+function normProg(P){const loose=P.filter(d=>!d.date&&!(d.wd&&d.wd.length));if(!loose.length)return P;
+  const used=new Set(P.flatMap(d=>d.date?[]:(d.wd||[]))),free=[0,1,2,3,4,5,6].filter(i=>!used.has(i));
+  loose.forEach((d,i)=>{d.wd=i<free.length?[free[Math.floor(i*free.length/Math.min(loose.length,free.length))]]:[]});return P}
+const progOf=c=>normProg(DB.prog[c.id]||(DB.prog[c.id]=[]));
+const progFor=(c,d)=>{const P=progOf(c),x=P.find(z=>z.date===d);if(x)return x.rest?null:x;return P.find(z=>!z.date&&(z.wd||[]).includes(wdi(d)))||null};
+const exGroups=d=>[...new Set((d.ex||[]).filter(x=>!x.cardio&&x.mg).map(x=>gLabel(x.mg)))];
+const wName=d=>(d.name||'').trim()||exGroups(d).slice(0,3).join(', ')||((d.ex||[]).some(x=>x.cardio)?'Кардио':'Тренировка');
+const wMeta=d=>{const n=(d.ex||[]).length,g=exGroups(d);return n?n+' упр.'+((d.name||'').trim()&&g.length?' · '+g.slice(0,3).join(', '):''):'упражнений пока нет'};
+const wWhen=d=>d.date?cap(WDL[wdi(d.date)])+', '+fmtD(d.date):(d.wd&&d.wd.length?'по '+d.wd.slice().sort().map(i=>WDP[i]).join(', '):'без дня');
+const wTpls=tid=>((DB.tpl&&DB.tpl[tid])||[]).filter(x=>x.kind==='w');
+const pTpls=tid=>((DB.tpl&&DB.tpl[tid])||[]).filter(x=>x.days);
+const cloneW=(d,extra)=>({id:uid('d'),name:d.name||'',focus:d.focus||'',ex:(d.ex||[]).map(x=>({...x,id:uid('x')})),...extra});
+const BUILTIN_W=()=>BUILTIN.flatMap(b=>b.days().map(d=>({...d,sub:b.name})));
+
+function trainView(c,body){const P=progOf(c),tid=c.trainerId;
   const dw=deloadWeeks(c);body.append(card(2,h('div',{className:'row'},h('div',{className:'f1'},h('h3',{},'Разгрузка'),h('div',{className:dw>=6?'bad':'mu',style:'font-size:13px;margin-top:2px'},`Прошло ${dw} нед. ${(DB.deload[c.id]||[]).length?'с последней разгрузки':'с начала работы'}`)),h('button',{className:'btn sm ghost',onclick:()=>{if(!canWrite())return;(DB.deload[c.id]=DB.deload[c.id]||[]).push(TODAY());S.put(c.id,'deload',DB.deload[c.id]);hapOk();refresh()}},'Отметить сегодня'))));
-  body.append(h('button',{className:'btn st',style:'--i:2','data-tour':'logwo',onclick:()=>{if(!canWrite())return;if(!P.length){hapErr();toast('Сначала добавьте упражнения в программу ниже');return}go('logwo',{id:c.id})}},ic('dumb'),'Отметить тренировку за клиента'));
-  body.append(h('div',{className:'row st wrap',style:'--i:3;margin:16px 0 8px'},h('h3',{className:'f1'},'Программа'),h('button',{className:'chip',onclick:()=>tplSheet(c)},'📋 Шаблоны'),P.length?h('button',{className:'chip',onclick:()=>saveTpl(c)},'Сохранить как шаблон'):null));
-  if(!P.length)body.append(card(3,h('div',{className:'empty',style:'padding-bottom:12px'},'Программы ещё нет. Возьмите готовую, скопируйте у другого клиента или соберите с нуля.'),h('div',{className:'g2'},h('button',{className:'btn',onclick:()=>tplSheet(c)},'Выбрать шаблон'),h('button',{className:'btn ghost',onclick:()=>{if(!canWrite())return;P.push({id:uid('d'),name:'День 1',focus:'',ex:[]});sv();refresh()}},'С нуля'))));
-  const mini='width:46px;text-align:center;padding:7px 4px';
-  P.forEach((d,di)=>{const nm=h('input',{value:d.name,style:'font-weight:600',onchange:e=>{if(!canWrite())return;d.name=e.target.value;sv()}}),fo=h('input',{value:d.focus||'',placeholder:'Акцент дня (видит клиент)',style:'margin-top:6px',onchange:e=>{d.focus=e.target.value;sv()}});
-    const cd=card(4+di,h('div',{className:'row'},nm,h('button',{className:'ib',onclick:()=>{if(di&&canWrite()){[P[di-1],P[di]]=[P[di],P[di-1]];sv();refresh()}}},'↑'),h('button',{className:'ib',onclick:()=>ask('Удалить «'+d.name+'»?',()=>{if(!canWrite())return;P.splice(di,1);sv();refresh()})},ic('x'))),fo);
-    if(!d.ex.length)cd.append(h('div',{className:'mu',style:'margin-top:10px'},'Упражнений пока нет'));
-    d.ex.forEach((x,xi)=>{const num=(k,min)=>h('input',{type:'number',value:x[k],style:mini,onchange:e=>{x[k]=Math.max(min,+e.target.value||min);sv()}});
-      const nt=h('input',{value:x.note||'',placeholder:x.cardio?'Пульс, наклон, скорость…':'Заметка для клиента (техника, тренажёр…)',style:'font-size:13px;padding:7px 9px',onchange:e=>{x.note=e.target.value;sv()}});
-      cd.append(h('div',{className:'exrow'},h('div',{className:'row'},h('button',{className:'ib sm',onclick:()=>{if(xi&&canWrite()){[d.ex[xi-1],d.ex[xi]]=[d.ex[xi],d.ex[xi-1]];sv();refresh()}}},'↑'),
-        h('div',{className:'f1'},h('div',{},(x.cardio?'🏃 ':'')+x.name),h('div',{className:'mu',style:'font-size:12px'},gLabel(x.mg||''))),
-        ...(x.cardio?[num('min',1),h('span',{className:'mu'},'мин')]:[num('sets',1),h('span',{className:'mu'},'×'),num('reps',1)]),
-        h('button',{className:'chip sm',onclick:()=>{if(!canWrite())return;d.ex.splice(xi,1);sv();refresh()}},'✕')),h('div',{style:'margin-top:6px'},nt)))});
-    cd.append(h('button',{className:'chip mt',onclick:()=>pickEx({g:grpOf(d.name),multi:1,tid},arr=>{if(!canWrite())return;d.ex.push(...arr);sv();refresh();toast('Добавлено: '+arr.length)})},'+ упражнения и кардио'));body.append(cd)});
-  if(P.length){const nd=h('input',{placeholder:'Новый день, например «День 5 — Руки»'});body.append(h('div',{className:'row st',style:'--i:8'},nd,h('button',{className:'ib',onclick:()=>{if(!nd.value.trim()||!canWrite())return;P.push({id:uid('d'),name:nd.value.trim(),focus:'',ex:[]});sv();refresh()}},ic('plus',2))))}
+  body.append(h('button',{className:'btn st',style:'--i:2','data-tour':'logwo',onclick:()=>{if(!canWrite())return;go('logwo',{id:c.id})}},ic('dumb'),'Отметить тренировку за клиента'));
+  body.append(h('h3',{className:'st',style:'--i:3;margin:18px 0 8px;font-size:18px'},'Программа'),h('div',{className:'row st wrap',style:'--i:3;margin-bottom:10px;gap:8px'},h('button',{className:'chip',onclick:()=>tplSheet(c)},'📋 Шаблоны'),P.some(d=>!d.date)?h('button',{className:'chip',onclick:()=>saveTpl(c)},'Сохранить неделю как шаблон'):null));
+  const cur=UI.seg.pv||'week';body.append(h('div',{className:'st',style:'--i:3;margin-bottom:10px'},seg('pv',[['week','По дням недели'],['dates','По датам']],cur,v=>{UI.seg.pv=v;refresh()},'sm')));
+  if(cur==='week')weekPlan(c,body);else datePlan(c,body);
   body.append(h('div',{className:'mt2'},volCard(c)));
   body.append(h('h3',{style:'margin:16px 0 8px'},'История тренировок'));histView(c,body)}
-/* шаблоны: готовые, свои и программы других клиентов */
-function tplSheet(c){const tid=c.trainerId,mine=(DB.tpl&&DB.tpl[tid])||[],others=myClients(tid).filter(x=>x.id!==c.id&&(DB.prog[x.id]||[]).length);
-  const meta=ds=>ds.length+' '+plural(ds.length,['день','дня','дней'])+' · '+ds.reduce((a,d)=>a+d.ex.length,0)+' упр.';
-  sheet('Шаблоны программ',(b,close)=>{const it=(t,s,get,del)=>h('div',{className:'row',style:'border-top:1px solid var(--bd)'},h('button',{className:'li',style:'border:0',onclick:()=>{close();setTimeout(()=>applyTpl(c,get(),t),250)}},h('div',{className:'f1'},h('div',{className:'t'},t),h('div',{className:'s'},s)),ic('chev')),del?h('button',{className:'chip sm',onclick:del},'✕'):null);
-    b.append(h('div',{className:'lb'},'Готовые'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},BUILTIN.map(x=>{const ds=x.days();return it(x.name,x.sub+' · '+meta(ds),()=>ds)})));
-    b.append(h('div',{className:'lb mt2'},'Мои шаблоны'),mine.length?h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},mine.map(x=>it(x.name,meta(x.days),()=>x.days,()=>ask('Удалить шаблон «'+x.name+'»?',()=>{if(!canWrite())return;DB.tpl[tid]=mine.filter(z=>z!==x);S.tdel('tpl:'+x.id);close();tplSheet(c)})))):h('div',{className:'mu',style:'margin:6px 0 4px'},'Пока пусто. Соберите программу клиенту и нажмите «Сохранить как шаблон».'));
-    if(others.length)b.append(h('div',{className:'lb mt2'},'Скопировать у клиента'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},others.map(x=>it(x.name,meta(DB.prog[x.id]),()=>DB.prog[x.id]))))})}
-function applyTpl(c,ds,name){if(!canWrite())return;const P=DB.prog[c.id]||(DB.prog[c.id]=[]);
-  const done=mode=>{const nd=cloneDays(ds);if(mode==='replace')DB.prog[c.id]=nd;else P.push(...nd);S.prog(c.id);hapOk();UI.fx=1;refresh();toast('Программа «'+name+'» добавлена')};
-  if(!P.length)return done('replace');
-  sheet('«'+name+'»',(b,close)=>b.append(h('div',{className:'mu',style:'margin:-6px 0 14px'},'У клиента уже есть программа. Что сделать?'),h('button',{className:'btn',onclick:()=>{close();done('replace')}},'Заменить текущую'),h('button',{className:'btn ghost mt',onclick:()=>{close();done('append')}},'Добавить дни к текущей')))}
-function saveTpl(c){const tid=c.trainerId;sheet('Сохранить как шаблон',(b,close)=>{const n=h('input',{value:'Программа · '+c.name.split(' ')[0]});
-  b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Шаблон появится в «Мои шаблоны» — его можно выдать любому клиенту в пару нажатий.'),n,h('button',{className:'btn mt',onclick:()=>{if(!n.value.trim()||!canWrite())return;DB.tpl=DB.tpl||{};const tp={id:uid('tp'),name:n.value.trim(),days:cloneDays(DB.prog[c.id]||[])};(DB.tpl[tid]=DB.tpl[tid]||[]).push(tp);S.tput('tpl:'+tp.id,{name:tp.name,days:tp.days});hapOk();close();toast('Шаблон сохранён')}},'Сохранить'))})}
+function weekPlan(c,body){const P=progOf(c),T=TODAY();
+  const cd=card(4);cd.style.padding='2px 14px';
+  for(let i=0;i<7;i++){const d=P.find(x=>!x.date&&(x.wd||[]).includes(i));
+    cd.append(h('button',{className:'wrow'+(d?'':' rest'),onclick:()=>{if(!canWrite())return;d?go('wedit',{id:c.id,w:d.id}):addSheet(c,{wd:i})}},
+      h('div',{className:'wdl'+(wdi(T)===i?' now':'')},WD[i]),
+      h('div',{className:'f1'},d?h('div',{className:'t'},wName(d)):null,h('div',{className:'s'},d?wMeta(d)+(d.wd.length>1?' · также '+d.wd.filter(j=>j!==i).map(j=>WD[j]).join(', '):''):'Отдых — нажмите, чтобы добавить')),
+      d?ic('chev'):h('span',{className:'plus'},'+')))}
+  body.append(cd);
+  if(!P.length)body.append(h('div',{className:'mu st',style:'--i:5;font-size:13px;margin:8px 2px 0'},'Нажмите на день недели и добавьте упражнения — или возьмите готовую программу в «Шаблоны».'));
+  const loose=P.filter(d=>!d.date&&!(d.wd||[]).length),dated=P.filter(d=>d.date&&!d.rest&&d.date>=T).sort((a,b)=>a.date<b.date?-1:1);
+  if(loose.length)body.append(card(5,h('div',{className:'lb'},'Без дня недели'),loose.map(d=>h('button',{className:'li',onclick:()=>go('wedit',{id:c.id,w:d.id})},h('div',{className:'f1'},h('div',{className:'t'},wName(d)),h('div',{className:'s'},wMeta(d))),ic('chev')))));
+  if(dated.length)body.append(card(5,h('div',{className:'lb'},'Разовые тренировки на даты'),dated.map(d=>h('button',{className:'li',onclick:()=>go('wedit',{id:c.id,w:d.id})},h('div',{className:'f1'},h('div',{className:'t'},wName(d)),h('div',{className:'s'},cap(WDL[wdi(d.date)])+', '+fmtD(d.date))),ic('chev')))))}
+function datePlan(c,body){const P=progOf(c),T=TODAY(),m0=UI.pm||T.slice(0,8)+'01',d0=pd(m0),y=d0.getFullYear(),mo=d0.getMonth(),dim=new Date(y,mo+1,0).getDate();
+  const L=new Set((DB.logs[c.id]||[]).map(l=>l.date)),mv=n=>{UI.pm=ds(new Date(y,mo+n,1));hapSel();UI.fx=1;refresh()};
+  const grid=h('div',{className:'pcal'},WD.map(w=>h('div',{className:'wh'},w)));for(let i=0;i<wdi(m0);i++)grid.append(h('div'));
+  for(let k=1;k<=dim;k++){const d=ds(new Date(y,mo,k)),x=P.find(z=>z.date===d),w=progFor(c,d);
+    grid.append(h('button',{className:'cd'+(d===T?' today':'')+(d<T?' past':''),onclick:()=>dateSheet(c,d)},h('b',{},k),L.has(d)?h('i',{className:'ok'},'✓'):x&&x.rest?h('i',{className:'rst'},'–'):w?h('i',{className:x?'own':'dot'}):h('i')))}
+  body.append(card(4,h('div',{className:'row',style:'margin-bottom:10px'},h('button',{className:'ib sm',onclick:()=>mv(-1)},ic('back')),h('b',{className:'f1 c'},MONN[mo]+' '+y),h('button',{className:'ib sm',onclick:()=>mv(1)},ic('chev'))),grid,
+    h('div',{className:'pleg'},h('span',{},h('i',{className:'dot'}),'по дню недели'),h('span',{},h('i',{className:'own'}),'на эту дату'),h('span',{},h('i',{className:'ok'},'✓'),'выполнена'))));
+  body.append(h('div',{className:'mu st',style:'--i:5;font-size:13px;margin:8px 2px 0'},'Нажмите на дату: назначить тренировку, изменить её только на этот день или сделать днём отдыха.'))}
+function dateSheet(c,date){const P=progOf(c),x=P.find(z=>z.date===date),base=P.find(z=>!z.date&&(z.wd||[]).includes(wdi(date)));
+  sheet(cap(WDL[wdi(date)])+', '+fmtD(date),(b,close)=>{const go2=f=>()=>{if(!canWrite())return;close();setTimeout(f,260)};
+    const info=(lb,d)=>h('div',{className:'card',style:'margin:0 0 12px'},h('div',{className:'lb'},lb),h('div',{style:'font-size:17px;font-weight:600;margin-top:4px'},wName(d)),h('div',{className:'mu',style:'margin-top:2px'},wMeta(d)));
+    const done=()=>{S.prog(c.id);hapOk();UI.fx=1;refresh()};
+    if(x&&!x.rest)b.append(info('Разовая тренировка на эту дату',x),h('button',{className:'btn',onclick:go2(()=>go('wedit',{id:c.id,w:x.id}))},'Открыть и изменить'),h('button',{className:'btn ghost mt',onclick:go2(()=>{P.splice(P.indexOf(x),1);done();toast(base?'Вернули по расписанию':'Удалено')})},base?'Вернуть как по '+WDP[wdi(date)]:'Удалить тренировку'));
+    else if(x&&x.rest)b.append(h('div',{className:'mu',style:'margin:-4px 0 14px'},'День отдыха'+(base?' вместо «'+wName(base)+'»':'')+'.'),h('button',{className:'btn',onclick:go2(()=>{P.splice(P.indexOf(x),1);done()})},'Вернуть тренировку'),h('button',{className:'btn ghost mt',onclick:go2(()=>{P.splice(P.indexOf(x),1);addSheet(c,{date})})},'Назначить другую'));
+    else if(base)b.append(info('По расписанию — каждый '+WD[wdi(date)],base),
+      h('button',{className:'btn',onclick:go2(()=>{const n=cloneW(base,{date});P.push(n);S.prog(c.id);go('wedit',{id:c.id,w:n.id})})},'Изменить только на эту дату'),
+      h('button',{className:'btn ghost mt',onclick:go2(()=>go('wedit',{id:c.id,w:base.id}))},'Изменить для всех — по '+WDP[wdi(date)]),
+      h('button',{className:'btn ghost mt',onclick:go2(()=>{P.push({id:uid('d'),date,rest:1,ex:[]});done();toast('Отмечен день отдыха')})},'Сделать днём отдыха'));
+    else b.append(h('div',{className:'mu',style:'margin:-4px 0 14px'},'Тренировка на этот день не назначена.'),h('button',{className:'btn',onclick:go2(()=>addSheet(c,{date}))},ic('plus'),'Назначить тренировку'))})}
+/* добавить тренировку на день недели или дату: новая, из шаблона, как в другой день, готовая */
+function addSheet(c,when){const tid=c.trainerId,P=progOf(c);
+  sheet('Тренировка на '+(when.date?fmtD(when.date):WDA[when.wd]),(b,close)=>{
+    const put=src=>{if(!canWrite())return;if(when.date)DB.prog[c.id]=progOf(c).filter(z=>z.date!==when.date);const d=src?cloneW(src,{}):{id:uid('d'),name:'',focus:'',ex:[]};if(when.date)d.date=when.date;else d.wd=[when.wd];
+      DB.prog[c.id].push(d);S.prog(c.id);hapOk();close();setTimeout(()=>go('wedit',{id:c.id,w:d.id,add:src?0:1}),260)};
+    const row=(t,s,f)=>h('button',{className:'li',onclick:f},h('div',{className:'f1'},h('div',{className:'t'},t),h('div',{className:'s'},s)),ic('chev'));
+    b.append(h('button',{className:'role',style:'margin-top:0',onclick:()=>put(null)},h('div',{className:'ic'},ic('plus')),h('div',{className:'f1'},h('b',{},'Новая тренировка'),h('div',{className:'mu'},'выберите упражнения из базы')),ic('chev')));
+    const mine=wTpls(tid);if(mine.length)b.append(h('div',{className:'lb',style:'margin:16px 0 6px'},'Мои шаблоны'),h('div',{className:'card',style:'padding:0 14px'},mine.map(t=>row(wName(t),wMeta(t),()=>put(t)))));
+    const same=P.filter(d=>!d.date&&!d.rest&&!(when.wd!=null&&(d.wd||[]).includes(when.wd)));
+    if(same.length)b.append(h('div',{className:'lb',style:'margin:16px 0 6px'},'Как в другой день'),h('div',{className:'card',style:'padding:0 14px'},same.map(d=>row(wName(d),wWhen(d)+' · '+wMeta(d),()=>{
+      if(when.date)return put(d);if(!canWrite())return;d.wd=[...d.wd,when.wd].sort();S.prog(c.id);hapOk();close();UI.fx=1;refresh();toast('«'+wName(d)+'» теперь и по '+WDP[when.wd])}))));
+    b.append(h('details',{className:'faq',style:'margin-top:10px'},h('summary',{},'Готовые тренировки',ic('chev')),h('div',{className:'card',style:'padding:0 14px'},BUILTIN_W().map(d=>row(wName(d),d.sub+' · '+wMeta(d),()=>put(d))))))})}
+/* редактор одной тренировки клиента или шаблона тренера */
+function scrWEdit(page,p){const isT=!!p.tpl;let d,c=null,save,tid;
+  if(isT){tid=who().id;d=wTpls(tid).find(x=>x.id===p.tpl);save=()=>{if(d)S.tput('tpl:'+d.id,{kind:'w',name:d.name||'',focus:d.focus||'',ex:d.ex})}}
+  else{c=C(p.id);tid=c&&c.trainerId;d=c&&progOf(c).find(x=>x.id===p.w);save=()=>S.prog(c.id)}
+  if(!d){page.append(hdr('Тренировка не найдена'),card(1,h('div',{className:'empty'},'Возможно, её удалили.')));return}
+  const P=c?progOf(c):null,re=()=>{UI.fx=1;refresh()};
+  page.append(hdr(isT?'Шаблон':wName(d),isT?'Шаблон тренировки · выдаётся любому клиенту':c.name+' · '+wWhen(d)));
+  if(!isT){if(d.date)page.append(card(1,h('div',{className:'lb'},'Дата'),h('input',{type:'date',value:d.date,style:'margin-top:6px',onchange:e=>{const v=e.target.value;if(!v||!canWrite()){e.target.value=d.date;return}
+        const o=P.find(z=>z!==d&&z.date===v);const doit=()=>{if(o)P.splice(P.indexOf(o),1);d.date=v;save();re()};o?ask('На '+fmtD(v)+' уже есть «'+(o.rest?'день отдыха':wName(o))+'». Заменить?',doit,{ok:'Заменить'}):doit()}}),
+      h('div',{className:'mu',style:'font-size:12.5px;margin-top:8px'},'Разовая тренировка: только в этот день, расписание по дням недели не меняется.')));
+    else page.append(card(1,h('div',{className:'lb'},'Дни недели'),h('div',{className:'wdp'},WD.map((w,i)=>{const on=(d.wd||[]).includes(i);return h('button',{className:'chip'+(on?' on':''),onclick:()=>{if(!canWrite())return;
+        if(on){if(d.wd.length===1){hapErr();toast('Нужен хотя бы один день. Удалить тренировку — внизу.');return}d.wd=d.wd.filter(j=>j!==i);save();hapSel();re();return}
+        const o=P.find(z=>z!==d&&!z.date&&(z.wd||[]).includes(i));const doit=()=>{if(o){o.wd=o.wd.filter(j=>j!==i);if(!o.wd.length)P.splice(P.indexOf(o),1)}d.wd=[...(d.wd||[]),i].sort();save();hapSel();re()};
+        o?ask('В '+WDA[i]+' уже «'+wName(o)+'». Поставить эту тренировку вместо неё?',doit,{ok:'Заменить'}):doit()}},w)})),
+      h('div',{className:'mu',style:'font-size:12.5px;margin-top:8px'},'Повторяется каждую неделю. Изменить один конкретный день — «Программа» → «По датам».')))}
+  page.append(card(2,h('div',{className:'lb'},'Название'),h('input',{value:d.name||'',placeholder:'Например: Грудь и трицепс',style:'margin-top:6px',onchange:e=>{if(!canWrite())return;d.name=e.target.value.trim();save();re()}}),
+    h('input',{value:d.focus||'',placeholder:'Комментарий для клиента (необязательно)',style:'margin-top:8px',onchange:e=>{if(!canWrite())return;d.focus=e.target.value;save()}}),
+    !(d.name||'').trim()?h('div',{className:'mu',style:'font-size:12.5px;margin-top:8px'},'Если оставить пустым — название будет по группам мышц.'):null));
+  const addEx=()=>pickEx({g:(d.ex.find(x=>!x.cardio)||{}).mg||'Грудь',multi:1,tid},arr=>{if(!canWrite())return;d.ex.push(...arr);save();re();toast('Добавлено: '+arr.length)});
+  const ec=card(3,h('div',{className:'row',style:'margin-bottom:4px'},h('h3',{className:'f1'},'Упражнения'),h('span',{className:'mu'},d.ex.length||'')));
+  exRows(ec,d,save,re);if(!d.ex.length)ec.append(h('div',{className:'mu',style:'margin:8px 0 4px'},'Пока пусто — нажмите кнопку ниже.'));page.append(ec);
+  page.append(h('button',{className:'btn st',style:'--i:4',onclick:addEx},ic('plus'),'Добавить упражнения и кардио'));
+  if(!isT)page.append(h('button',{className:'btn ghost st mt',style:'--i:5',onclick:()=>saveWTpl(d,tid)},'Сохранить как мой шаблон'));
+  page.append(h('button',{className:'btn ghost danger st mt',style:'--i:6',onclick:()=>ask(isT?'Удалить шаблон «'+wName(d)+'»?':'Удалить тренировку «'+wName(d)+'»'+(d.date?'':' ('+wWhen(d)+')')+'?',()=>{if(!canWrite())return;
+    if(isT){DB.tpl[tid]=(DB.tpl[tid]||[]).filter(z=>z!==d);S.tdel('tpl:'+d.id)}else{P.splice(P.indexOf(d),1);save()}hapOk();back()},{ok:'Удалить'})},isT?'Удалить шаблон':'Удалить тренировку'));
+  if(p.add&&!d.ex.length&&!UI['wa'+d.id]){UI['wa'+d.id]=1;onMount(()=>setTimeout(addEx,380))}}
+function exRows(cd,d,save,re){const mini='width:46px;text-align:center;padding:7px 4px';
+  d.ex.forEach((x,xi)=>{const num=(k,min)=>h('input',{type:'number',value:x[k],style:mini,onchange:e=>{if(!canWrite())return;x[k]=Math.max(min,+e.target.value||min);save()}});
+    const nt=h('input',{value:x.note||'',placeholder:x.cardio?'Пульс, наклон, скорость…':'Заметка для клиента (техника, тренажёр…)',style:'font-size:13px;padding:7px 9px',onchange:e=>{if(!canWrite())return;x.note=e.target.value;save()}});
+    cd.append(h('div',{className:'exrow'},h('div',{className:'row'},h('button',{className:'ib sm',onclick:()=>{if(xi&&canWrite()){[d.ex[xi-1],d.ex[xi]]=[d.ex[xi],d.ex[xi-1]];save();re()}}},'↑'),
+      h('div',{className:'f1'},h('div',{},(x.cardio?'🏃 ':'')+x.name),h('div',{className:'mu',style:'font-size:12px'},gLabel(x.mg||''))),
+      ...(x.cardio?[num('min',1),h('span',{className:'mu'},'мин')]:[num('sets',1),h('span',{className:'mu'},'×'),num('reps',1)]),
+      h('button',{className:'chip sm',onclick:()=>{if(!canWrite())return;d.ex.splice(xi,1);save();re()}},'✕')),h('div',{style:'margin-top:6px'},nt)))})}
+function saveWTpl(d,tid){sheet('Сохранить как шаблон',(b,close)=>{const n=h('input',{value:wName(d)});
+  b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Шаблон появится в «Мои шаблоны» — его можно поставить любому клиенту на любой день.'),n,h('button',{className:'btn mt',onclick:()=>{if(!n.value.trim()||!canWrite())return;
+    const tp={id:uid('tp'),kind:'w',name:n.value.trim(),focus:d.focus||'',ex:d.ex.map(x=>({...x,id:uid('x')}))};DB.tpl=DB.tpl||{};(DB.tpl[tid]=DB.tpl[tid]||[]).push(tp);S.tput('tpl:'+tp.id,{kind:'w',name:tp.name,focus:tp.focus,ex:tp.ex});hapOk();close();toast('Шаблон сохранён')}},'Сохранить'))})}
+function newWTpl(){if(!canWrite())return;const tid=who().id,tp={id:uid('tp'),kind:'w',name:'',focus:'',ex:[]};DB.tpl=DB.tpl||{};(DB.tpl[tid]=DB.tpl[tid]||[]).push(tp);S.tput('tpl:'+tp.id,{kind:'w',name:'',focus:'',ex:[]});go('wedit',{tpl:tp.id,add:1})}
+/* шаблоны в программе клиента */
+function tplSheet(c){const tid=c.trainerId,wt=wTpls(tid),pt=pTpls(tid),others=myClients(tid).filter(x=>x.id!==c.id&&progOf(x).some(d=>!d.date&&!d.rest));
+  const meta=ds=>ds.length+' '+plural(ds.length,['тренировка','тренировки','тренировок'])+' в неделю';
+  sheet('Шаблоны',(b,close)=>{const it=(t,s,f,del)=>h('div',{className:'row',style:'border-top:1px solid var(--bd)'},h('button',{className:'li',style:'border:0',onclick:()=>{close();setTimeout(f,260)}},h('div',{className:'f1'},h('div',{className:'t'},t),h('div',{className:'s'},s)),ic('chev')),del?h('button',{className:'chip sm',onclick:del},'✕'):null);
+    b.append(h('div',{className:'row'},h('div',{className:'lb f1'},'Мои шаблоны тренировок'),h('button',{className:'chip sm',onclick:()=>{close();setTimeout(newWTpl,260)}},'+ Создать')),
+      wt.length?h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},wt.map(t=>it(wName(t),wMeta(t),()=>whenPick(c,w=>{const P=progOf(c);if(w.date)DB.prog[c.id]=P.filter(z=>z.date!==w.date);else{P.forEach(z=>{if(!z.date)z.wd=(z.wd||[]).filter(j=>j!==w.wd)});DB.prog[c.id]=P.filter(z=>z.date||z.wd.length)}
+        DB.prog[c.id].push(cloneW(t,w.date?{date:w.date}:{wd:[w.wd]}));S.prog(c.id);hapOk();UI.fx=1;refresh();toast('«'+wName(t)+'» — '+(w.date?fmtD(w.date):'по '+WDP[w.wd]))})))):h('div',{className:'mu',style:'margin:6px 0 4px'},'Пока пусто. Нажмите «+ Создать» — название и упражнения, потом ставьте клиентам в два нажатия.'));
+    if(pt.length)b.append(h('div',{className:'lb mt2'},'Мои программы на неделю'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},pt.map(x=>it(x.name,meta(x.days),()=>applyTpl(c,x.days,x.name),()=>ask('Удалить шаблон «'+x.name+'»?',()=>{if(!canWrite())return;DB.tpl[tid]=(DB.tpl[tid]||[]).filter(z=>z!==x);S.tdel('tpl:'+x.id);close();tplSheet(c)})))));
+    b.append(h('div',{className:'lb mt2'},'Готовые программы'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},BUILTIN.map(x=>{const ds=x.days();return it(x.name,x.sub+' · '+meta(ds),()=>applyTpl(c,ds,x.name))})));
+    if(others.length)b.append(h('div',{className:'lb mt2'},'Скопировать у клиента'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},others.map(x=>{const ds=progOf(x).filter(d=>!d.date&&!d.rest);return it(x.name,meta(ds),()=>applyTpl(c,ds,'как у '+x.name.split(' ')[0]))})))})}
+function whenPick(c,cb){sheet('На какой день?',(b,close)=>{const P=progOf(c);
+  b.append(h('div',{className:'lb'},'Каждую неделю'),h('div',{className:'card',style:'padding:2px 14px;margin-top:8px'},WD.map((w,i)=>{const o=P.find(z=>!z.date&&(z.wd||[]).includes(i));return h('button',{className:'wrow',onclick:()=>{close();setTimeout(()=>cb({wd:i}),220)}},h('div',{className:'wdl'},w),h('div',{className:'f1 s'},o?'сейчас: '+wName(o)+' — заменится':'отдых'),ic('chev'))})),
+    h('div',{className:'lb mt2'},'Или один раз — на дату'),h('div',{className:'row mt'},h('input',{type:'date',id:'wpd',value:TODAY()}),h('button',{className:'btn',style:'width:auto',onclick:()=>{const v=$('#wpd').value;if(!v)return;close();setTimeout(()=>cb({date:v}),220)}},'Выбрать')))})}
+function applyTpl(c,ds,name){if(!canWrite())return;const P=progOf(c),n=ds.length;
+  const sel=ds.map((d,i)=>d.wd&&d.wd.length?d.wd.slice():[Math.floor(i*7/Math.min(n,7))%7]);
+  sheet('«'+name+'»',(b,close)=>{const list=h('div');
+    const draw=()=>list.replaceChildren(...ds.map((d,i)=>h('div',{className:'tday'},h('div',{},h('b',{},wName(d)),h('span',{className:'mu'},' · '+wMeta(d))),h('div',{className:'wdp'},WD.map((w,j)=>h('button',{className:'chip sm'+(sel[i].includes(j)?' on':''),onclick:()=>{sel[i]=sel[i].includes(j)?sel[i].filter(z=>z!==j):[...sel[i],j];hapSel();draw()}},w))))));
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 8px'},'В какие дни недели делать каждую тренировку? Можно поправить.'),list,
+      h('button',{className:'btn mt2',onclick:()=>{const all=sel.flat();if(sel.some(s=>!s.length)){hapErr();toast('Выберите день для каждой тренировки');return}
+        if(new Set(all).size!==all.length){hapErr();toast('Две тренировки в один день — выберите разные дни');return}
+        DB.prog[c.id]=[...P.filter(d=>d.date),...ds.map((d,i)=>cloneW(d,{wd:sel[i].sort()}))];S.prog(c.id);hapOk();close();UI.seg.pv='week';UI.fx=1;refresh();toast('Расписание обновлено')}},P.some(d=>!d.date)?'Заменить расписание':'Готово'));draw()})}
+function saveTpl(c){const tid=c.trainerId;sheet('Сохранить программу как шаблон',(b,close)=>{const n=h('input',{value:'Программа · '+c.name.split(' ')[0]});
+  b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Вся неделя целиком — со всеми тренировками и днями. Появится в «Шаблоны» → «Мои программы на неделю».'),n,h('button',{className:'btn mt',onclick:()=>{if(!n.value.trim()||!canWrite())return;DB.tpl=DB.tpl||{};
+    const tp={id:uid('tp'),name:n.value.trim(),days:progOf(c).filter(d=>!d.date&&!d.rest).map(d=>cloneW(d,{wd:(d.wd||[]).slice()}))};(DB.tpl[tid]=DB.tpl[tid]||[]).push(tp);S.tput('tpl:'+tp.id,{name:tp.name,days:tp.days});hapOk();close();toast('Шаблон сохранён')}},'Сохранить'))})}
 function tReport(page,t){const s=tStatus(t),lock=s==='expired'||s==='blocked';const T=TODAY(),d=UI.rep||add(T,-1),cl=myClients(t.id);
   page.append(hdr('Отчёт','Кто сдал данные, а кто нет'));if(lock){page.append(subWarn(t,1));return}
   page.append(h('div',{className:'row st',style:'--i:1;margin-bottom:10px'},h('button',{className:'ib',onclick:()=>{UI.rep=add(d,-1);hapSel();refresh()}},ic('back',2)),h('div',{className:'f1 c'},h('b',{},d===T?'Сегодня':d===add(T,-1)?'Вчера':cap(WDL[wdi(d)])),h('div',{className:'mu'},fmtD(d))),h('button',{className:'ib',disabled:d>=T,onclick:()=>{if(d<T){UI.rep=add(d,1);hapSel();refresh()}}},ic('chev',2))));
@@ -1254,7 +1400,10 @@ function tCabinet(page,t){const s=tStatus(t),u=tUntil(t),left=diff(u,TODAY()),li
       h('div',{className:'f1'},h('div',{className:'row'},h('b',{style:'font-size:16px'},p.n),p.pop?h('span',{className:'badge ac'},'популярный'):null,cur?h('span',{className:'badge'},'ваш'):null),h('div',{className:'mu',style:'margin-top:3px'},'до '+p.max+' клиентов · ≈ '+fmtN(Math.round(month/p.max))+' ₸ за клиента')),
       h('div',{className:'r'},h('div',{className:'pr'},money(month)),h('div',{className:'mu',style:'font-size:11.5px'},per>1?'в месяц · '+money(total)+(pp[3]?' · '+pp[3]:''):'в месяц'))))});
   page.append(h('div',{className:'mu st',style:'--i:6;font-size:12px;margin:6px 2px 14px'},'Нужно больше 30 клиентов — напишите в поддержку, подберём условия.'));
-  const tp=DB.tpl[t.id]||[];page.append(card(7,h('h3',{},'Мои шаблоны программ'),tp.length?tp.map(x=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{},x.name),h('span',{className:'mu'},x.days.length+' '+plural(x.days.length,['день','дня','дней'])))):h('div',{className:'mu',style:'margin-top:4px'},'Пока нет. Соберите программу клиенту и сохраните её как шаблон — потом выдавайте другим в два нажатия.'),h('div',{className:'mu',style:'font-size:12px;margin-top:8px'},'В базе '+Object.values(EXDB).reduce((a,l)=>a+l.length,0)+' упражнений по '+GROUPS.length+' группам + ваши собственные.')));
+  const wt=wTpls(t.id),pt=pTpls(t.id);page.append(card(7,h('div',{className:'row'},h('h3',{className:'f1'},'Мои шаблоны'),h('button',{className:'chip',onclick:newWTpl},'+ Создать')),
+    wt.length?wt.map(x=>h('button',{className:'li',onclick:()=>go('wedit',{tpl:x.id})},h('div',{className:'f1'},h('div',{className:'t'},wName(x)),h('div',{className:'s'},wMeta(x))),ic('chev'))):h('div',{className:'mu',style:'margin-top:6px'},'Создайте свою тренировку: название и упражнения. Потом ставьте её любому клиенту на любой день недели в два нажатия.'),
+    pt.length?h('div',{className:'mu',style:'font-size:12.5px;margin-top:10px'},'Программ на неделю: '+pt.length+' — они в карточке клиента → «Программа» → «Шаблоны».'):null,
+    h('div',{className:'mu',style:'font-size:12px;margin-top:8px'},'В базе '+Object.values(EXDB).reduce((a,l)=>a+l.length,0)+' упражнений по '+GROUPS.length+' группам + ваши собственные.')));
   page.append(card(8,h('h3',{},'Ссылка-приглашение'),h('div',{className:'mu',style:'margin:4px 0 10px;word-break:break-all'},`t.me/${APP.bot}?startapp=inv_${t.invite}`),h('button',{className:'btn ghost',onclick:()=>inviteSheet(t)},'Пригласить клиента')));
   page.append(commonLinks(9))}
 function paySheet(t,k,per0){const p=PLANS[k];let per=per0||1;const st=tStatus(t),renew=st==='paid'&&t.plan===k;
