@@ -714,19 +714,20 @@ const TOURS={
     {tab:'clients',el:'[data-tour=invite]',t:'Добавьте клиента',x:'Нажмите «Пригласить», затем «Отправить» и выберите клиента в Telegram. Он откроет ссылку — и сразу появится у вас.'},
     {tab:'clients',el:'[data-tour=clist]',t:'Ваши клиенты',x:cl.length?'Нажмите на клиента — увидите вес, питание, тренировки и прогресс. Красная точка — клиенту нужно ваше внимание.':'Здесь появятся ваши клиенты. Нажмёте на клиента — увидите его вес, питание, тренировки и прогресс.'},
     {tab:'report',el:'[data-tour=tab-report]',t:'Отчёт за день',x:'Кто сегодня внёс вес, шаги и калории, а кто нет — в одной таблице.'},
-    {tab:'cabinet',el:'[data-tour=tab-cabinet]',t:'Кабинет',x:'Ваша подписка и оплата. Первый месяц бесплатно — до 30 клиентов.'},
+    {tab:'cabinet',el:'[data-tour=tab-cabinet]',t:'Кабинет',x:'Подписка и оплата (первый месяц бесплатно), а ещё «Мои шаблоны» — свои тренировки, которые ставите клиентам в два нажатия.'},
     {tab:'clients',el:'[data-tour=help]',t:'Если что-то непонятно',x:'Нажмите «Помощь» — там ответы на частые вопросы и это обучение заново.'},
     {c:1,tab:'clients',ic:'✓',t:'Готово!',x:cl.length?'Можно работать. Откройте клиента — там тоже есть короткая подсказка.':'Начните с приглашения первого клиента.',next:cl.length?'Начать работу':'Пригласить клиента',done:()=>{if(!cl.length)inviteSheet(t)}}]},
   tcard:()=>{const c=C(stack[stack.length-1].p&&stack[stack.length-1].p.id);if(!c)return null;const set=v=>()=>{UI.seg.cc=v;refresh()};return[
     {pre:set('week'),el:'[data-tour=ccseg]',t:'Карточка клиента',x:'Неделя — дневник по дням. Прогресс — графики и фото. Программа — тренировки. Анкета — данные и планки КБЖУ.'},
     {pre:set('week'),el:'[data-tour=week]',t:'Дневник клиента',x:'Нажмите на день — увидите вес, шаги, калории, отметки и заметку клиента. Там же можно оставить комментарий.'},
     {pre:set('train'),el:'[data-tour=logwo]',t:'Тренировка в зале',x:'Клиент с вами на тренировке? Нажмите сюда и отмечайте подходы за него. Веса можно дописать потом.'},
+    {pre:set('train'),el:'[data-tour=pweek]',t:'Программа по дням недели',x:'Нажмите на день (Пн, Ср…) и добавьте упражнения или свой шаблон — тренировка будет повторяться каждую неделю. Изменить один конкретный день — «По датам».'},
     {pre:set('week'),el:'[data-tour=chatbtn]',t:'Связь с клиентом',x:'Написать клиенту в Telegram в одно касание.'}]},
   client:()=>{const c=C(who().id);if(!c||!c.trainerId)return null;const t=Tr(c.trainerId);return[
     {c:1,ic:'👋',t:`Привет, ${first(c.name)}!`,x:`${t?'Тренер '+t.name:'Ваш тренер'} будет видеть ваш прогресс. Покажу, что делать — это 30 секунд.`,next:'Показать'},
     {tab:'diary',el:'[data-tour=today]',t:'Каждый день — 30 секунд',x:'Нажмите на карточку «Сегодня» и внесите вес утром, шаги и калории вечером.'},
     {tab:'diary',el:'[data-tour=week]',t:'Ваша неделя',x:'Нажмите на любой день: поставьте отметку (тренировка, пропуск, самочувствие) или напишите заметку тренеру.'},
-    {tab:'workout',el:'[data-tour=tab-workout]',t:'Тренировка',x:'Здесь программа от тренера. Отмечайте подходы и нажмите «Завершить» — тренер сразу увидит.'},
+    {tab:'workout',el:'[data-tour=tab-workout]',t:'Тренировка',x:'Сверху неделя по датам — тренировка на сегодня подставится сама. Отмечайте подходы и нажмите «Завершить» — тренер сразу увидит.'},
     {tab:'progress',el:'[data-tour=tab-progress]',t:'Прогресс',x:'Графики веса, замеры тела и фото «до/после».'},
     {tab:'profile',el:'[data-tour=tab-profile]',t:'Профиль',x:'Написать тренеру, ваша анкета и поддержка.'},
     {tab:'diary',el:'[data-tour=help]',t:'Если что-то непонятно',x:'Нажмите «Помощь» — там ответы на вопросы и это обучение заново.'},
@@ -767,7 +768,8 @@ async function showStep(i,dir){const T=TS;if(!T)return;if(i<0)i=0;if(i>=T.steps.
   requestAnimationFrame(()=>{if(TS!==T)return;const ch=T.tc.offsetHeight,H=innerHeight;let top;
     if(!r)top=(H-ch)/2;else{const below=r.bottom+pd+14,above=r.top-pd-14-ch;top=(r.top+r.height/2>H*.5||below+ch>H-12)&&above>8?above:Math.min(below,H-ch-12);
       if(r.height>H*.55)top=Math.min(H-ch-12,Math.max(8,r.top-pd)+H*.42+14)}
-    T.tc.style.top=Math.max(8,top)+'px';T.tc.style.opacity=1})}
+    T.tc.style.top=Math.max(8,top)+'px';T.tc.style.opacity=1;
+    if(el)setTimeout(()=>{if(TS!==T||T.i!==i)return;const r2=el.getBoundingClientRect();if(Math.abs(r2.top-r.top)>2){T.hole.style.top=Math.max(8,r2.top-pd)+'px';T.hole.style.left=(r2.left-pd)+'px'}},380)})}
 function endTour(silent){const T=TS;if(!T)return;TS=null;clearTimeout(tourPoll);if(!AS)tourMark(T.k);
   T.ov.classList.add('out');setTimeout(()=>T.ov.remove(),300);
   if(!silent&&T.role===who().role){if(T.k==='tcard'){UI.seg.cc='week';refresh()}else if(T.tab0&&stack.length===1&&curTab()!==T.tab0&&T.steps[T.steps.length-1].tab==null){UI.tab[T.role]=T.tab0;render('tab')}}
@@ -1271,7 +1273,7 @@ function trainView(c,body){const P=progOf(c),tid=c.trainerId;
   body.append(h('div',{className:'mt2'},volCard(c)));
   body.append(h('h3',{style:'margin:16px 0 8px'},'История тренировок'));histView(c,body)}
 function weekPlan(c,body){const P=progOf(c),T=TODAY();
-  const cd=card(4);cd.style.padding='2px 14px';
+  const cd=card(4);cd.style.padding='2px 14px';cd.setAttribute('data-tour','pweek');
   for(let i=0;i<7;i++){const d=P.find(x=>!x.date&&(x.wd||[]).includes(i));
     cd.append(h('button',{className:'wrow'+(d?'':' rest'),onclick:()=>{if(!canWrite())return;d?go('wedit',{id:c.id,w:d.id}):addSheet(c,{wd:i})}},
       h('div',{className:'wdl'+(wdi(T)===i?' now':'')},WD[i]),
