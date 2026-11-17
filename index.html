@@ -286,7 +286,7 @@ const APP={name:'SplitFit',bot:'splitfit_coach_bot'};
 const API_URL='https://mbemxdadkufsagwczhqc.supabase.co/functions/v1/splitfit';
 const PLANS={t10:{n:'Старт',max:10,price:4990},t20:{n:'Про',max:20,price:8990,pop:1},t30:{n:'Студия',max:30,price:12990}};
 const PERIODS=[[1,'1 месяц',1,''],[3,'3 месяца',.9,'−10%'],[12,'12 месяцев',10/12,'2 мес. в подарок']];
-const TRIAL={days:30,max:30};
+const TRIAL={days:14,max:30};
 const DEMO_MODE=!API_URL; // нет сервера — демо
 const LSK='splitfit-demo-v1',DRK='splitfit-draft-',RSK='splitfit-rest';
 
@@ -585,7 +585,7 @@ function render(anim){
   $('#app').replaceChildren(...nodes);
   $('#tabs').replaceChildren(...(top.s==='root'&&ME?[tabbar()]:[]));
   window.scrollTo(0,anim&&anim!=='none'?0:sy);flushMount();syncBack();
-  if(ME&&!AS&&!TS){const tk=top.s==='root'?who().role:top.s==='client'&&who().role==='trainer'?'tcard':null;if(tk)maybeTour(tk)}}
+  if(ME&&!AS&&!TS){const tk=tourKey();if(tk)maybeTour(tk)}}
 const refresh=()=>render(null);
 function go(s,p){stack.push({s,p});hap();render('fwd')}
 function back(){if(TS){endTour();return}if(SH.length){SH[SH.length-1].close();return}if(stack.length>1){stack.pop();hap();render('back')}}
@@ -668,7 +668,7 @@ onboard(page){
     h('div',{className:'logo'},h('i'),h('span',{},APP.name)),
     h('div',{className:'mu st',style:'--i:2;font-size:15px;max-width:340px'},'Ведение клиентов без таблиц и скриншотов: тренировки, вес, питание, замеры и фото в одном месте.'),
     h('div',{style:'height:22px'}),
-    h('button',{className:'role st',style:'--i:3',onclick:()=>signupTrainer()},h('div',{className:'ic'},ic('users')),h('div',{className:'f1'},h('b',{},'Я тренер'),h('div',{className:'mu'},'Веду клиентов. Первый месяц бесплатно.')),ic('chev')),
+    h('button',{className:'role st',style:'--i:3',onclick:()=>signupTrainer()},h('div',{className:'ic'},ic('users')),h('div',{className:'f1'},h('b',{},'Я тренер'),h('div',{className:'mu'},'Веду клиентов. 2 недели бесплатно.')),ic('chev')),
     h('button',{className:'role st',style:'--i:4',onclick:()=>signupClient()},h('div',{className:'ic'},ic('user')),h('div',{className:'f1'},h('b',{},'Я клиент'),h('div',{className:'mu'},'Тренер прислал мне приглашение.')),ic('chev')),
     DEMO&&h('div',{className:'card st mt2',style:'--i:5'},h('div',{className:'lb'},'Демо-вход для прототипа'),h('div',{className:'mu',style:'margin:4px 0 10px'},'В рабочей версии роль определяется по Telegram-аккаунту, а админ — по вашему ID.'),
       h('div',{className:'chips'},
@@ -695,7 +695,7 @@ function roleSheet(){if(LIVE){sheet('Режим',(b,close)=>{const it=(m,t,s2)=>
     h('div',{className:'lb',style:'margin:18px 0 8px'},'Тестирование своего аккаунта'),
     h('div',{className:'card',style:'padding:2px 14px'},
       h('button',{className:'li',onclick:()=>{close();setTimeout(()=>resetUser(SRV.id,'tour'),300)}},h('div',{className:'f1'},h('div',{className:'t'},'Показать обучение заново'),h('div',{className:'s'},'приветствие и подсказки во всех режимах')),ic('chev')),
-      h('button',{className:'li',onclick:()=>{close();setTimeout(()=>resetUser(SRV.id,'trainer','мой кабинет'),300)}},h('div',{className:'f1'},h('div',{className:'t',style:'color:var(--ac2)'},'Обнулить мой кабинет тренера'),h('div',{className:'s'},'первый вход тренера заново, новый пробный месяц')),ic('chev')),
+      h('button',{className:'li',onclick:()=>{close();setTimeout(()=>resetUser(SRV.id,'trainer','мой кабинет'),300)}},h('div',{className:'f1'},h('div',{className:'t',style:'color:var(--ac2)'},'Обнулить мой кабинет тренера'),h('div',{className:'s'},'первый вход тренера заново, новый пробный период')),ic('chev')),
       h('button',{className:'li',onclick:()=>{close();setTimeout(()=>resetUser(SRV.id,'client','тестовый клиент'),300)}},h('div',{className:'f1'},h('div',{className:'t',style:'color:var(--ac2)'},'Обнулить тестового клиента'),h('div',{className:'s'},'первый вход клиента заново')),ic('chev'))))});return}
   sheet('Сменить роль (демо)',(b,close)=>{const it=(t,s,f)=>h('button',{className:'li',onclick:()=>{close();setTimeout(f,250)}},h('div',{className:'f1'},h('div',{className:'t'},t),s?h('div',{className:'s'},s):null),ic('chev'));const ex=DB.trainers.find(t=>tStatus(t)==='expired');
   b.append(h('div',{className:'card',style:'padding:2px 14px'},it('Админ','сводка, тренеры, поддержка',()=>login('admin','admin')),it('Тренер · '+DB.trainers[0].name,'14 клиентов, тариф «Про»',()=>login('trainer',DB.trainers[0].id)),it('Клиент · '+DB.clients[0].name,'есть фото, замеры, тренировки',()=>login('client',DB.clients[0].id)),ex?it('Тренер · '+ex.name,'подписка истекла',()=>login('trainer',ex.id)):null,it('Стартовый экран','регистрация тренера или клиента',()=>{UI.obi=null;tourClearDemo('_');logout()}),it('Показать обучение заново','приветствие и подсказки для всех ролей',()=>{tourClearDemo(null);UI.obi=null;toast('Обучение начнётся заново');stack=[{s:ME?'root':'onboard'}];render('back')})))})}
@@ -714,20 +714,27 @@ const TOURS={
     {tab:'clients',el:'[data-tour=invite]',t:'Добавьте клиента',x:'Нажмите «Пригласить», затем «Отправить» и выберите клиента в Telegram. Он откроет ссылку — и сразу появится у вас.'},
     {tab:'clients',el:'[data-tour=clist]',t:'Ваши клиенты',x:cl.length?'Нажмите на клиента — увидите вес, питание, тренировки и прогресс. Красная точка — клиенту нужно ваше внимание.':'Здесь появятся ваши клиенты. Нажмёте на клиента — увидите его вес, питание, тренировки и прогресс.'},
     {tab:'report',el:'[data-tour=tab-report]',t:'Отчёт за день',x:'Кто сегодня внёс вес, шаги и калории, а кто нет — в одной таблице.'},
-    {tab:'cabinet',el:'[data-tour=tab-cabinet]',t:'Кабинет',x:'Подписка и оплата (первый месяц бесплатно), а ещё «Мои шаблоны» — свои тренировки, которые ставите клиентам в два нажатия.'},
+    {tab:'cabinet',el:'[data-tour=tab-cabinet]',t:'Кабинет',x:'Подписка и оплата (первые 2 недели бесплатно), а ещё «Мои шаблоны» — свои тренировки, которые ставите клиентам в два нажатия.'},
     {tab:'clients',el:'[data-tour=help]',t:'Если что-то непонятно',x:'Нажмите «Помощь» — там ответы на частые вопросы и это обучение заново.'},
     {c:1,tab:'clients',ic:'✓',t:'Готово!',x:cl.length?'Можно работать. Откройте клиента — там тоже есть короткая подсказка.':'Начните с приглашения первого клиента.',next:cl.length?'Начать работу':'Пригласить клиента',done:()=>{if(!cl.length)inviteSheet(t)}}]},
+  tfirst:()=>{const t=Tr(who().id),cl=t?myClients(t.id).slice().sort((a,b)=>a.name.localeCompare(b.name)):[],c=cl[0];if(!c)return null;return[
+    {c:1,ic:'🎉',t:cl.length>1?'У вас уже есть клиенты':'У вас первый клиент!',x:`${cl.length>1?'Клиенты уже в списке':first(c.name)+' уже в списке'}. Покажу, как вести клиента: дневник, программа по дням недели и отметка тренировки в зале.`,next:'Показать'},
+    {pre:()=>{UI.seg['tc'+t.id]='all';refresh()},el:['[data-tour=crow]','[data-tour=clist]'],t:'Откройте клиента',x:'Нажмите на клиента — откроется его карточка: дневник, прогресс, программа и анкета. Там продолжу подсказки.',next:'Открыть клиента',done:()=>go('client',{id:c.id})}]},
+  logwo:()=>woSteps(1).filter(s=>s.only!==0),
+  cwork:()=>woSteps(0),
   tcard:()=>{const c=C(stack[stack.length-1].p&&stack[stack.length-1].p.id);if(!c)return null;const set=v=>()=>{UI.seg.cc=v;refresh()};return[
     {pre:set('week'),el:'[data-tour=ccseg]',t:'Карточка клиента',x:'Неделя — дневник по дням. Прогресс — графики и фото. Программа — тренировки. Анкета — данные и планки КБЖУ.'},
     {pre:set('week'),el:'[data-tour=week]',t:'Дневник клиента',x:'Нажмите на день — увидите вес, шаги, калории, отметки и заметку клиента. Там же можно оставить комментарий.'},
     {pre:set('train'),el:'[data-tour=logwo]',t:'Тренировка в зале',x:'Клиент с вами на тренировке? Нажмите сюда и отмечайте подходы за него. Веса можно дописать потом.'},
-    {pre:set('train'),el:'[data-tour=pweek]',t:'Программа по дням недели',x:'Нажмите на день (Пн, Ср…) и добавьте упражнения или свой шаблон — тренировка будет повторяться каждую неделю. Изменить один конкретный день — «По датам».'},
+    {pre:()=>{UI.seg.pv='week';set('train')()},el:'[data-tour=pweek]',t:'Программа по дням недели',x:'Нажмите на день (Пн, Ср…) и добавьте упражнения или свой шаблон — тренировка будет повторяться каждую неделю.'},
+    {pre:set('train'),el:'[data-tour=pseg]',t:'Один конкретный день',x:'Перенос, замена или день отдыха? Переключитесь на «По датам», нажмите на дату — изменится только этот день.'},
+    {pre:set('train'),el:'[data-tour=ptpl]',t:'Шаблоны',x:'Готовые программы и ваши шаблоны: выдайте клиенту всю неделю в пару нажатий. Свой шаблон — «Кабинет» → «Мои шаблоны».'},
     {pre:set('week'),el:'[data-tour=chatbtn]',t:'Связь с клиентом',x:'Написать клиенту в Telegram в одно касание.'}]},
   client:()=>{const c=C(who().id);if(!c||!c.trainerId)return null;const t=Tr(c.trainerId);return[
     {c:1,ic:'👋',t:`Привет, ${first(c.name)}!`,x:`${t?'Тренер '+t.name:'Ваш тренер'} будет видеть ваш прогресс. Покажу, что делать — это 30 секунд.`,next:'Показать'},
     {tab:'diary',el:'[data-tour=today]',t:'Каждый день — 30 секунд',x:'Нажмите на карточку «Сегодня» и внесите вес утром, шаги и калории вечером.'},
     {tab:'diary',el:'[data-tour=week]',t:'Ваша неделя',x:'Нажмите на любой день: поставьте отметку (тренировка, пропуск, самочувствие) или напишите заметку тренеру.'},
-    {tab:'workout',el:'[data-tour=tab-workout]',t:'Тренировка',x:'Сверху неделя по датам — тренировка на сегодня подставится сама. Отмечайте подходы и нажмите «Завершить» — тренер сразу увидит.'},
+    {tab:'workout',el:'[data-tour=tab-workout]',t:'Тренировка',x:'Сверху неделя по датам — тренировка на сегодня подставится сама. Отмечайте подходы и нажмите «Завершить» — тренер сразу увидит. Не хотите заполнять — можно ничего не вписывать, тренер отметит за вас.'},
     {tab:'progress',el:'[data-tour=tab-progress]',t:'Прогресс',x:'Графики веса, замеры тела и фото «до/после».'},
     {tab:'profile',el:'[data-tour=tab-profile]',t:'Профиль',x:'Написать тренеру, ваша анкета и поддержка.'},
     {tab:'diary',el:'[data-tour=help]',t:'Если что-то непонятно',x:'Нажмите «Помощь» — там ответы на вопросы и это обучение заново.'},
@@ -740,8 +747,21 @@ const TOURS={
     {tab:'dash',el:'[data-tour=mode]',t:'Режимы',x:LIVE?'Переключайтесь: админ, свой кабинет тренера или тестовый клиент. Там же — обнулить себя и пройти первый вход заново.':'Смена роли в демо. Там же — показать обучение заново.'},
     {c:1,tab:'dash',ic:'✓',t:'Готово',x:'Обучение можно пройти заново через «Помощь».',next:'Понятно'}]};
 let TS=null,tourPoll=0;
+/* какое обучение уместно на текущем экране */
+function tourKey(){if(!ME)return null;const top=stack[stack.length-1],r=who().role;
+  if(top.s==='root'){if(r==='trainer'&&tourSeen('trainer')&&curTab()==='clients'){const t=Tr(who().id);if(t&&myClients(t.id).length&&!tourSeen('tfirst'))return 'tfirst'}
+    if(r==='client'&&tourSeen('client')&&curTab()==='workout'&&UI.seg['wo'+who().id]!=='hist')return 'cwork';return r}
+  if(r==='trainer'&&top.s==='client')return 'tcard';if(r==='trainer'&&top.s==='logwo')return 'logwo';return null}
+const woSteps=tr=>[
+  {el:'[data-tour=wstrip]',t:'Выберите день',x:'Неделя по датам. Точка — по программе есть тренировка, ✓ — уже выполнена. Тренировка на выбранный день подставится сама.'},
+  {el:'[data-tour=wchoose]',t:'День без тренировки',x:'Можно взять любую тренировку из программы или собрать свою — «Своя».'},
+  {el:'[data-tour=wother]',t:'Другая тренировка',x:'Хотите сделать не ту, что по плану? Нажмите — выберите другую из программы или соберите свою.'},
+  {el:'[data-tour=wset]',t:'Отмечайте подходы',x:tr?'Впишите вес и повторы и нажмите ✓. «✓ всё упр.» — отметить упражнение целиком, ⇄ — заменить упражнение.':'Впишите вес и повторы и нажмите ✓ — запустится таймер отдыха. «✓ всё упр.» — отметить упражнение целиком.'},
+  {c:1,only:0,ic:'🤝',t:'Заполнять не обязательно',x:'Если не хотите вписывать веса и подходы — можно ничего не заполнять. Тренер отметит тренировку за вас.'},
+  {el:'[data-tour=wadd]',t:'Добавить упражнение',x:'Можно добавить упражнение или кардио прямо во время тренировки.'},
+  {el:'[data-tour=wfin]',t:'Завершить',x:tr?'Нажмите в конце. Ничего не отметили — тренировка запишется по плану, веса допишете потом в истории.':'Нажмите в конце — тренер сразу увидит. Не успели отметить — всё запишется по плану.'}];
 function maybeTour(k){if(TS||tourSeen(k)||!TOURS[k])return;clearTimeout(tourPoll);let n=0;
-  const f=()=>{if(TS||tourSeen(k)||AS)return;const top=stack[stack.length-1],want=top.s==='root'?who().role:top.s==='client'?'tcard':null;if(want!==k)return;
+  const f=()=>{if(TS||tourSeen(k)||AS)return;if(tourKey()!==k)return;
     if(SH.length||document.querySelector('.sh.on')){if(++n<60)tourPoll=setTimeout(f,500);return}startTour(k)};tourPoll=setTimeout(f,650)}
 function startTour(k,force){const steps=TOURS[k]&&TOURS[k]();if(!steps||!steps.length)return;if(TS)endTour(true);
   const ov=h('div',{id:'tour'}),hole=h('div',{className:'hole c'}),tc=h('div',{className:'tc'});ov.append(h('div',{className:'blk'}),hole,tc);document.body.append(ov);
@@ -751,7 +771,7 @@ async function showStep(i,dir){const T=TS;if(!T)return;if(i<0)i=0;if(i>=T.steps.
   if(st.tab&&stack.length===1&&curTab()!==st.tab){UI.tab[T.role]=st.tab;render('tab');changed=true}
   if(st.pre){st.pre();changed=true}
   await new Promise(r=>setTimeout(r,changed?480:60));if(TS!==T)return;
-  let el=st.el?document.querySelector(st.el):null;
+  let el=null;if(st.el)for(const q of [].concat(st.el)){el=document.querySelector(q);if(el)break}
   if(st.el&&!el){showStep(i+dir,dir);return}
   if(el){const r0=el.getBoundingClientRect();if(r0.top<70||r0.bottom>innerHeight-90){el.scrollIntoView({block:'center',behavior:'smooth'});await new Promise(r=>setTimeout(r,420));if(TS!==T)return}}
   const r=el?el.getBoundingClientRect():null,pd=6;
@@ -782,16 +802,16 @@ const FAQ={
     ['Что значит красная точка у клиента?','Клиенту нужно внимание: не внёс данные, пропустил тренировку или вес идёт не туда. Список — во вкладке «Внимание».'],
     ['Как оплатить подписку?','«Кабинет» → «Оплатить подписку» → выберите тариф и срок → отправьте заявку. Мы пришлём реквизиты и продлим подписку.']],
   client:[['Как внести вес и шаги?','«Дневник» → нажмите на карточку «Сегодня». Вес — утром натощак, шаги и калории — вечером.'],
-    ['Как отметить тренировку?','«Тренировка» → отмечайте подходы → «Завершить». Если тренер вёл вас в зале, он может отметить сам.'],
+    ['Как отметить тренировку?','«Тренировка» → отмечайте подходы → «Завершить».'],['Обязательно ли заполнять тренировку?','Нет. Если не хотите — можно ничего не заполнять: тренер отметит тренировку за вас и допишет веса.'],
     ['Как оставить заметку тренеру?','«Дневник» → нажмите на нужный день → напишите заметку или поставьте отметку.'],
     ['Как добавить фото и замеры?','«Прогресс» → раздел с фото или замерами → «Добавить».'],
     ['Кто видит мои данные?','Только вы и ваш тренер.']],
   admin:[['Как продлить подписку тренеру?','«Тренеры» → тренер → выберите тариф → «+1/+3/+12 мес». Или в «Поддержке» нажмите «Оплата получена» на заявке.'],
     ['Как посмотреть глазами тренера или клиента?','Откройте тренера → значок глаза вверху. Клиента — нажмите на него в списке клиентов тренера.'],
     ['Как пройти первый вход заново?','Переключатель режима вверху → «Тестирование своего аккаунта». Другого пользователя — в его карточке, раздел «Тестирование».']]};
-function helpSheet(){const r=who().role,tk=r==='trainer'&&stack[stack.length-1].s==='client'?'tcard':r;
+function helpSheet(){const r=who().role,top=stack[stack.length-1],tk=r==='trainer'&&top.s==='client'?'tcard':r==='trainer'&&top.s==='logwo'?'logwo':r==='client'&&top.s==='root'&&curTab()==='workout'?'cwork':r;
   sheet('Помощь',(b,close)=>{b.append(
-    h('button',{className:'role',style:'margin-top:0',onclick:()=>{close();if(tk!=='tcard'&&stack.length>1){stack=[stack[0]];render('back')}setTimeout(()=>startTour(tk,1),420)}},h('div',{className:'ic'},ic('eye')),h('div',{className:'f1'},h('b',{},tk==='tcard'?'Подсказки по карточке клиента':'Пройти обучение заново'),h('div',{className:'mu'},'30 секунд — покажу, где что')),ic('chev')),
+    h('button',{className:'role',style:'margin-top:0',onclick:()=>{close();if(tk===r&&stack.length>1){stack=[stack[0]];render('back')}setTimeout(()=>startTour(tk,1),420)}},h('div',{className:'ic'},ic('eye')),h('div',{className:'f1'},h('b',{},{tcard:'Подсказки по карточке клиента',logwo:'Подсказки по отметке тренировки',cwork:'Подсказки по тренировке'}[tk]||'Пройти обучение заново'),h('div',{className:'mu'},'30 секунд — покажу, где что')),ic('chev')),
     h('div',{className:'lb',style:'margin:18px 0 8px'},'Частые вопросы'),
     h('div',{className:'card',style:'padding:2px 14px'},(FAQ[r]||[]).map(([q,a])=>h('details',{className:'faq'},h('summary',{},q,ic('chev')),h('div',{className:'mu'},a)))),
     h('button',{className:'btn ghost mt',onclick:()=>{close();setTimeout(()=>supportSheet(),350)}},ic('chat'),'Не нашли ответ? Напишите нам'))})}
@@ -810,8 +830,8 @@ const OBS=[
 /* ===== админ: обнулить пользователя (чтобы проверить первый вход заново) ===== */
 const RST={tour:['Показать обучение заново','Приветствие и подсказки покажутся при следующем входе. Данные не трогаются.','Сбросить'],
   client:['Обнулить клиента','Удалятся анкета, дневник, замеры, фото и тренировки. При следующем входе — как в первый раз: выбор роли и регистрация.','Обнулить'],
-  trainer:['Обнулить тренера','Удалятся кабинет, подписка, платежи и шаблоны. Клиенты останутся без тренера, их данные сохранятся. При следующем входе — как в первый раз, с новым пробным месяцем.','Обнулить']};
-function demoReset(id,what){if(what==='tour')tourClearDemo(id);else try{const o=JSON.parse(localStorage.getItem(TLK)||'{}'),drop=what==='client'?['client']:['trainer','tcard'];if(o[id])drop.forEach(k=>delete o[id][k]);delete o._;localStorage.setItem(TLK,JSON.stringify(o))}catch(e){}if(what==='client'){DB.clients=DB.clients.filter(c=>c.id!==id);['days','meas','photos','prog','logs','com','deload'].forEach(k=>{if(DB[k])delete DB[k][id]})}
+  trainer:['Обнулить тренера','Удалятся кабинет, подписка, платежи и шаблоны. Клиенты останутся без тренера, их данные сохранятся. При следующем входе — как в первый раз, с новым пробным периодом.','Обнулить']};
+function demoReset(id,what){if(what==='tour')tourClearDemo(id);else try{const o=JSON.parse(localStorage.getItem(TLK)||'{}'),drop=what==='client'?['client','cwork']:['trainer','tcard','tfirst','logwo'];if(o[id])drop.forEach(k=>delete o[id][k]);delete o._;localStorage.setItem(TLK,JSON.stringify(o))}catch(e){}if(what==='client'){DB.clients=DB.clients.filter(c=>c.id!==id);['days','meas','photos','prog','logs','com','deload'].forEach(k=>{if(DB[k])delete DB[k][id]})}
   if(what==='trainer'){DB.clients.forEach(c=>{if(c.trainerId===id){const l=c.links.find(x=>x.t===id&&!x.to);if(l)l.to=TODAY();c.trainerId=null}});DB.trainers=DB.trainers.filter(t=>t.id!==id);DB.pay=DB.pay.filter(p=>p.trainerId!==id);delete DB.tpl[id];delete DB.custom[id]}persist()}
 function resetUser(id,what,name){const [t,sub,ok]=RST[what];
   ask(t+(name?' — '+name:'')+'?',async()=>{const self=LIVE?id===SRV.id:(ME&&ME.id===id);
@@ -827,7 +847,7 @@ function resetCard(i,id,role,name){return card(i,h('h3',{},'Тестирован
 /* ===== регистрация ===== */
 function signupTrainer(){const tu=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
   sheet('Регистрация тренера',(b,close)=>{const n=h('input',{placeholder:'Имя и фамилия',value:tu?[tu.first_name,tu.last_name].filter(Boolean).join(' '):''});
-    b.append(h('div',{className:'mu',style:'margin:-6px 0 14px'},'Первый месяц бесплатно, без ограничений по функциям, до 30 клиентов. Карта не нужна.'),h('label',{className:'fld'},h('span',{},'Как вас зовут'),n),
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 14px'},'2 недели бесплатно, без ограничений по функциям, до 30 клиентов. Карта не нужна.'),h('label',{className:'fld'},h('span',{},'Как вас зовут'),n),
       h('div',{className:'card mt'},h('div',{className:'lb'},'Дальше — от '+money(PLANS.t10.price)+' в месяц'),...Object.values(PLANS).map(p=>h('div',{className:'row mt',style:'justify-content:space-between'},h('span',{},'до '+p.max+' клиентов'),h('b',{},money(p.price))))),
       h('button',{className:'btn mt',onclick:async e=>{if(!n.value.trim()){n.focus();hapErr();return}if(LIVE){const bt=e.currentTarget;bt.disabled=true;bt.textContent='Создаю кабинет…';try{await api('signup_trainer',{name:n.value.trim()});await reloadMe();askWrite();close();stack=[{s:'root'}];UI.tab={};hapOk();render('fwd')}catch(er){bt.disabled=false;bt.textContent='Начать бесплатно';hapErr();toast(er.message)}return}const T=TODAY();const t={id:uid('t'),name:n.value.trim(),tg:tu&&tu.username||'',plan:'t10',joined:T,trialUntil:add(T,TRIAL.days),paidUntil:null,blocked:false,invite:Math.random().toString(36).slice(2,8)};DB.trainers.push(t);persist();close();login('trainer',t.id)}},'Начать бесплатно'))})}
 function signupClient(code){
@@ -1054,7 +1074,7 @@ function workoutLogger(c,body,tr){
   const P=progOf(c),key=dkey(c,tr),T=TODAY();UI.wsel=UI.wsel||{};UI.wws=UI.wws||{};
   const started=w=>!!w&&Object.values(w.sets||{}).some(a=>a.some(s=>s.ok));
   let W=loadDraft(key);if(W&&(!W.date||W.date>T))W=null;
-  if(W&&!W.name){const o=P.find(d=>d.id===W.dayId);W.name=o?wName(o):'Тренировка'}
+  if(W){const o=P.find(d=>d.id===W.dayId);W.name=cleanName(W.name)||(o?wName(o):'')||'Тренировка'}
   const sel=UI.wsel[key]||(W?W.date:T);
   if(W&&!started(W)&&(W.date!==sel||(W.dayId!=='free'&&W.dayId!=='pick'&&!P.find(d=>d.id===W.dayId))))W=null;
   if(W&&W.date!==sel)W=null;
@@ -1063,7 +1083,7 @@ function workoutLogger(c,body,tr){
   const ws=UI.wws[key]||add(sel,-wdi(sel)),LD=new Set((DB.logs[c.id]||[]).map(l=>l.date));
   const choose=d=>{if(d===sel)return;const sw=()=>{UI.wsel[key]=d;if(W&&W.date!==d)localStorage.removeItem(DRK+key);hapSel();UI.fx=1;refresh()};started(W)&&W.date!==d?ask('Перейти на другой день? Отмеченные подходы сбросятся.',sw,{ok:'Перейти'}):sw()};
   const mvw=n=>{UI.wws[key]=add(ws,n*7);hapSel();UI.fx=1;refresh()};
-  body.append(h('div',{className:'wstrip st',style:'--i:2'},h('button',{className:'wsa',onclick:()=>mvw(-1)},ic('back')),
+  body.append(h('div',{className:'wstrip st',style:'--i:2','data-tour':'wstrip'},h('button',{className:'wsa',onclick:()=>mvw(-1)},ic('back')),
     ...Array.from({length:7},(_,j)=>{const d=add(ws,j);return h('button',{className:'wsd'+(d===sel?' on':'')+(d===T?' today':'')+(d>T?' fut':''),onclick:()=>choose(d)},h('span',{},WD[j]),h('b',{},pd(d).getDate()),LD.has(d)?h('i',{className:'ok'},'✓'):progFor(c,d)?h('i',{className:'dot'}):h('i'))}),
     h('button',{className:'wsa',onclick:()=>mvw(1)},ic('chev'))));
   const dl=sel===T?'Сегодня, '+fmtD(sel):cap(WDL[wdi(sel)])+', '+fmtD(sel);
@@ -1071,19 +1091,21 @@ function workoutLogger(c,body,tr){
     LD.has(sel)?h('div',{className:'okline'},'✓ Тренировка за этот день уже записана'+(tr?' — смотрите историю ниже':' — смотрите «Историю»')):null));
   if(sel>T){body.append(plan?card(3,h('div',{className:'lb'},'План'),plan.ex.map(x=>h('div',{className:'row',style:'padding:9px 0;border-top:1px solid var(--bd)'},h('span',{className:'f1'},(x.cardio?'🏃 ':'')+x.name),h('span',{className:'mu'},exPlan(x)))),h('div',{className:'mu',style:'font-size:12.5px;margin-top:10px'},'Отметить подходы можно в день тренировки.'))
     :card(3,h('div',{className:'empty'},'На этот день тренировка не назначена.')));return}
-  if(!W){const pickW=()=>{const list=P.filter(d=>!d.rest&&d.ex.length),wt=tr?wTpls(c.trainerId):[];if(!list.length&&!wt.length){toast('В программе пока нет тренировок');return}
-      sheet('Какую тренировку делаем?',(b,close)=>{const row=(d,s)=>h('button',{className:'li',onclick:()=>{close();W=newDraft(c,d,sel);W.dayId=P.includes(d)?d.id:'pick';saveDraft(key,W);UI.wsel[key]=sel;hapSel();setTimeout(()=>{UI.fx=1;refresh()},220)}},h('div',{className:'f1'},h('div',{className:'t'},wName(d)),h('div',{className:'s'},s)),ic('chev'));
-        if(list.length)b.append(h('div',{className:'lb'},'Из программы'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},list.map(d=>row(d,wWhen(d)+' · '+wMeta(d)))));
-        if(wt.length)b.append(h('div',{className:'lb mt2'},'Мои шаблоны'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},wt.map(d=>row(d,wMeta(d)))))})};
-    const free=()=>{W={dayId:'free',name:'Свободная тренировка',focus:'',date:sel,ex:[],sets:{},opts:{},note:''};saveDraft(key,W);UI.wsel[key]=sel;hapSel();UI.fx=1;refresh();
-      setTimeout(()=>pickEx({g:'Грудь',multi:1,tid:c.trainerId},arr=>{arr.forEach(n=>{W.ex.push(n);initSets(c,W,n)});saveDraft(key,W);UI.fx=1;refresh()}),400)};
-    body.append(card(3,h('div',{className:'empty',style:'padding-bottom:12px'},P.length?'На этот день тренировка не назначена. Можно сделать любую из программы или свободную.':(tr?'Программы пока нет — соберите её во вкладке «Программа» или запишите свободную тренировку.':'Тренер ещё не составил программу. Можно записать свободную тренировку.')),
-      h('div',{className:'g2'},h('button',{className:'btn',disabled:!P.some(d=>!d.rest&&d.ex.length)&&!(tr&&wTpls(c.trainerId).length),onclick:pickW},'Выбрать'),h('button',{className:'btn ghost',onclick:free},'Свободная'))));return}
+  /* выбрать другую тренировку: из программы, из шаблонов или своя (упражнения выбирает сам) */
+  const own=()=>{W={dayId:'free',name:'Своя тренировка',focus:'',date:sel,ex:[],sets:{},opts:{},note:''};saveDraft(key,W);UI.wsel[key]=sel;hapSel();UI.fx=1;refresh();
+    setTimeout(()=>pickEx({g:'Грудь',multi:1,tid:c.trainerId},arr=>{arr.forEach(n=>{W.ex.push(n);initSets(c,W,n)});saveDraft(key,W);UI.fx=1;refresh()}),400)};
+  const pickW=()=>{const list=P.filter(d=>!d.rest&&d.ex.length&&(!W||d.id!==W.dayId)),wt=tr?wTpls(c.trainerId):[];
+    sheet('Какую тренировку делаем?',(b,close)=>{const row=(d,s)=>h('button',{className:'li',onclick:()=>{close();W=newDraft(c,d,sel);W.dayId=P.includes(d)?d.id:'pick';saveDraft(key,W);UI.wsel[key]=sel;hapSel();setTimeout(()=>{UI.fx=1;refresh()},220)}},h('div',{className:'f1'},h('div',{className:'t'},wName(d)),h('div',{className:'s'},s)),ic('chev'));
+      b.append(h('button',{className:'role',style:'margin-top:0',onclick:()=>{close();setTimeout(own,220)}},h('div',{className:'ic'},ic('plus')),h('div',{className:'f1'},h('b',{},'Своя тренировка'),h('div',{className:'mu'},'выберите упражнения сами')),ic('chev')));
+      if(list.length)b.append(h('div',{className:'lb',style:'margin:16px 0 0'},'Из программы'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},list.map(d=>row(d,wWhen(d)+' · '+wMeta(d)))));
+      if(wt.length)b.append(h('div',{className:'lb mt2'},'Мои шаблоны'),h('div',{className:'card',style:'padding:0 14px;margin-top:8px'},wt.map(d=>row(d,wMeta(d)))))})};
+  if(!W){body.append(card(3,h('div',{className:'empty',style:'padding-bottom:12px'},P.length?'На этот день тренировка не назначена. Можно сделать любую из программы или свою.':(tr?'Программы пока нет — соберите её во вкладке «Программа» или запишите свою тренировку.':'Тренер ещё не составил программу. Можно записать свою тренировку.')),
+      P.some(d=>!d.rest&&d.ex.length)||(tr&&wTpls(c.trainerId).length)?h('div',{className:'g2','data-tour':'wchoose'},h('button',{className:'btn',onclick:pickW},'Выбрать'),h('button',{className:'btn ghost',onclick:own},'Своя')):h('button',{className:'btn','data-tour':'wchoose',onclick:own},ic('plus'),'Своя тренировка')));return}
   const day={name:W.name};
   const started_=started(W);
   const rs=h('select',{style:'width:auto',onchange:e=>{localStorage.setItem(RSK,e.target.value)}},[60,90,120,150,180,240,300].map(v=>h('option',{value:v,selected:v===restSec()},'отдых '+v/60+' мин')));
-  if(!tr)body.append(h('div',{className:'row wrap st',style:'--i:2;margin-bottom:6px;justify-content:flex-end'},rs));
-  body.append(h('div',{className:'mu st',style:'--i:2;margin-bottom:10px;font-size:12.5px'},tr?'Отметьте, что клиент сделал. Можно ничего не отмечать и нажать «Завершить» — тренировка запишется по плану, веса допишете позже.':(started_?'Черновик сохраняется автоматически':'Отмечайте подходы галочкой. Не успели — просто нажмите «Завершить», всё запишется по плану.')));
+  body.append(h('div',{className:'row wrap st',style:'--i:2;margin-bottom:6px;justify-content:space-between'},h('button',{className:'chip','data-tour':'wother',onclick:()=>started_?ask('Сменить тренировку? Отмеченные подходы сбросятся.',pickW,{ok:'Сменить'}):pickW()},'⇄ Другая тренировка'),tr?null:rs));
+  body.append(h('div',{className:'mu st',style:'--i:2;margin-bottom:10px;font-size:12.5px'},tr?'Отметьте, что клиент сделал. Можно ничего не отмечать и нажать «Завершить» — тренировка запишется по плану, веса допишете позже.':(started_?'Черновик сохраняется автоматически':'Отмечайте подходы галочкой. Заполнять не обязательно — если не хотите, тренер отметит тренировку за вас.')));
   const pk={g:(W.ex.find(x=>!x.cardio)||{}).mg||'Грудь',tid:c.trainerId};
   W.ex.forEach((x,i)=>{const l=lastOf(c,x.name),dr=W.sets[x.id]||(initSets(c,W,x),W.sets[x.id]),kd=kindOf(x);
     const allOk=dr.length&&dr.every(s=>s.ok);
@@ -1101,16 +1123,16 @@ function workoutLogger(c,body,tr){
       box.append(h('button',{className:'chip sm mt',onclick:()=>{dr.push({min:'',km:'',lvl:'',ok:false});sv();refresh()}},'+ отрезок'));body.append(box);return}
     if(kd==='band')box.append(h('label',{className:'row mt'},h('input',{type:'checkbox',checked:W.opts[x.id]==='с резинкой',onchange:e=>{W.opts[x.id]=e.target.checked?'с резинкой':'';sv()}}),'С резинкой'));
     if(kd==='bench')box.append(h('div',{className:'mt'},h('select',{style:'width:auto',onchange:e=>{W.opts[x.id]=e.target.value;sv()}},['скамья прямая','скамья 45°'].map(o=>h('option',{value:o,selected:o===W.opts[x.id]},o)))));
-    dr.forEach((s,k)=>{const row=h('div',{className:'set'+(s.ok?' done':'')},h('span',{className:'n'},k+1),
+    dr.forEach((s,k)=>{const row=h('div',{className:'set'+(s.ok?' done':''),'data-tour':k===0&&!body.querySelector('[data-tour=wset]')?'wset':null},h('span',{className:'n'},k+1),
       h('input',{type:'number',inputMode:'decimal',step:'0.5',placeholder:'кг',value:s.w,oninput:e=>{s.w=e.target.value;sv()}}),h('span',{className:'mu'},'×'),
       h('input',{type:'number',inputMode:'numeric',placeholder:/сек/.test(x.name)?'сек':'повт',value:s.r,oninput:e=>{s.r=e.target.value;sv()}}),
       h('select',{onchange:e=>{s.f=e.target.value;sv()}},Object.entries(FL).map(([q,t])=>h('option',{value:q,selected:q===s.f},t))),
       h('button',{className:'chk',onclick:()=>{s.ok=!s.ok;row.classList.toggle('done',s.ok);sv();if(s.ok){hap('medium');if(!tr)startRest()}else hapSel()}},'✓'));box.append(row)});
     box.append(h('button',{className:'chip sm mt',onclick:()=>{const p=dr[dr.length-1]||{};dr.push({w:p.w||'',r:p.r||x.reps,f:'',ok:false});sv();refresh()}},'+ подход'));
     body.append(box)});
-  body.append(h('button',{className:'btn ghost',onclick:()=>pickEx({...pk,multi:1},arr=>{arr.forEach(n=>{W.ex.push(n);initSets(c,W,n)});sv();refresh()})},ic('plus'),'Добавить упражнение или кардио'));
+  body.append(h('button',{className:'btn ghost','data-tour':'wadd',onclick:()=>pickEx({...pk,multi:1},arr=>{arr.forEach(n=>{W.ex.push(n);initSets(c,W,n)});sv();refresh()})},ic('plus'),'Добавить упражнение или кардио'));
   const note=h('textarea',{rows:2,placeholder:tr?'Комментарий к тренировке':'Как прошла тренировка?',value:W.note||'',oninput:e=>{W.note=e.target.value;sv()}});body.append(h('div',{className:'card mt'},h('div',{className:'lb'},'Заметка'),note));
-  body.append(h('button',{className:'btn',onclick:()=>finishWorkout(c,W,day,tr)},'Завершить тренировку'))}
+  body.append(h('button',{className:'btn','data-tour':'wfin',onclick:()=>finishWorkout(c,W,day,tr)},'Завершить тренировку'))}
 /* выбор упражнений: группы мышц, поиск по всей базе, свои упражнения тренера, множественный выбор */
 function pickEx(o,cb){const tid=o.tid,mine=()=>(tid&&DB.custom&&DB.custom[tid])||[];
   sheet(o.multi?'Добавить упражнения':'Выберите упражнение',(b,close)=>{let g=o.g&&EXDB[o.g]?o.g:'Грудь',q='';const picked=new Map();
@@ -1166,7 +1188,7 @@ function editLog(c,l){sheet('Изменить · '+fmtD(l.date),(b,close)=>{cons
     h('button',{className:'btn ghost mt',onclick:()=>ask('Удалить запись о тренировке?',()=>{if(!canWrite())return;DB.logs[c.id]=(DB.logs[c.id]||[]).filter(z=>z!==l);S.del(c.id,'log:'+l.id);close();refresh()})},'Удалить тренировку'))})}
 function histView(c,body){const L=DB.logs[c.id]||[];if(!L.length){body.append(h('div',{className:'empty'},'Пока нет завершённых тренировок'));return}
   [...L].reverse().slice(0,30).forEach((l,i)=>{const byT=l.by&&l.by!==c.id;const miss=l.items.some(noW);
-    body.append(h('div',{className:'card st',style:'--i:'+Math.min(i+2,8)},h('div',{className:'row'},h('b',{className:'f1'},l.day),h('span',{className:'mu'},fmtD(l.date)),AS?null:h('button',{className:'chip sm',onclick:()=>editLog(c,l)},'Изменить')),
+    body.append(h('div',{className:'card st',style:'--i:'+Math.min(i+2,8)},h('div',{className:'row'},h('b',{className:'f1'},logName(l)),h('span',{className:'mu'},fmtD(l.date)),AS?null:h('button',{className:'chip sm',onclick:()=>editLog(c,l)},'Изменить')),
     byT||miss?h('div',{className:'chips',style:'margin-top:6px'},byT?h('span',{className:'chip sm'},'отметил тренер'):null,miss?h('span',{className:'chip sm bad'},'не все веса'):null):null,
     ...l.items.map(it=>h('div',{className:'mu',style:'margin-top:5px'},h('span',{style:'color:var(--tx)'},(it.cardio?'🏃 ':'')+it.name),it.opt?' ('+it.opt+')':'',': '+fmtSets(it))),
     l.note?h('div',{className:'quote'},l.note):null))})}
@@ -1222,7 +1244,7 @@ function tClients(page,t){const cl=myClients(t.id),s=tStatus(t),lock=s==='expire
   const open=c=>{if(lock){hapErr();toast('Продлите подписку, чтобы открыть данные');return}go('client',{id:c.id})};
   const arr=cur==='att'?att:withI.sort((a,b)=>a.c.name.localeCompare(b.c.name));
   if(!arr.length)list.append(h('div',{className:'empty'},'Все в порядке — никто не требует внимания 👌'));
-  arr.forEach(({c,is})=>{const T=TODAY();list.append(h('button',{className:'li','data-n':c.name.toLowerCase(),onclick:()=>open(c)},av(c.name,is.some(i=>i.l>=2)),
+  arr.forEach(({c,is},ri)=>{const T=TODAY();list.append(h('button',{className:'li','data-n':c.name.toLowerCase(),'data-tour':ri?null:'crow',onclick:()=>open(c)},av(c.name,is.some(i=>i.l>=2)),
     h('div',{className:'f1'},h('div',{className:'t'},c.name),cur==='att'?h('div',{className:'chips',style:'margin-top:5px'},is.slice(0,3).map(i=>h('span',{className:'chip sm'+(i.l>=2?' bad':'')},i.t))):h('div',{className:'s'},`Неделя ${weekNo(c,T)} · ${GOALS[c.goal]}`)),
     lock?h('span',{className:'mu'},'🔒'):h('div',{style:'display:flex;flex-direction:column;align-items:flex-end;gap:5px'},spark(c.id),heat(c.id,7))))});
   if(UI.q)onMount(()=>q.oninput({target:q}))}
@@ -1250,14 +1272,17 @@ function clientCard(page,c){if(!c){page.append(hdr('Клиент не найде
 const WDA=['понедельник','вторник','среду','четверг','пятницу','субботу','воскресенье'],WDP=['понедельникам','вторникам','средам','четвергам','пятницам','субботам','воскресеньям'];
 const MONN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 /* старые программы («День 1», «Верх 1»…) без дней недели раскладываем по неделе: 3 тренировки → Пн, Ср, Пт */
-function normProg(P){const loose=P.filter(d=>!d.date&&!(d.wd&&d.wd.length));if(!loose.length)return P;
+const LEGN=/^(?:день|day)\s*[A-Za-zА-Яа-яЁё0-9]{1,2}\b\s*(?:[—–:.-]\s*(.*))?$/i;
+const cleanName=n=>{n=String(n||'').trim();const m=n.match(LEGN);return m?(m[1]||'').trim():n};
+const logName=l=>cleanName(l.day)||[...new Set((l.items||[]).filter(x=>!x.cardio&&x.mg).map(x=>gLabel(x.mg)))].slice(0,3).join(', ')||((l.items||[]).some(x=>x.cardio)?'Кардио':'Тренировка');
+function normProg(P){P.forEach(d=>{if(d.name&&LEGN.test(d.name.trim()))d.name=cleanName(d.name)});const loose=P.filter(d=>!d.date&&!(d.wd&&d.wd.length));if(!loose.length)return P;
   const used=new Set(P.flatMap(d=>d.date?[]:(d.wd||[]))),free=[0,1,2,3,4,5,6].filter(i=>!used.has(i));
   loose.forEach((d,i)=>{d.wd=i<free.length?[free[Math.floor(i*free.length/Math.min(loose.length,free.length))]]:[]});return P}
 const progOf=c=>normProg(DB.prog[c.id]||(DB.prog[c.id]=[]));
 const progFor=(c,d)=>{const P=progOf(c),x=P.find(z=>z.date===d);if(x)return x.rest?null:x;return P.find(z=>!z.date&&(z.wd||[]).includes(wdi(d)))||null};
 const exGroups=d=>[...new Set((d.ex||[]).filter(x=>!x.cardio&&x.mg).map(x=>gLabel(x.mg)))];
-const wName=d=>(d.name||'').trim()||exGroups(d).slice(0,3).join(', ')||((d.ex||[]).some(x=>x.cardio)?'Кардио':'Тренировка');
-const wMeta=d=>{const n=(d.ex||[]).length,g=exGroups(d);return n?n+' упр.'+((d.name||'').trim()&&g.length?' · '+g.slice(0,3).join(', '):''):'упражнений пока нет'};
+const wName=d=>cleanName(d.name)||exGroups(d).slice(0,3).join(', ')||((d.ex||[]).some(x=>x.cardio)?'Кардио':'Тренировка');
+const wMeta=d=>{const n=(d.ex||[]).length,g=exGroups(d);return n?n+' упр.'+(cleanName(d.name)&&g.length?' · '+g.slice(0,3).join(', '):''):'упражнений пока нет'};
 const wWhen=d=>d.date?cap(WDL[wdi(d.date)])+', '+fmtD(d.date):(d.wd&&d.wd.length?'по '+d.wd.slice().sort().map(i=>WDP[i]).join(', '):'без дня');
 const wTpls=tid=>((DB.tpl&&DB.tpl[tid])||[]).filter(x=>x.kind==='w');
 const pTpls=tid=>((DB.tpl&&DB.tpl[tid])||[]).filter(x=>x.days);
@@ -1267,8 +1292,8 @@ const BUILTIN_W=()=>BUILTIN.flatMap(b=>b.days().map(d=>({...d,sub:b.name})));
 function trainView(c,body){const P=progOf(c),tid=c.trainerId;
   const dw=deloadWeeks(c);body.append(card(2,h('div',{className:'row'},h('div',{className:'f1'},h('h3',{},'Разгрузка'),h('div',{className:dw>=6?'bad':'mu',style:'font-size:13px;margin-top:2px'},`Прошло ${dw} нед. ${(DB.deload[c.id]||[]).length?'с последней разгрузки':'с начала работы'}`)),h('button',{className:'btn sm ghost',onclick:()=>{if(!canWrite())return;(DB.deload[c.id]=DB.deload[c.id]||[]).push(TODAY());S.put(c.id,'deload',DB.deload[c.id]);hapOk();refresh()}},'Отметить сегодня'))));
   body.append(h('button',{className:'btn st',style:'--i:2','data-tour':'logwo',onclick:()=>{if(!canWrite())return;go('logwo',{id:c.id})}},ic('dumb'),'Отметить тренировку за клиента'));
-  body.append(h('h3',{className:'st',style:'--i:3;margin:18px 0 8px;font-size:18px'},'Программа'),h('div',{className:'row st wrap',style:'--i:3;margin-bottom:10px;gap:8px'},h('button',{className:'chip',onclick:()=>tplSheet(c)},'📋 Шаблоны'),P.some(d=>!d.date)?h('button',{className:'chip',onclick:()=>saveTpl(c)},'Сохранить неделю как шаблон'):null));
-  const cur=UI.seg.pv||'week';body.append(h('div',{className:'st',style:'--i:3;margin-bottom:10px'},seg('pv',[['week','По дням недели'],['dates','По датам']],cur,v=>{UI.seg.pv=v;refresh()},'sm')));
+  body.append(h('h3',{className:'st',style:'--i:3;margin:18px 0 8px;font-size:18px'},'Программа'),h('div',{className:'row st wrap',style:'--i:3;margin-bottom:10px;gap:8px'},h('button',{className:'chip','data-tour':'ptpl',onclick:()=>tplSheet(c)},'📋 Шаблоны'),P.some(d=>!d.date)?h('button',{className:'chip',onclick:()=>saveTpl(c)},'Сохранить неделю как шаблон'):null));
+  const cur=UI.seg.pv||'week';body.append(h('div',{className:'st',style:'--i:3;margin-bottom:10px','data-tour':'pseg'},seg('pv',[['week','По дням недели'],['dates','По датам']],cur,v=>{UI.seg.pv=v;refresh()},'sm')));
   if(cur==='week')weekPlan(c,body);else datePlan(c,body);
   body.append(h('div',{className:'mt2'},volCard(c)));
   body.append(h('h3',{style:'margin:16px 0 8px'},'История тренировок'));histView(c,body)}
