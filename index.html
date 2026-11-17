@@ -690,8 +690,17 @@ logwo(page,p){scrLogWo(page,p)},
 wedit(page,p){scrWEdit(page,p)},
 trainer(page,p){aTrainer(page,Tr(p.id))}};
 
+/* админ: выбрать тренера и открыть приложение его глазами (из любого режима) */
+async function asTrainerPick(){if(LIVE&&MODE!=='admin'){MODE='admin';try{localStorage.setItem(MODEK,'admin')}catch(e){}AS=null;UI.tab={};UI.phl={};$('#tabs').replaceChildren();$('#app').replaceChildren(loaderPage());try{await reloadMe()}catch(er){toast(er.message);return}startUI();await new Promise(r=>setTimeout(r,450))}
+  const all=DB.trainers.slice().sort((a,b)=>a.name.localeCompare(b.name));if(!all.length){toast('Тренеров пока нет');return}
+  sheet('Войти как тренер',(b,close)=>{const list=h('div',{className:'card',style:'padding:0 14px;margin-top:10px;min-height:40vh'});
+    const st={paid:'подписка',trial:'пробный',expired:'истекла',blocked:'заблокирован'};
+    const draw=q=>list.replaceChildren(...all.filter(t=>!q||(t.name+' '+(t.tg||'')).toLowerCase().includes(q)).map(t=>h('button',{className:'li',onclick:()=>{close();setTimeout(()=>{if(AS)exitAs();if(stack.length>1){stack=[stack[0]]}viewAs('trainer',t.id)},280)}},av(t.name),h('div',{className:'f1'},h('div',{className:'t'},t.name),h('div',{className:'s'},(t.tg?'@'+t.tg+' · ':'')+myClients(t.id).length+' '+plural(myClients(t.id).length,['клиент','клиента','клиентов'])+' · '+st[tStatus(t)])),ic('eye'))));
+    const q=h('input',{type:'search',placeholder:'Имя или @username',oninput:e=>draw(e.target.value.trim().toLowerCase())});
+    b.append(h('div',{className:'mu',style:'margin:-6px 0 10px'},'Только просмотр: изменения в режиме просмотра отключены. Выйти — кнопка «Выйти» вверху.'),q,list);draw('')})}
 function roleSheet(){if(LIVE){sheet('Режим',(b,close)=>{const it=(m,t,s2)=>h('button',{className:'li',onclick:async()=>{close();if(m===MODE)return;MODE=m;try{localStorage.setItem(MODEK,m)}catch(e){}AS=null;UI.tab={};UI.phl={};$('#tabs').replaceChildren();$('#app').replaceChildren(loaderPage());try{await reloadMe()}catch(er){toast(er.message)}startUI()}},h('div',{className:'f1'},h('div',{className:'t'},t+(MODE===m?'  ✓':'')),h('div',{className:'s'},s2)),ic('chev'));
   b.append(h('div',{className:'mu',style:'margin:-6px 0 12px'},'Видно только вам как админу. Во всех режимах — ваш Telegram-аккаунт.'),h('div',{className:'card',style:'padding:2px 14px'},it('admin','Админ','сводка, тренеры, оплаты, поддержка'),it('trainer','Мой кабинет тренера','свои клиенты и подписка, как у обычного тренера'),it('client','Тестовый клиент','подключитесь кодом из своего кабинета тренера')),
+    h('div',{className:'card',style:'padding:2px 14px;margin-top:10px'},h('button',{className:'li',onclick:()=>{close();setTimeout(asTrainerPick,300)}},h('div',{className:'f1'},h('div',{className:'t'},'Войти как тренер…'),h('div',{className:'s'},'выберите любого тренера и посмотрите приложение его глазами')),ic('eye'))),
     h('div',{className:'lb',style:'margin:18px 0 8px'},'Тестирование своего аккаунта'),
     h('div',{className:'card',style:'padding:2px 14px'},
       h('button',{className:'li',onclick:()=>{close();setTimeout(()=>resetUser(SRV.id,'tour'),300)}},h('div',{className:'f1'},h('div',{className:'t'},'Показать обучение заново'),h('div',{className:'s'},'приветствие и подсказки во всех режимах')),ic('chev')),
